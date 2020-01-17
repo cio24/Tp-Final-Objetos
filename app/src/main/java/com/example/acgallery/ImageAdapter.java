@@ -45,6 +45,7 @@ public class ImageAdapter extends PagerAdapter {
 
 
         ImageSource source = ImageSource.bitmap(bitmap);
+
         image.setImage(source);
 
         container.addView(imageView,0);

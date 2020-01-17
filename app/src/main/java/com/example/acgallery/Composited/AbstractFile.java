@@ -16,7 +16,7 @@ public abstract class AbstractFile implements Serializable {
     //BEGIN CONSTRUCTORS------------------------------------------------
 
     public AbstractFile(File innerFile){
-        this.copyNumber = 1;
+        this.copyNumber = 1; //revisar en caso de copia
         this.innerFile = innerFile;
         container = null;
     }

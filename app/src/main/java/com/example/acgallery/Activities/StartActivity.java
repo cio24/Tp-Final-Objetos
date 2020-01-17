@@ -7,18 +7,15 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.R;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -141,16 +138,9 @@ public class StartActivity extends AppCompatActivity {
             directory = findDirectory(directoryName, directoryRoot);
             if(directory != null) {
                 Folder folder = new Folder(directory);
-                /*
-                    Bajé esa definición de folder porque por cómo definí el nuevo constructor es
-                    necesario que directory esté inicializado desde antes. Además, no tiene
-                    sentido crear un folder si el directorio luego va a ser nulo.
-                    Thank me later :3
-                 */
                 loadFolder(folder, directory); // load pictures and folders into the BIG folder
                 folderRoot.add(folder);
             }
-            // else, the directory is not on the storage
         }
         return folderRoot;
     }

@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.R;
 
 public class ImageActivity extends AppCompatActivity {
@@ -38,7 +39,9 @@ public class ImageActivity extends AppCompatActivity {
             la activity de donde mandamos el dato y lo agregamos al view con Picasso
         */
         Intent intent = getIntent();
-        String path = intent.getExtras().getString("fullImage");
+        //String path = intent.getExtras().getString("fullImage");
+
+        Picture imageToShow = (Picture) getIntent().getSerializableExtra("fullImage");
 
 
         //Picasso.get().load(new File(path)).into(image);
@@ -46,7 +49,7 @@ public class ImageActivity extends AppCompatActivity {
 
 
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeFile(path,bmOptions);
+        Bitmap bitmap = BitmapFactory.decodeFile(imageToShow.getAbsolutePath(),bmOptions);
 
         ImageSource source = ImageSource.bitmap(bitmap);
         image.setImage(source);

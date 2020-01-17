@@ -14,7 +14,6 @@ public class MainActivityTwo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         ViewPager viewPager = findViewById(R.id.viewPager);
         Picture imageToShow = (Picture) getIntent().getSerializableExtra("fullImage");
         ImageAdapter adapter = new ImageAdapter(this, imageToShow.getContainer());

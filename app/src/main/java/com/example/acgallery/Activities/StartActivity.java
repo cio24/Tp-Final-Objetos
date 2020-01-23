@@ -61,7 +61,9 @@ public class StartActivity extends AppCompatActivity {
         extensions.add(JPG_EXTENSION); //extensions.add(PNG_EXTENSION);
 
         directories = new ArrayList<>();
-        directories.add(DCIM); directories.add(DOWNLOADS); directories.add(SCREENSHOTS);
+        //directories.add(DCIM);
+        //directories.add(DOWNLOADS);
+        directories.add(SCREENSHOTS);
 
         Timer timer = new Timer();
 
@@ -73,20 +75,27 @@ public class StartActivity extends AppCompatActivity {
                     public void run() {
                         ConstraintLayout layout = findViewById(R.id.start);
                         layout.removeViewAt(0);
-                        if(permissionsGranted())
-                            folderRoot = loadAllFolders();
-                        else
+                        if(permissionsGranted()) {
+                            startActivityMain();
+                        }
+                        else{
                             askForPermissions();
-                        Toast.makeText(getApplicationContext(), "intentando iniciar activity", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                        intent.putExtra("idFolder",folderRoot);
-                        startActivity(intent);
-                        finish();
+                        }
                     }
                 });
             }
         }, 1000);
 
+    }
+
+    public void startActivityMain(){
+        Log.d("XXX", "Permisos concedidos");
+        folderRoot = loadAllFolders();
+        Toast.makeText(getApplicationContext(), "intentando iniciar activity", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+        intent.putExtra("idFolder",folderRoot);
+        startActivity(intent);
+        finish();
     }
 
 
@@ -95,9 +104,7 @@ public class StartActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PERMISSION){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(getApplicationContext(), "Permission Granted!", Toast.LENGTH_SHORT).show();
-
-                folderRoot = loadAllFolders();
-                // future code here, too?
+                startActivityMain();
             }
             else{
                 if(firstRequirement)

@@ -35,7 +35,7 @@ public class StartActivity extends AppCompatActivity {
     final static String JPG_EXTENSION = ".jpg", PNG_EXTENSION = ".png";
 
     // Folders we want to track
-    final static String DCIM = "DCIM", DOWNLOADS = "Downloads", SCREENSHOTS = "Screenshots";
+    final static String DCIM = "DCIM", DOWNLOADS = "Download", SCREENSHOTS = "Screenshots";
 
     private String [] permissions;
     private Folder folderRoot;
@@ -61,10 +61,10 @@ public class StartActivity extends AppCompatActivity {
         extensions.add(JPG_EXTENSION); //extensions.add(PNG_EXTENSION);
 
         directories = new ArrayList<>();
-        //directories.add(DCIM);
-        //directories.add(DOWNLOADS);
+        directories.add(DCIM);
+        directories.add(DOWNLOADS);
         directories.add(SCREENSHOTS);
-
+        /*
         Timer timer = new Timer();
 
         timer.schedule(new TimerTask() {
@@ -86,16 +86,33 @@ public class StartActivity extends AppCompatActivity {
             }
         }, 1000);
 
+         */
+
+        ConstraintLayout layout = findViewById(R.id.start);
+        layout.removeViewAt(0);
+        if(permissionsGranted()) {
+            startActivityMain();
+        }
+        else{
+            askForPermissions();
+        }
+
     }
 
     public void startActivityMain(){
-        Log.d("XXX", "Permisos concedidos");
-        folderRoot = loadAllFolders();
-        Toast.makeText(getApplicationContext(), "intentando iniciar activity", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-        intent.putExtra("idFolder",folderRoot);
-        startActivity(intent);
-        finish();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("XXX", "Permisos concedidos");
+                folderRoot = loadAllFolders();
+                Toast.makeText(getApplicationContext(), "intentando iniciar activity", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                intent.putExtra("idFolder",folderRoot);
+                startActivity(intent);
+                finish();
+            }
+        });
+
     }
 
 
@@ -209,4 +226,6 @@ public class StartActivity extends AppCompatActivity {
             }
         return true;
     }
+
+
 }

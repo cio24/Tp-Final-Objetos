@@ -135,7 +135,7 @@ public class ImageActivity extends AppCompatActivity {
             actionBar.hide();
         }
         mVisible = false;
-        mHideHandler.postDelayed(mHidePart2Runnable, 0);
+        mHideHandler.postDelayed(mHidePart2Runnable, 300);
     }
 
     @SuppressLint("InlinedApi")
@@ -144,7 +144,7 @@ public class ImageActivity extends AppCompatActivity {
         image.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
-        mHideHandler.postDelayed(mShowPart2Runnable,0);
+        mHideHandler.postDelayed(mShowPart2Runnable,300);
     }
 
 

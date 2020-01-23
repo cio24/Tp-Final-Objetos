@@ -37,6 +37,7 @@ public class ImageAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
 
         ImageView imageView = new ImageView(mContext);
+        image = new SubsamplingScaleImageView(mContext);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -48,12 +49,12 @@ public class ImageAdapter extends PagerAdapter {
 
         image.setImage(source);
 
-        container.addView(imageView,0);
-        return imageView;
+        container.addView(image,0);
+        return image;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeView((ImageView) object);
+        container.removeView((SubsamplingScaleImageView) object);
     }
 }

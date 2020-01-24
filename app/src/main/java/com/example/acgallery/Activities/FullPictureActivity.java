@@ -1,6 +1,7 @@
 package com.example.acgallery.Activities;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,18 +17,14 @@ import com.example.acgallery.R;
 
 public class FullPictureActivity extends AppCompatActivity {
 
+    private Picture picture;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //we get the picture to be displayed
-        Picture picture = (Picture) getIntent().getSerializableExtra("fullPicture");
-
-        ViewPager viewPager = findViewById(R.id.viewPager);
-        SwipeAdapter adapter = new SwipeAdapter(this, picture.getContainer(), getSupportActionBar());
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(picture.getContainer().getFilePos(picture));
+        picture = (Picture) getIntent().getSerializableExtra("fullPicture");
+        showFullImage(picture);
     }
 
     @Override
@@ -36,6 +33,14 @@ public class FullPictureActivity extends AppCompatActivity {
         inflater.inflate(R.menu.picture_menu, menu);
         return true;
     }
+
+    private void showFullImage(Picture picture){
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        SwipeAdapter adapter = new SwipeAdapter(this, picture.getContainer(), getSupportActionBar());
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(picture.getContainer().getFilePos(picture));
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -46,7 +51,11 @@ public class FullPictureActivity extends AppCompatActivity {
                     .setPositiveButton("YOLO", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Toast.makeText(getApplicationContext(),"Better hide while you can!", Toast.LENGTH_SHORT).show();
+                            picture.delete();
+                            Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+                            intent.putExtra("idFolder", picture.getContainer());
+                            finish();
+                            startActivity(intent);
                         }
                     })
                     .setNegativeButton("I'm scared", new DialogInterface.OnClickListener() {
@@ -60,5 +69,14 @@ public class FullPictureActivity extends AppCompatActivity {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+        intent.putExtra("idFolder", picture.getContainer());
+        startActivity(intent);
+        finish();
+        super.onBackPressed();
     }
 }

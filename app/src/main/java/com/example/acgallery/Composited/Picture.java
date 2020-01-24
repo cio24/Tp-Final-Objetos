@@ -67,6 +67,7 @@ public class Picture extends AbstractFile {
             datos...
         */
         intent.putExtra("fullPicture",this);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
     }
 

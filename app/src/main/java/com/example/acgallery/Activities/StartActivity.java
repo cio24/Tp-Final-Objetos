@@ -65,12 +65,10 @@ public class StartActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(permissionsGranted()) {
+                        if(permissionsGranted())
                             startThumbnailsActivity();
-                        }
-                        else{
+                        else
                             askForPermissions();
-                        }
                     }
                 });
             }

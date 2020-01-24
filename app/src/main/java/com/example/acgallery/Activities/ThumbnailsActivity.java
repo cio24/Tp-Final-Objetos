@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
@@ -31,5 +32,16 @@ public class ThumbnailsActivity extends AppCompatActivity {
         adapter = new RecyclerViewAdapter(folderToShow,this);
         recyclerView.setAdapter(adapter);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(folderToShow.getContainer() != null){
+            Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+            intent.putExtra("idFolder", folderToShow.getContainer());
+            startActivity(intent);
+            finish();
+        }
+        super.onBackPressed();
     }
 }

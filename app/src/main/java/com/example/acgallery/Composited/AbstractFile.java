@@ -111,8 +111,9 @@ public abstract class AbstractFile implements Serializable {
 
     public boolean delete() {
         Folder container = getContainer();
-        if(container != null)
+        if(container != null){
             return container.deleteFile(this);
+        }
         return false;
     }
 

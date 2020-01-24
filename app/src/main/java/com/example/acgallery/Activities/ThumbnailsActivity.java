@@ -6,11 +6,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
-import com.example.acgallery.Adapter;
+import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.R;
 
-public class MainActivity extends AppCompatActivity {
+public class ThumbnailsActivity extends AppCompatActivity {
 
     //Number of rows of pics showed
     final static int ROWS_OF_GRID = 4;
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.Adapter adapter;
 
         folderToShow = (Folder) getIntent().getSerializableExtra("idFolder");
-        adapter = new Adapter(folderToShow,this);
+        adapter = new RecyclerViewAdapter(folderToShow,this);
         recyclerView.setAdapter(adapter);
 
     }

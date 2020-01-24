@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.acgallery.Activities.MainActivity;
+import com.example.acgallery.Activities.ThumbnailsActivity;
 import com.example.acgallery.R;
 import com.squareup.picasso.Picasso;
 
@@ -33,7 +33,7 @@ public class Folder extends AbstractFile{
 
     @Override
     public void open(Context context) {
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, ThumbnailsActivity.class);
         /*
             se agrega al canal el path de la imagen que se quiere mostrar, además
             se agrega un nombre, que es como una id que permite obtener el dato desde

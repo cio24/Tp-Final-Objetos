@@ -1,4 +1,4 @@
-package com.example.acgallery;
+package com.example.acgallery.Activities;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -6,26 +6,28 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
-
+import com.example.acgallery.Adapters.SwipeAdapter;
 import com.example.acgallery.Composited.Picture;
+import com.example.acgallery.R;
 
-public class MainActivityTwo extends AppCompatActivity {
+public class FullPictureActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //we get the picture to be displayed
+        Picture picture = (Picture) getIntent().getSerializableExtra("fullPicture");
+
         ViewPager viewPager = findViewById(R.id.viewPager);
-        Picture imageToShow = (Picture) getIntent().getSerializableExtra("fullImage");
-        ImageAdapter adapter = new ImageAdapter(this, imageToShow.getContainer());
+        SwipeAdapter adapter = new SwipeAdapter(this, picture.getContainer(), getSupportActionBar());
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(imageToShow.getContainer().getFilePos(imageToShow));
+        viewPager.setCurrentItem(picture.getContainer().getFilePos(picture));
     }
 
     @Override

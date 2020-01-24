@@ -18,9 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivityTwo" />
-        <activity android:name=".Activities.MainActivity" />
-        <activity android:name=".Activities.ImageActivity" />
+        <activity android:name=".Activities.FullPictureActivity" />
+        <activity android:name=".Activities.ThumbnailsActivity" />
     </application>
 
 </manifest>

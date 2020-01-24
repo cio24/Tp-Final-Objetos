@@ -5,27 +5,21 @@ import android.content.Intent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.acgallery.Activities.ImageActivity;
-import com.example.acgallery.MainActivityTwo;
+import com.example.acgallery.Activities.FullPictureActivity;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
 public class Picture extends AbstractFile {
 
-    private float size;
-    private String type;
-
     //BEGIN PICTURE EXCLUSIVE BEHAVIOR-------------------------------------
 
-    public Picture(float size, String type, File innerFile) {
+    public Picture(File innerFile) {
         super(innerFile);
-        this.size = size;
-        this.type = type;
     }
 
     public String getType() {
-        return this.type;
+        return null;
     }
 
     //END PICTURE EXCLUSIVE BEHAVIOR---------------------------------------
@@ -58,26 +52,21 @@ public class Picture extends AbstractFile {
 
     @Override
     public void bindThumbnailToView(ImageView image, TextView text) {
-        File f = new File(getAbsolutePath());
-        Picasso.get().load(f).resize(300,300).centerCrop().into(image);
+        Picasso.get().load(new File(getAbsolutePath())).resize(300,300).centerCrop().into(image);
         text.setText("");
     }
 
     @Override
     public void open(Context context) {
-        Intent intent = new Intent(context, ImageActivity.class);
-        //Intent intent = new Intent(context, MainActivityTwo.class);
+        Intent intent = new Intent(context, FullPictureActivity.class);
+
         /*
-            se agrega al canal el path de la imagen que se quiere mostrar, además
-            se agrega un nombre, que es como una id que permite obtener el dato desde
-            la activity ImageActivity. Es necesario este id por si se quieren pasar muchos
+            se agrega al canal la foto que se quiere mostrar, además
+            se agrega un id que permite obtener el dato desde
+            la activity FullPictureActivity. Es necesario este id por si se quieren pasar muchos
             datos...
         */
-        //intent.putExtra("fullImage",getAbsolutePath());
-        intent.putExtra("fullImage",this);
-
-
-        // Una vez hecha todas las configuraciones, se inicia la nueva activity con la imagen que tocamos
+        intent.putExtra("fullPicture",this);
         context.startActivity(intent);
     }
 

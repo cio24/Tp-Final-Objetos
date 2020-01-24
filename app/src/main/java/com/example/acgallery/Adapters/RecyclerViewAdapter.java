@@ -1,4 +1,4 @@
-package com.example.acgallery;
+package com.example.acgallery.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Folder;
+import com.example.acgallery.R;
 
 /*
     Esta clase es la encargada de administrar todas las imagenes que se van a mostrar en la interfaz,
@@ -19,7 +20,7 @@ import com.example.acgallery.Composited.Folder;
     Es parametrizada porqué necesita el holder (o contenedor )de cada imagen, esta clase la tenemos
     que crear nosotros.
 */
-public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     /*
         Esta clase se crea para que el adaptador la utilice para mostrar cada item (en nuestro caso
@@ -48,14 +49,14 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     private Context context; //el contexto es necesario pero no tengo bien claro que sería.
 
     // Constructor
-    public Adapter(Folder folderRoot, Context context){
+    public RecyclerViewAdapter(Folder folderRoot, Context context){
         this.folderRoot = folderRoot;
 
         this.context = context;
     }
 
     /*
-        Este método crea nuevas views y es invocado por el layoutmanager (después fijate que en MainActivity
+        Este método crea nuevas views y es invocado por el layoutmanager (después fijate que en ThumbnailsActivity
         el que utuliza el adaptador es el gridLayout).
     */
     @NonNull

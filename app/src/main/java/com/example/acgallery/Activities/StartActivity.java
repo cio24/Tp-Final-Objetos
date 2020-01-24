@@ -17,18 +17,20 @@ import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.R;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class StartActivity extends AppCompatActivity {
 
-    //it is used to prevent the dialog screen when the app runs the first time.
-    private boolean firstRequirement = true;
-
     // Request permission code
     final static int REQUEST_PERMISSION = 1;
 
+    //time the icon remains in the start screen
+    final static int START_SCREEN_DELAY = 1000;
+
+    // internal and external storage directory path
     final static String ROOT_PATH = "/mnt";
 
     // Images extensions
@@ -37,34 +39,24 @@ public class StartActivity extends AppCompatActivity {
     // Folders we want to track
     final static String DCIM = "DCIM", DOWNLOADS = "Download", SCREENSHOTS = "Screenshots";
 
-    private String [] permissions;
-    private Folder folderRoot;
-    private ArrayList<String> extensions, directories; //all image extensions and directories to be found
-    private File directoryRoot; //directory root of phone storage
 
+    private boolean firstRequirement = true; //it is used to prevent the dialog screen when the app runs the first time.
+    private List<String> extensions, directories;
+    private String [] permissions;
+    private File directoryRoot;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start);
-
         getSupportActionBar().hide();
 
-
-        // Permissions required to read/write internal storage
         permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-
         directoryRoot = new File(ROOT_PATH);
+        extensions = Arrays.asList(JPG_EXTENSION, PNG_EXTENSION);
+        directories = Arrays.asList(DCIM,DOWNLOADS,SCREENSHOTS);
 
-        extensions = new ArrayList<>();
-        extensions.add(JPG_EXTENSION); //extensions.add(PNG_EXTENSION);
-
-        directories = new ArrayList<>();
-        directories.add(DCIM);
-        directories.add(DOWNLOADS);
-        directories.add(SCREENSHOTS);
-        /*
         Timer timer = new Timer();
 
         timer.schedule(new TimerTask() {
@@ -73,10 +65,8 @@ public class StartActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ConstraintLayout layout = findViewById(R.id.start);
-                        layout.removeViewAt(0);
                         if(permissionsGranted()) {
-                            startActivityMain();
+                            startThumbnailsActivity();
                         }
                         else{
                             askForPermissions();
@@ -84,35 +74,15 @@ public class StartActivity extends AppCompatActivity {
                     }
                 });
             }
-        }, 1000);
-
-         */
-
-        ConstraintLayout layout = findViewById(R.id.start);
-        layout.removeViewAt(0);
-        if(permissionsGranted()) {
-            startActivityMain();
-        }
-        else{
-            askForPermissions();
-        }
-
+        }, START_SCREEN_DELAY);
     }
 
-    public void startActivityMain(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("XXX", "Permisos concedidos");
-                folderRoot = loadAllFolders();
-                Toast.makeText(getApplicationContext(), "intentando iniciar activity", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                intent.putExtra("idFolder",folderRoot);
-                startActivity(intent);
-                finish();
-            }
-        });
-
+    private void startThumbnailsActivity(){
+        Folder folderRoot = getFolderRootLoaded();
+        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+        intent.putExtra("idFolder", folderRoot);
+        startActivity(intent);
+        finish();
     }
 
 
@@ -121,7 +91,7 @@ public class StartActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PERMISSION){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(getApplicationContext(), "Permission Granted!", Toast.LENGTH_SHORT).show();
-                startActivityMain();
+                startThumbnailsActivity();
             }
             else{
                 if(firstRequirement)
@@ -155,7 +125,7 @@ public class StartActivity extends AppCompatActivity {
             }
     }
 
-    private Folder loadAllFolders(){
+    private Folder getFolderRootLoaded(){
         Folder folderRoot = new Folder(directoryRoot);
         File directory;
         for (String directoryName: directories) {
@@ -178,7 +148,7 @@ public class StartActivity extends AppCompatActivity {
                     for(String extension: extensions){
                         if(files[i].getName().endsWith(extension)){
                             Log.d("picFound", "nombre:" + files[i].getName() + " found!");
-                            Picture picture = new Picture (files[i].length(),extension, files[i]);
+                            Picture picture = new Picture (files[i]);
                             folderToLoad.add(picture);
                         }
                     }

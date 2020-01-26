@@ -106,6 +106,26 @@ public class Folder extends AbstractFile {
         return files.size();
     }
 
+    public int getPicturesAmount(){
+        int amount = 0;
+        for (AbstractFile file: files) {
+            if (!file.getInnerFile().isDirectory()){
+                amount++;
+            }
+        }
+        return amount;
+    }
+
+    public int getFoldersAmount(){
+        int amount = 0;
+        for (AbstractFile file: files) {
+            if (file.getInnerFile().isDirectory()){
+                amount++;
+            }
+        }
+        return amount;
+    }
+
     public AbstractFile getFileAt(int index) {
         if ((index >= 0) && (index < files.size())) {
             return files.get(index);

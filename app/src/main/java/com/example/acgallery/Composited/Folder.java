@@ -2,17 +2,25 @@ package com.example.acgallery.Composited;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+
 import com.example.acgallery.Activities.ThumbnailsActivity;
 import com.example.acgallery.R;
+import com.example.acgallery.Sorters.Criterion;
+import com.example.acgallery.Sorters.NameSort;
+import com.example.acgallery.Sorters.OrSort;
+import com.example.acgallery.Sorters.TypeSort;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 
-public class Folder extends AbstractFile{
+public class Folder extends AbstractFile {
 
     private ArrayList<AbstractFile> files;
 
@@ -33,6 +41,10 @@ public class Folder extends AbstractFile{
 
     @Override
     public void open(Context context) {
+        Criterion c1 = new TypeSort();
+        Criterion c2 = new NameSort();
+        Criterion c = new OrSort(c1, c2);
+        this.sort(c1);
         Intent intent = new Intent(context, ThumbnailsActivity.class);
         /*
             se agrega al canal el path de la imagen que se quiere mostrar, además
@@ -113,6 +125,18 @@ public class Folder extends AbstractFile{
         return R.drawable.folder;
     }
 
+    public void sort(Criterion c){
+        AbstractFile aux;
+        for(int i = 0; i < files.size() - 1; i++){
+            for (int j = i+1; j < files.size(); j++){
+                if (!c.lessThan(files.get(i), files.get(j))){
+                    aux = files.remove(i);
+                    files.add(i, files.remove(j-1));
+                    files.add(j, aux);
+                }
+            }
+        }
+    }
 
 
     //END FOLDER EXCLUSIVE BEHAVIOR---------------------------------------

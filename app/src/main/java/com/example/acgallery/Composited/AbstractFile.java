@@ -59,6 +59,8 @@ public abstract class AbstractFile implements Serializable {
         return innerFile.getName();
     }
 
+    public File getInnerFile() { return this.innerFile; }
+
     public boolean moveTo(Folder destination) {
 
         /*

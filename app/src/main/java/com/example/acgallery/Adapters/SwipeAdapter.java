@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,26 +15,30 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Folder;
+
+import java.util.ArrayList;
 
 public class SwipeAdapter extends PagerAdapter {
     private Context context;
     private Folder folder;
+    private ArrayList<AbstractFile> pictures;
     private boolean mVisible;
     private final Handler mHideHandler = new Handler();
     private SubsamplingScaleImageView image;
     private ActionBar actionBar;
 
 
-    public SwipeAdapter(Context context, Folder folder, ActionBar actionBar) {
-        this.folder = folder;
+    public SwipeAdapter(Context context, ArrayList<AbstractFile> pictures, ActionBar actionBar) {
+        this.pictures = pictures;
         this.actionBar = actionBar;
         this.context = context;
     }
 
     @Override
     public int getCount() {
-        return folder.getFilesAmount();
+        return pictures.size();
     }
 
     @Override
@@ -48,7 +53,8 @@ public class SwipeAdapter extends PagerAdapter {
         image = new SubsamplingScaleImageView(context);
 
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeFile(folder.getFileAt(position).getAbsolutePath(),bmOptions);
+        Log.d("KAWAI","Position de imagen actual: " + position);
+        Bitmap bitmap = BitmapFactory.decodeFile(pictures.get(position).getAbsolutePath(),bmOptions);
         ImageSource source = ImageSource.bitmap(bitmap);
         image.setImage(source);
         image.setOnClickListener(new View.OnClickListener() {

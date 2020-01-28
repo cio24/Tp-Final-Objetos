@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.Composited.Folder;
@@ -32,6 +34,13 @@ public class ThumbnailsActivity extends AppCompatActivity {
         adapter = new RecyclerViewAdapter(folderToShow,this);
         recyclerView.setAdapter(adapter);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.folder_menu, menu);
+        return true;
     }
 
     @Override

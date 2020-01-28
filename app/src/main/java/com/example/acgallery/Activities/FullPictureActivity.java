@@ -12,12 +12,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 import com.example.acgallery.Adapters.SwipeAdapter;
+import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Picture;
+import com.example.acgallery.Filters.CriterionFilter;
+import com.example.acgallery.Filters.FolderFilter;
 import com.example.acgallery.R;
+
+import java.util.ArrayList;
 
 public class FullPictureActivity extends AppCompatActivity {
 
     private Picture picture;
+    private CriterionFilter filter = new FolderFilter();
+    private ArrayList<AbstractFile> pictures;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +43,22 @@ public class FullPictureActivity extends AppCompatActivity {
 
     private void showFullImage(Picture picture){
         ViewPager viewPager = findViewById(R.id.viewPager);
-        SwipeAdapter adapter = new SwipeAdapter(this, picture.getContainer(), getSupportActionBar());
+        pictures = picture.getContainer().getPicturesOnly(filter);
+        int i = 0;
+        for(AbstractFile pic: pictures){
+            if(pic.equals(picture))
+                break;
+            i++;
+        }
+        SwipeAdapter adapter = new SwipeAdapter(this, pictures, getSupportActionBar());
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(picture.getContainer().getFilePos(picture));
+        viewPager.setCurrentItem(i);
     }
 
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.delete_op){
+        if(item.getItemId() == R.id.deleteImage_op){
             new AlertDialog.Builder(this)
                     .setTitle("Are you sure dude?")
                     .setMessage("The akatsuki members gonna kill u!")
@@ -65,7 +79,7 @@ public class FullPictureActivity extends AppCompatActivity {
                         }
                     }).create().show();
         }
-        if(item.getItemId() == R.id.back_op) {
+        if(item.getItemId() == R.id.backImage_op) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);

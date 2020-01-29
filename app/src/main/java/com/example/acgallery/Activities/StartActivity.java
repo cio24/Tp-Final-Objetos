@@ -5,12 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.example.acgallery.Composited.Folder;
@@ -27,7 +25,7 @@ public class StartActivity extends AppCompatActivity {
     // Request permission code
     final static int REQUEST_PERMISSION = 1;
 
-    //time the icon remains in the start screen
+    //time the icon of the app remains in the activity_start_layout screen
     final static int START_SCREEN_DELAY = 1000;
 
     // internal and external storage directory path
@@ -40,7 +38,7 @@ public class StartActivity extends AppCompatActivity {
     final static String DCIM = "DCIM", DOWNLOADS = "Download", SCREENSHOTS = "Screenshots";
 
 
-    private boolean firstRequirement = true; //it is used to prevent the dialog screen when the app runs the first time.
+    private boolean firstRequirement = true; //it is used to prevent the dialog screen to be shown when the app runs the first time.
     private List<String> extensions, directories;
     private String [] permissions;
     private File directoryRoot;
@@ -49,7 +47,11 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.start);
+
+        //buinding the activity to the activity_start_layout layout.
+        setContentView(R.layout.activity_start_layout);
+
+        //we hide the actions buttons 'cause we copied the style from Google Photos
         getSupportActionBar().hide();
 
         permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -59,13 +61,14 @@ public class StartActivity extends AppCompatActivity {
 
         Timer timer = new Timer();
 
+        //we want to show the app icon like Google Photo does
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(permissionsGranted())
+                        if(isPermissionsGranted())
                             startThumbnailsActivity();
                         else
                             askForPermissions();
@@ -75,15 +78,12 @@ public class StartActivity extends AppCompatActivity {
         }, START_SCREEN_DELAY);
     }
 
-    private void startThumbnailsActivity(){
-        Folder folderRoot = getFolderRootLoaded();
-        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        intent.putExtra("idFolder", folderRoot);
-        startActivity(intent);
-        finish();
-    }
-
-
+    /*
+        this methods runs automatically when the app starts, so
+        we have to control the result of the request of the permissions
+        so we show a message explaining the user why we need them when the permissions are noy accepted
+        in the other case we continue loading the pictures and showing them
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSION){
@@ -116,6 +116,19 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+    /*
+    this method load the root folder_thumbnail and puts it in an intent
+    then starts the activity_thumbnails_layout activity so it can get the folder_thumbnail to displayed
+    */
+    private void startThumbnailsActivity(){
+        Folder rootFolder = getFolderRootLoaded();
+        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+        intent.putExtra("idFolder", rootFolder);
+        startActivity(intent);
+        finish();
+    }
+
+    //it asks the user for permissions so the app can have access to the files.
     private void askForPermissions() {
         for(String permission: permissions)
             if(ContextCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED) {
@@ -123,6 +136,10 @@ public class StartActivity extends AppCompatActivity {
             }
     }
 
+    /*
+        this method creates a Folder and adds all the folders we want to track,
+        loaded with pictures and other folders
+     */
     private Folder getFolderRootLoaded(){
         Folder folderRoot = new Folder(directoryRoot);
         File directory;
@@ -130,14 +147,14 @@ public class StartActivity extends AppCompatActivity {
             directory = findDirectory(directoryName, directoryRoot);
             if(directory != null) {
                 Folder folder = new Folder(directory);
-                loadFolder(folder, directory); // load pictures and folders into the BIG folder
+                loadFolder(folder, directory); // load pictures and folders into the BIG folder_thumbnail
                 folderRoot.add(folder);
             }
         }
         return folderRoot;
     }
 
-    //it loads all the pictures from the directory source into the given folder
+    //it loads all the pictures from the directory source into the given folder_thumbnail
     private void loadFolder(Folder folderToLoad,File directorySource){
         File[] files = directorySource.listFiles();
         if(files != null){ // Directory not empty
@@ -145,7 +162,6 @@ public class StartActivity extends AppCompatActivity {
                 if (!files[i].isDirectory()) {
                     for(String extension: extensions){
                         if(files[i].getName().endsWith(extension)){
-                            Log.d("picFound", "nombre:" + files[i].getName() + " found!");
                             Picture picture = new Picture (files[i]);
                             folderToLoad.add(picture);
                         }
@@ -187,13 +203,13 @@ public class StartActivity extends AppCompatActivity {
         return null; // the directory is not on the storage
     }
 
-    private boolean permissionsGranted(){
+    //it checks wether the app has the required permissions or not
+    private boolean isPermissionsGranted(){
         for(String permission: permissions)
             if(ContextCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         return true;
     }
-
 
 }

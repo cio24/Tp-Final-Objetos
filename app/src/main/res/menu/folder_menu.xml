@@ -2,15 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:checkable="true"
-        android:enabled="false"
-        android:icon="@android:drawable/checkbox_off_background"
-        android:title="check"
-        android:visible="true"
-        app:showAsAction="ifRoom" />
     <item android:id="@+id/deleteImage_op"
-        android:icon="@drawable/ic_delete"
+        android:icon="@drawable/delete_icon"
+        android:title="Details"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/backFolder_op"
+        android:icon="@drawable/back_icon"
         android:title="Details"
         app:showAsAction="ifRoom"/>
 

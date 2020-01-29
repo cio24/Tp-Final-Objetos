@@ -7,7 +7,7 @@
     android:background="#000000">
 
     <ImageView
-        android:id="@+id/HOLDER_IMAGE"
+        android:id="@+id/thumbnail_holder"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:background="#DFDCDC"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/FOLDER_NAME"
+        android:id="@+id/folder_name_holder"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -27,7 +27,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/HOLDER_IMAGE"
+        app:layout_constraintTop_toTopOf="@+id/thumbnail_holder"
         app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

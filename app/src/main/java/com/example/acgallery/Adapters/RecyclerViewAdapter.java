@@ -24,12 +24,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     /*
         Esta clase se crea para que el adaptador la utilice para mostrar cada item (en nuestro caso
-        una imagen) que se quiera mostrar en el recyclerview.
+        una imagen con un texto) que se quiera mostrar en el recyclerview.
     */
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView image;
-        private TextView text;
+        private ImageView thumbnailToShow;
+        private TextView folderNameToShow;
 
         /*
             Constructor:
@@ -38,34 +38,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         */
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.HOLDER_IMAGE);
-            text = (TextView) itemView.findViewById(R.id.FOLDER_NAME);
+            thumbnailToShow = (ImageView) itemView.findViewById(R.id.thumbnail_holder);
+            folderNameToShow = (TextView) itemView.findViewById(R.id.folder_name_holder);
         }
     }
 
     // Una vez que tenemos el holder listo, pasamos a implementar los métodos del adaptador.
 
-    private Folder folderRoot; //De acá es de donde se van a tomar todas las imagenes a mostrar.
-    private Context context; //el contexto es necesario pero no tengo bien claro que sería.
+    private Folder folderToShow; //De acá es de donde se van a tomar todas las imagenes a mostrar.
+    private Context context; //el contexto es necesario pero no tengo bien claro xq.
 
     // Constructor
-    public RecyclerViewAdapter(Folder folderRoot, Context context){
-        this.folderRoot = folderRoot;
-
+    public RecyclerViewAdapter(Folder folderToShow, Context context){
+        this.folderToShow = folderToShow;
         this.context = context;
     }
 
     /*
-        Este método crea nuevas views y es invocado por el layoutmanager (después fijate que en ThumbnailsActivity
+        Este método crea nuevos view holder y es invocado por el layoutmanager (después fijate que en ThumbnailsActivity
         el que utuliza el adaptador es el gridLayout).
     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
-        //esto es lo que crea una nueva view que sera mostrada dentro de la interfaz del image_item.xml
+        /*
+            esto es lo que crea una nueva view que sera mostrada dentro de la interfaz del image item layout
+            al igual que cuando se agrega el layout de un menu a otro layout, se debe utilizar el método
+            inflate.
+         */
         LayoutInflater mInflater = LayoutInflater.from(context);
-        View view = mInflater.inflate(R.layout.item_image,viewGroup,false);
+        View view = mInflater.inflate(R.layout.item_image_layout,viewGroup,false);
 
         //se la retorna dentro del view holder para poder ser utilizada por el siguiente método
         return new ViewHolder(view);
@@ -95,14 +98,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             la aplicación termina consumiendo mucha memoria y hace que se cierre por el error
             Java.lang.outOfMemory
         */
-        final AbstractFile f = folderRoot.getFileAt(position);
-        f.bindThumbnailToView(holder.image,holder.text);
+        final AbstractFile thumbnail = folderToShow.getFileAt(position);
+        thumbnail.bindThumbnailToView(holder.thumbnailToShow,holder.folderNameToShow);
 
-        // Agregamos un Evento que nos muestre la imagen en pantalla completa cada vez que es tocada.
-        holder.image.setOnClickListener(new View.OnClickListener() {
+        /*
+         Agregamos un Evento que nos muestre la imagen en pantalla completa cada vez que es tocada
+         o bien abra una nueva carpeta
+         */
+        holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                f.open(context);
+                thumbnail.open(context);
             }
         });
     }
@@ -110,6 +116,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     //Acá simplemente le damos la cantidad de datos que tenemos para que no haga cagada con el indice (position)
     @Override
     public int getItemCount() {
-        return folderRoot.getFilesAmount();
+        return folderToShow.getFilesAmount();
     }
 }

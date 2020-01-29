@@ -2,12 +2,13 @@ package com.example.acgallery.Composited;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.acgallery.Activities.ThumbnailsActivity;
 import com.example.acgallery.Filters.CriterionFilter;
-import com.example.acgallery.Filters.FolderFilter;
 import com.example.acgallery.R;
 import com.example.acgallery.Sorters.CriterionSorter;
 import com.example.acgallery.Sorters.NameSort;
@@ -33,7 +34,7 @@ public class Folder extends AbstractFile {
     @Override
     public void bindThumbnailToView(ImageView image, TextView text) {
 
-        Picasso.get().load(R.drawable.folder).resize(300,300).into(image);
+        Picasso.get().load(R.drawable.folder_thumbnail).resize(300,300).into(image);
         text.setText(getName());
     }
 
@@ -85,7 +86,11 @@ public class Folder extends AbstractFile {
         la carpeta que eliminamos.
         Entonces, a lo que voy es, ¿deberíamos hacer el deleteFile en profundidad?
          */
-        return files.remove(f);
+        if(f.innerFile.delete()){
+            return files.remove(f);
+        }
+        return false;
+
     }
 
     public boolean existName(String name) {
@@ -140,14 +145,14 @@ public class Folder extends AbstractFile {
     }
 
     public Object getImageFolder() {
-        return R.drawable.folder;
+        return R.drawable.folder_thumbnail;
     }
 
-    public void sort(CriterionSorter c){
+    public void sort(CriterionSorter criterion){
         AbstractFile aux;
         for(int i = 0; i < files.size() - 1; i++){
             for (int j = i+1; j < files.size(); j++){
-                if (!c.lessThan(files.get(i), files.get(j))){
+                if (!criterion.lessThan(files.get(i), files.get(j))){
                     aux = files.remove(i);
                     files.add(i, files.remove(j-1));
                     files.add(j, aux);
@@ -156,7 +161,7 @@ public class Folder extends AbstractFile {
         }
     }
 
-    public ArrayList<AbstractFile> getPicturesOnly(CriterionFilter filter){
+    public ArrayList<AbstractFile> getFilteredFiles(CriterionFilter filter){
         ArrayList<AbstractFile> pictures = new ArrayList<>();
         for(AbstractFile file: files){
             if(!filter.satisfy(file))
@@ -174,7 +179,7 @@ public class Folder extends AbstractFile {
     @Override
     public String getPath() {
         Folder container = getContainer();
-        if(container == null){ //if this is a root folder
+        if(container == null){ //if this is a root folder_thumbnail
             return "/" + this.getName(); //with the copyNumber included
         }
         return container.getPath() + "/" + this.getName(); //with the copyNumber included

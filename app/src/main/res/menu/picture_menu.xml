@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/deleteImage_op"
-        android:icon="@drawable/ic_delete"
+    <item android:id="@+id/delete_image_op"
+        android:icon="@drawable/delete_icon"
         android:title="Details"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/backImage_op"
-        android:icon="@drawable/ic_back"
+    <item android:id="@+id/back_image_op"
+        android:icon="@drawable/back_icon"
         android:title="Details"
         app:showAsAction="ifRoom"/>
 

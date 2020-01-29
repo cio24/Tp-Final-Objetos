@@ -10,7 +10,7 @@ import java.io.Serializable;
 public abstract class AbstractFile implements Serializable {
 
     private int copyNumber; //it is used for rename this file when there's another file with the same name in the container.
-    private Folder container; //in order to delete this file we must have a reference of the folder that has it.
+    private Folder container; //in order to delete this file we must have a reference of the folder_thumbnail that has it.
     public File innerFile; //file allocated in phone storage
 
     //BEGIN CONSTRUCTORS------------------------------------------------
@@ -39,7 +39,7 @@ public abstract class AbstractFile implements Serializable {
 
     public void setName(String name){
         //setCopyNumber(1); //we do this 'cause the previous name could be duplicated thus copyNumber > 1
-        if(this.container != null) {//if it is not a root folder
+        if(this.container != null) {//if it is not a root folder_thumbnail
             if (this.container.existName(name)) {
                 this.copyNumber++;
                 setName(name + "(" + this.copyNumber + ")");

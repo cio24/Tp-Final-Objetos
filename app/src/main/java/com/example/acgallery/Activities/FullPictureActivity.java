@@ -2,16 +2,23 @@ package com.example.acgallery.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 import com.example.acgallery.Adapters.SwipeAdapter;
 import com.example.acgallery.Composited.AbstractFile;
@@ -20,7 +27,19 @@ import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.Filters.FolderFilter;
 import com.example.acgallery.R;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class FullPictureActivity extends AppCompatActivity {
 
@@ -30,6 +49,11 @@ public class FullPictureActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_picture_layout);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
+        }
         fullPictureToShow = (Picture) getIntent().getSerializableExtra("fullPicture");
         showFullPicture(fullPictureToShow);
     }
@@ -89,6 +113,48 @@ public class FullPictureActivity extends AppCompatActivity {
         else if(item.getItemId() == R.id.back_image_op) {
             onBackPressed();
         }
+        else if(item.getItemId() == R.id.details_image_op){
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(fullPictureToShow.getAbsolutePath(), options);
+            int h = options.outHeight;
+            int w = options.outWidth;
+
+            BasicFileAttributes attributes = null;
+            Path filePath = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                filePath = Paths.get(fullPictureToShow.getAbsolutePath());
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try {
+                    attributes = Files.readAttributes(filePath,BasicFileAttributes.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                String time = attributes.creationTime().toString();
+
+                new AlertDialog.Builder(this)
+                        .setTitle(fullPictureToShow.getName())
+                        .setMessage(
+                                "Dimensions: " + w + " x " + h + "\n" +
+                                "Size: " + fullPictureToShow.getInnerFile().length()/(1024*1024) +  " MB"+ "\n" +
+                                "Path: " + fullPictureToShow.getAbsolutePath() + "\n" +
+                                "Taken on: " + time.substring(0,time.indexOf("T"))
+                        )
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .create().show();
+            }
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

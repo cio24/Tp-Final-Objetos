@@ -97,7 +97,7 @@ public abstract class AbstractFile implements Serializable {
     public boolean copyTo(Folder destination){
         /*
         Folder container = this.getContainer();
-        if(container != null) {
+        if(container != null) { // so it won't be the root
             if (this.getCopyNumber() > 1){ //Only if it is bigger than 1, otherwise it makes no sense.
                 this.setName(this.getName() + " (" + this.getCopyNumber() + ")"); //Actual name + copyNumber
                 // this.setCopyNumber(1); //Reset copyNumber. Actually not necessary because we do it on setName().

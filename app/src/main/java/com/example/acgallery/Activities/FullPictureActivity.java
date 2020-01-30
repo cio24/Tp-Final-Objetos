@@ -9,11 +9,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -123,6 +125,7 @@ public class FullPictureActivity extends AppCompatActivity {
             onBackPressed();
         }
         else if(item.getItemId() == R.id.details_image_op){
+            Log.d("DETAILS", "Details executing" + fullPictureToShow.getAbsolutePath());
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(fullPictureToShow.getAbsolutePath(), options);
@@ -162,6 +165,15 @@ public class FullPictureActivity extends AppCompatActivity {
                         })
                         .create().show();
             }
+        }
+        else if(item.getItemId() == R.id.renameImage_op){
+            if (fullPictureToShow.getInnerFile().renameTo(new File (fullPictureToShow.getContainer().getAbsolutePath() + "/geralt.jpg"))){
+                Toast.makeText(this, "File renamed", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(this, "Tu vieja te va a renombrar", Toast.LENGTH_SHORT).show();
+            }
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fullPictureToShow.innerFile)));
         }
 
         return super.onOptionsItemSelected(item);

@@ -43,7 +43,9 @@ import java.util.TimeZone;
 
 public class FullPictureActivity extends AppCompatActivity {
 
-    private Picture fullPictureToShow;
+    private AbstractFile fullPictureToShow;
+    private ViewPager viewPager;
+    private ArrayList<AbstractFile> pictures;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +72,9 @@ public class FullPictureActivity extends AppCompatActivity {
         trying to show a folder, then we have to find what is the posicion of the
         picture to be shown in the arraylist so we can set it up as the current item
      */
-    private void showFullPicture(Picture picture){
-        ViewPager viewPager = findViewById(R.id.view_pager);
-        ArrayList<AbstractFile> pictures = picture.getContainer().getFilteredFiles(new FolderFilter());
+    private void showFullPicture(AbstractFile picture){
+        viewPager = findViewById(R.id.view_pager);
+        pictures = picture.getContainer().getFilteredFiles(new FolderFilter());
         int currentPicturePos = 0;
         for(AbstractFile pic: pictures){
             if(pic.equals(picture))
@@ -86,6 +88,14 @@ public class FullPictureActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        int currentPicPosition = viewPager.getCurrentItem();
+        for (int i = 0; i < pictures.size(); i++){
+            if (i == currentPicPosition){
+                fullPictureToShow = pictures.get(i);
+            }
+        }
+
         if(item.getItemId() == R.id.delete_image_op){
             new AlertDialog.Builder(this)
                     .setTitle("Delete Item permanently?")
@@ -94,7 +104,6 @@ public class FullPictureActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             fullPictureToShow.delete();
-                            //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse(fullPictureToShow.getAbsolutePath() + Environment.getExternalStorageDirectory())));
                             Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
                             intent.putExtra("idFolder", fullPictureToShow.getContainer());
                             sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fullPictureToShow.innerFile)));

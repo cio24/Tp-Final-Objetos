@@ -29,6 +29,10 @@ public abstract class AbstractFile implements Serializable {
         return this.innerFile.getAbsolutePath();
     }
 
+    public void setInnerFile(File innerFile){
+        this.innerFile = innerFile;
+    }
+
     protected void setContainer(Folder container){ // Check. Shouldn't we do the comprobation of an AbstractFile on the same container?
         this.container = container; //Protected because we use this method on Folder (add()) & Picture.
     }
@@ -58,6 +62,8 @@ public abstract class AbstractFile implements Serializable {
     public String getName(){//return the entire name with the extension file.
         return innerFile.getName();
     }
+
+
 
     public File getInnerFile() { return this.innerFile; }
 

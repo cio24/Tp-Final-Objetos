@@ -24,7 +24,7 @@
         android:title="Move"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/renameImage_op"
+    <item android:id="@+id/rename_image_op"
         android:title="Rename"
         app:showAsAction="never"/>
 

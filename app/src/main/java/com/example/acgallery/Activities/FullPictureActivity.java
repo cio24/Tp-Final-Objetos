@@ -2,19 +2,16 @@ package com.example.acgallery.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,7 +22,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.acgallery.Adapters.SwipeAdapter;
 import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Picture;
-import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.Filters.FolderFilter;
 import com.example.acgallery.R;
 
@@ -35,17 +31,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class FullPictureActivity extends AppCompatActivity {
 
-    private AbstractFile fullPictureToShow;
+    private Picture fullPictureDisplayed;
     private ViewPager viewPager;
     private ArrayList<AbstractFile> pictures;
 
@@ -58,8 +48,9 @@ public class FullPictureActivity extends AppCompatActivity {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
         }
-        fullPictureToShow = (Picture) getIntent().getSerializableExtra("fullPicture");
-        showFullPicture(fullPictureToShow);
+        fullPictureDisplayed = (Picture) getIntent().getSerializableExtra("fullPicture");
+
+        showFullPicture(fullPictureDisplayed);
     }
 
     @Override
@@ -88,15 +79,21 @@ public class FullPictureActivity extends AppCompatActivity {
         viewPager.setCurrentItem(currentPicturePos);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
+    private Picture getPictureDisplayed(){
         int currentPicPosition = viewPager.getCurrentItem();
         for (int i = 0; i < pictures.size(); i++){
             if (i == currentPicPosition){
-                fullPictureToShow = pictures.get(i);
+                return (Picture) pictures.get(i);
             }
         }
+        return null;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        fullPictureDisplayed = getPictureDisplayed();
 
         if(item.getItemId() == R.id.delete_image_op){
             new AlertDialog.Builder(this)
@@ -105,12 +102,18 @@ public class FullPictureActivity extends AppCompatActivity {
                     .setPositiveButton("Delete Permanently", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            fullPictureToShow.delete();
+
+                            //we delete the picture and make sure that won't remain an empty file of it.
+                            fullPictureDisplayed.delete();
+                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fullPictureDisplayed.innerFile)));
+
+                            //then we comeback to the folder where the picture was
                             Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-                            intent.putExtra("idFolder", fullPictureToShow.getContainer());
-                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fullPictureToShow.innerFile)));
-                            finish();
+                            intent.putExtra("idFolder", fullPictureDisplayed.getContainer());
                             startActivity(intent);
+
+                            //and close this activity
+                            finish();
                         }
                     })
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -119,61 +122,102 @@ public class FullPictureActivity extends AppCompatActivity {
                             //close the Alert Dialog
                         }
                     }).create().show();
-
         }
         else if(item.getItemId() == R.id.back_image_op) {
             onBackPressed();
         }
         else if(item.getItemId() == R.id.details_image_op){
-            Log.d("DETAILS", "Details executing" + fullPictureToShow.getAbsolutePath());
+
+            //all of this is necessary to get the real dimensions of the picture
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(fullPictureToShow.getAbsolutePath(), options);
-            int h = options.outHeight;
-            int w = options.outWidth;
+            BitmapFactory.decodeFile(fullPictureDisplayed.getAbsolutePath(), options);
+            int height = options.outHeight;
+            int width = options.outWidth;
 
+            //all this things are needed to show the creationTime
+            String time = null;
             BasicFileAttributes attributes = null;
             Path filePath = null;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                filePath = Paths.get(fullPictureToShow.getAbsolutePath());
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                filePath = Paths.get(fullPictureDisplayed.getAbsolutePath());
                 try {
                     attributes = Files.readAttributes(filePath,BasicFileAttributes.class);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                time = attributes.creationTime().toString();
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                String time = attributes.creationTime().toString();
-
-                new AlertDialog.Builder(this)
-                        .setTitle(fullPictureToShow.getName())
-                        .setMessage(
-                                "Dimensions: " + w + " x " + h + "\n" +
-                                "Size: " + fullPictureToShow.getInnerFile().length()/(1024*1024) +  " MB"+ "\n" +
-                                "Path: " + fullPictureToShow.getAbsolutePath() + "\n" +
-                                "Taken on: " + time.substring(0,time.indexOf("T"))
-                        )
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        })
-                        .create().show();
-            }
-        }
-        else if(item.getItemId() == R.id.renameImage_op){
-            if (fullPictureToShow.getInnerFile().renameTo(new File (fullPictureToShow.getContainer().getAbsolutePath() + "/geralt.jpg"))){
-                Toast.makeText(this, "File renamed", Toast.LENGTH_SHORT).show();
+            String units;
+            Float size;
+            Float pictureSize = Float.valueOf(fullPictureDisplayed.getInnerFile().length());
+            if(pictureSize/(1024*1024) > 1.0){
+                size = pictureSize/(1024*1024);
+                units = "MB";
             }
             else{
-                Toast.makeText(this, "Tu vieja te va a renombrar", Toast.LENGTH_SHORT).show();
+                units = "KB";
+                size = pictureSize/1024;
             }
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fullPictureToShow.innerFile)));
+
+            //finally we show all the info about this picture
+            new AlertDialog.Builder(this)
+                    .setTitle(fullPictureDisplayed.getName())
+                    .setMessage(
+                            "Dimensions: " + width + " x " + height + "\n" +
+                            "Size: " + size + " " + units + "\n" +
+                            "Path: " + fullPictureDisplayed.getAbsolutePath() + "\n" +
+                            "Taken on: " + time.substring(0,time.indexOf("T"))
+                    )
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //close the Alert Dialog
+                        }
+                    })
+                    .create().show();
+        }
+        else if(item.getItemId() == R.id.rename_image_op){
+            //we defined an editText to read the input of the user and let the user select all the text of old name
+            final EditText inputNewName = new EditText(this);
+            inputNewName.setText(fullPictureDisplayed.getBaseName());
+            inputNewName.setSelectAllOnFocus(true);
+
+
+            new AlertDialog.Builder(this)
+                    .setView(inputNewName)
+                    .setTitle("Rename")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            File renamed = new File(fullPictureDisplayed.getContainer().getAbsolutePath() +
+                                                    "/" + inputNewName.getText() + fullPictureDisplayed.getExtension());
+                            int copyNumber = 1;
+                            while(renamed.exists()){
+                                renamed = new File(fullPictureDisplayed.getContainer().getAbsolutePath() +
+                                        "/" + inputNewName.getText() + " (" + copyNumber + ")" + fullPictureDisplayed.getExtension());
+                                copyNumber++;
+                            }
+                            if(fullPictureDisplayed.getInnerFile().renameTo(renamed))
+                                fullPictureDisplayed.setInnerFile(renamed);
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //close the Alert Dialog
+                        }
+                    })
+                    .create().show();
+        }
+        else if(item.getItemId() == R.id.copyImage_op) {
+            File ff = new File(fullPictureDisplayed.getContainer().getAbsolutePath() + "/cio.jpg");
+            if (ff.exists()) {
+                Toast.makeText(this, "File exists", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "File does not exist", Toast.LENGTH_SHORT).show();
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -182,9 +226,11 @@ public class FullPictureActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        intent.putExtra("idFolder", fullPictureToShow.getContainer());
+        intent.putExtra("idFolder", fullPictureDisplayed.getContainer());
         startActivity(intent);
         finish();
         super.onBackPressed();
     }
+
+
 }

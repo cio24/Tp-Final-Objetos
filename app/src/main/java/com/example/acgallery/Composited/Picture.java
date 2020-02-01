@@ -56,6 +56,14 @@ public class Picture extends AbstractFile {
         text.setText("");
     }
 
+    public String getBaseName(){
+        return getName().substring(0,getName().lastIndexOf("."));
+    }
+
+    public String getExtension(){
+        return getName().substring(getName().lastIndexOf("."));
+    }
+
     @Override
     public void open(Context context) {
         Intent intent = new Intent(context, FullPictureActivity.class);

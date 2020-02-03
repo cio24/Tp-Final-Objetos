@@ -9,14 +9,12 @@ import java.io.Serializable;
 
 public abstract class AbstractFile implements Serializable {
 
-    private int copyNumber; //it is used for rename this file when there's another file with the same name in the container.
     private Folder container; //in order to delete this file we must have a reference of the folder_thumbnail that has it.
     public File innerFile; //file allocated in phone storage
 
     //BEGIN CONSTRUCTORS------------------------------------------------
 
     public AbstractFile(File innerFile){
-        this.copyNumber = 1; //revisar en caso de copia
         this.innerFile = innerFile;
         container = null;
     }
@@ -39,24 +37,6 @@ public abstract class AbstractFile implements Serializable {
 
     public Folder getContainer(){ //Protected because we use this method on Folder (getPath()) & Picture.
         return this.container;
-    }
-
-    public void setName(String name){
-        //setCopyNumber(1); //we do this 'cause the previous name could be duplicated thus copyNumber > 1
-        if(this.container != null) {//if it is not a root folder_thumbnail
-            if (this.container.existName(name)) {
-                this.copyNumber++;
-                setName(name + "(" + this.copyNumber + ")");
-            }
-            else{
-                this.copyNumber = 1;
-                //innerFile.renameTo();
-            }
-        }
-        else{
-            //innerFile.renameTo(); investigar
-        }
-
     }
 
     public String getName(){//return the entire name with the extension file.
@@ -100,23 +80,6 @@ public abstract class AbstractFile implements Serializable {
         return true;
     }
 
-    public boolean copyTo(Folder destination){
-        /*
-        Folder container = this.getContainer();
-        if(container != null) { // so it won't be the root
-            if (this.getCopyNumber() > 1){ //Only if it is bigger than 1, otherwise it makes no sense.
-                this.setName(this.getName() + " (" + this.getCopyNumber() + ")"); //Actual name + copyNumber
-                // this.setCopyNumber(1); //Reset copyNumber. Actually not necessary because we do it on setName().
-            }
-            this.setCopyNumber(1);
-            destination.add(this.getCopy());
-            return true;
-        }
-
-         */
-        return false;
-    }
-
     public boolean delete() {
         Folder container = getContainer();
         if(container != null){
@@ -139,7 +102,9 @@ public abstract class AbstractFile implements Serializable {
     //BEGIN ABSTRACT METHODS----------------------------------------------
 
     public abstract void bindThumbnailToView(ImageView image, TextView text);
-    public abstract void open(Context context);
+    public abstract void open(Context context, Class cls);
+    public abstract boolean rename(String newName);
+    public abstract boolean copyTo(Folder destination);
     //public abstract String getRelativePath();
     // public abstract float getSize();
     //public abstract AbstractFile getCopy();

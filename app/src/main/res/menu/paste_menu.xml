@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/paste_picture_op"
+        android:title="Paste"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/cancel_op"
+        android:title="Cancel"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/backFolder_op"
+        android:icon="@drawable/back_icon"
+        android:title="Back"
+        app:showAsAction="ifRoom"/>
+
+</menu>

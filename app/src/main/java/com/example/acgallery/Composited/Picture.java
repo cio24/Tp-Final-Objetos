@@ -9,6 +9,12 @@ import com.example.acgallery.Activities.FullPictureActivity;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class Picture extends AbstractFile {
 
@@ -65,7 +71,7 @@ public class Picture extends AbstractFile {
     }
 
     @Override
-    public void open(Context context) {
+    public void open(Context context,Class cls) {
         Intent intent = new Intent(context, FullPictureActivity.class);
 
         /*
@@ -77,6 +83,45 @@ public class Picture extends AbstractFile {
         intent.putExtra("fullPicture",this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
+    }
+
+    @Override
+    public boolean rename(String newName) {
+        File renamed = new File(getContainer().getAbsolutePath() +
+                "/" + newName + getExtension());
+        int copyNumber = 1;
+        while(renamed.exists()){
+            renamed = new File(getContainer().getAbsolutePath() +
+                    "/" + newName + " (" + copyNumber + ")" + getExtension());
+            copyNumber++;
+        }
+        if(getInnerFile().renameTo(renamed)){
+            setInnerFile(renamed);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean copyTo(Folder destination) {
+        File fileCopy = new File(destination.getAbsolutePath()+"/"+getName());
+        int copyNumber = 1;
+        while(fileCopy.exists()){
+            fileCopy = new File(destination.getAbsolutePath() + "/" + getBaseName() + " (" + copyNumber +")" + getExtension());
+        }
+        try (InputStream in = new FileInputStream(innerFile)) {
+            try (OutputStream out = new FileOutputStream(fileCopy)) {
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     //END IMPLEMENTATION OF INHERIT METHODS-----------------------------

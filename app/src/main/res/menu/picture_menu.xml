@@ -2,29 +2,29 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/delete_image_op"
+    <item android:id="@+id/delete_picture_op"
         android:icon="@drawable/delete_icon"
         android:title="Details"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/back_image_op"
+    <item android:id="@+id/back_picture_op"
         android:icon="@drawable/back_icon"
         android:title="Details"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/details_image_op"
+    <item android:id="@+id/details_picture_op"
         android:title="Details"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/copyImage_op"
+    <item android:id="@+id/copy_picture_op"
         android:title="Copy"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/moveImage_op"
+    <item android:id="@+id/move_picture_op"
         android:title="Move"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/rename_image_op"
+    <item android:id="@+id/rename_picture_op"
         android:title="Rename"
         app:showAsAction="never"/>
 

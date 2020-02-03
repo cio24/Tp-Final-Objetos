@@ -39,12 +39,12 @@ public class Folder extends AbstractFile {
     }
 
     @Override
-    public void open(Context context) {
+    public void open(Context context, Class cls) {
         CriterionSorter c1 = new TypeSort();
         CriterionSorter c2 = new NameSort();
         CriterionSorter c = new OrSort(c1, c2);
         this.sort(c1);
-        Intent intent = new Intent(context, ThumbnailsActivity.class);
+        Intent intent = new Intent(context, cls);
         /*
             se agrega al canal el path de la imagen que se quiere mostrar, además
             se agrega un nombre, que es como una id que permite obtener el dato desde
@@ -61,6 +61,15 @@ public class Folder extends AbstractFile {
         context.startActivity(intent);
     }
 
+    @Override
+    public boolean rename(String newName) {
+        return false;
+    }
+
+    @Override
+    public boolean copyTo(Folder destination) {
+        return false;
+    }
 
 
     public boolean add(AbstractFile f) {

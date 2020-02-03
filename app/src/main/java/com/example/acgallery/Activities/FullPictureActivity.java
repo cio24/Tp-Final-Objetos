@@ -21,12 +21,18 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 import com.example.acgallery.Adapters.SwipeAdapter;
 import com.example.acgallery.Composited.AbstractFile;
+import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.Filters.FolderFilter;
 import com.example.acgallery.R;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -89,13 +95,12 @@ public class FullPictureActivity extends AppCompatActivity {
         return null;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         fullPictureDisplayed = getPictureDisplayed();
 
-        if(item.getItemId() == R.id.delete_image_op){
+        if(item.getItemId() == R.id.delete_picture_op){
             new AlertDialog.Builder(this)
                     .setTitle("Delete Item permanently?")
                     .setMessage("If you delete this item, it will be removed permanently from your device.")
@@ -123,10 +128,10 @@ public class FullPictureActivity extends AppCompatActivity {
                         }
                     }).create().show();
         }
-        else if(item.getItemId() == R.id.back_image_op) {
+        else if(item.getItemId() == R.id.back_picture_op) {
             onBackPressed();
         }
-        else if(item.getItemId() == R.id.details_image_op){
+        else if(item.getItemId() == R.id.details_picture_op){
 
             //all of this is necessary to get the real dimensions of the picture
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -178,12 +183,11 @@ public class FullPictureActivity extends AppCompatActivity {
                     })
                     .create().show();
         }
-        else if(item.getItemId() == R.id.rename_image_op){
+        else if(item.getItemId() == R.id.rename_picture_op){
             //we defined an editText to read the input of the user and let the user select all the text of old name
             final EditText inputNewName = new EditText(this);
             inputNewName.setText(fullPictureDisplayed.getBaseName());
             inputNewName.setSelectAllOnFocus(true);
-
 
             new AlertDialog.Builder(this)
                     .setView(inputNewName)
@@ -191,16 +195,8 @@ public class FullPictureActivity extends AppCompatActivity {
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            File renamed = new File(fullPictureDisplayed.getContainer().getAbsolutePath() +
-                                                    "/" + inputNewName.getText() + fullPictureDisplayed.getExtension());
-                            int copyNumber = 1;
-                            while(renamed.exists()){
-                                renamed = new File(fullPictureDisplayed.getContainer().getAbsolutePath() +
-                                        "/" + inputNewName.getText() + " (" + copyNumber + ")" + fullPictureDisplayed.getExtension());
-                                copyNumber++;
-                            }
-                            if(fullPictureDisplayed.getInnerFile().renameTo(renamed))
-                                fullPictureDisplayed.setInnerFile(renamed);
+                            if(!fullPictureDisplayed.rename(inputNewName.getText().toString()))
+                                Toast.makeText(getApplicationContext(),"The name coudn't be changed!",Toast.LENGTH_LONG).show();
                         }
                     })
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -211,16 +207,24 @@ public class FullPictureActivity extends AppCompatActivity {
                     })
                     .create().show();
         }
-        else if(item.getItemId() == R.id.copyImage_op) {
-            File ff = new File(fullPictureDisplayed.getContainer().getAbsolutePath() + "/cio.jpg");
-            if (ff.exists()) {
-                Toast.makeText(this, "File exists", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "File does not exist", Toast.LENGTH_SHORT).show();
-            }
+        else if(item.getItemId() == R.id.copy_picture_op) {
+            Intent intent = new Intent(getApplicationContext(), CopyActivity.class);
+            intent.putExtra("idFolder", getFolderRoot());
+            intent.putExtra("idPicToMove", getPictureDisplayed());
+            startActivity(intent);
+            finish();
         }
 
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private Folder getFolderRoot(){
+        Folder folderRoot = getPictureDisplayed().getContainer();
+        while(folderRoot.getContainer() != null){
+            folderRoot = folderRoot.getContainer();
+        }
+        return folderRoot;
     }
 
     @Override

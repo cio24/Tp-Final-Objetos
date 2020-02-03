@@ -1,22 +1,28 @@
 package com.example.acgallery.Activities;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.Composited.Folder;
+import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.R;
 
-public class ThumbnailsActivity extends AppCompatActivity {
+public class CopyActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private Folder folderToShow;
+    private static Picture pictureToMove;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +34,11 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
         //getting the folder_thumbnail from to be displayed
         folderToShow = (Folder) getIntent().getSerializableExtra("idFolder");
+        if(pictureToMove == null)
+            pictureToMove = (Picture) getIntent().getSerializableExtra("idPicToMove");
 
         //defining the adapter which will handle the buinding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow,this,ThumbnailsActivity.class,false);
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow,this, CopyActivity.class, true);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -43,15 +51,25 @@ public class ThumbnailsActivity extends AppCompatActivity {
     }
 
     //this method shows a menu layout over the activity_thumbnails_layout layout
-    /*
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.folder_menu, menu);
+        inflater.inflate(R.menu.paste_menu, menu);
         return true;
     }
 
-     */
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.paste_picture_op){
+            Log.d("revrev","foldername: " + folderToShow.getName() + " Picture name: " + pictureToMove.getName());
+            Toast.makeText(this,"picture: " + pictureToMove.getName(), Toast.LENGTH_SHORT).show();
+            pictureToMove.copyTo(folderToShow);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 
     /*
         in order to get an up-to-date screen we create a new intent to go back,
@@ -68,4 +86,5 @@ public class ThumbnailsActivity extends AppCompatActivity {
         }
         super.onBackPressed();
     }
+
 }

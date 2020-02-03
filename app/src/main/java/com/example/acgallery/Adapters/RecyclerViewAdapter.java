@@ -47,11 +47,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private Folder folderToShow; //De acá es de donde se van a tomar todas las imagenes a mostrar.
     private Context context; //el contexto es necesario pero no tengo bien claro xq.
+    private boolean pasteMode;
+    private Class cls;
 
     // Constructor
-    public RecyclerViewAdapter(Folder folderToShow, Context context){
+    public RecyclerViewAdapter(Folder folderToShow, Context context, Class cls, boolean pasteMode){
         this.folderToShow = folderToShow;
+        this.cls = cls;
         this.context = context;
+        this.pasteMode = pasteMode;
     }
 
     /*
@@ -105,12 +109,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
          Agregamos un Evento que nos muestre la imagen en pantalla completa cada vez que es tocada
          o bien abra una nueva carpeta
          */
-        holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                thumbnail.open(context);
-            }
-        });
+        if(pasteMode)
+            holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(thumbnail.getInnerFile().isDirectory())
+                        thumbnail.open(context,cls);
+                }
+            });
+        else
+            holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    thumbnail.open(context,cls);
+                }
+            });
     }
 
     //Acá simplemente le damos la cantidad de datos que tenemos para que no haga cagada con el indice (position)

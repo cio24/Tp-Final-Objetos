@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,13 +25,7 @@ import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.Filters.FolderFilter;
 import com.example.acgallery.R;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -196,7 +189,7 @@ public class FullPictureActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if(!fullPictureDisplayed.rename(inputNewName.getText().toString()))
-                                Toast.makeText(getApplicationContext(),"The name coudn't be changed!",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(),"The name couldn't be changed!",Toast.LENGTH_LONG).show();
                         }
                     })
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -208,9 +201,18 @@ public class FullPictureActivity extends AppCompatActivity {
                     .create().show();
         }
         else if(item.getItemId() == R.id.copy_picture_op) {
-            Intent intent = new Intent(getApplicationContext(), CopyActivity.class);
+            Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
             intent.putExtra("idFolder", getFolderRoot());
-            intent.putExtra("idPicToMove", getPictureDisplayed());
+            intent.putExtra("idPicToPaste", getPictureDisplayed());
+            intent.putExtra("opCode", 0);
+            startActivity(intent);
+            finish();
+        }
+        else if(item.getItemId() == R.id.move_picture_op){
+            Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
+            intent.putExtra("idFolder", getFolderRoot());
+            intent.putExtra("idPicToPaste", getPictureDisplayed());
+            intent.putExtra("opCode", 1);
             startActivity(intent);
             finish();
         }

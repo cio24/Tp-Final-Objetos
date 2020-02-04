@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -124,6 +125,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     thumbnail.open(context,cls);
                 }
             });
+        Toast.makeText(context, "Cantidad de elementos: " + folderToShow.getFilesAmount(), Toast.LENGTH_SHORT).show();
     }
 
     //Acá simplemente le damos la cantidad de datos que tenemos para que no haga cagada con el indice (position)

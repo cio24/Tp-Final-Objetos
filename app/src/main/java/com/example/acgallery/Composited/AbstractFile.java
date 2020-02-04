@@ -47,39 +47,6 @@ public abstract class AbstractFile implements Serializable {
 
     public File getInnerFile() { return this.innerFile; }
 
-    public boolean moveTo(Folder destination) {
-
-        /*
-        destination.add(this);
-
-        if(container != null) {
-            container.deleteFile(this);
-        }
-        else{
-            Log.d(TAG, "NO TE TENDRIA QUE PODER MOVER UNA CARPETA ROOT!");
-        }
-
-        String pathDestination = getContainer().getAbsolutePath() + "/" + getName();
-        File targetLocation = new File (pathDestination);
-
-        // just to take note of the location sources
-        Log.d(TAG, "sourceLocation: " + getAbsolutePath());
-        Log.d(TAG, "targetLocation: " + targetLocation.getAbsolutePath());
-
-        try {
-            // moving the file to another directory
-            if(innerFile.renameTo(targetLocation))
-                Log.d(TAG, "Move file successful.");
-            else
-                Log.d(TAG, "Move file failed.");
-        }
-        catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    */
-        return true;
-    }
-
     public boolean delete() {
         Folder container = getContainer();
         if(container != null){
@@ -97,14 +64,16 @@ public abstract class AbstractFile implements Serializable {
         return false;
     }
 
+
     //END SETTERS & GETTERS-----------------------------------------------
 
     //BEGIN ABSTRACT METHODS----------------------------------------------
-
     public abstract void bindThumbnailToView(ImageView image, TextView text);
+
     public abstract void open(Context context, Class cls);
     public abstract boolean rename(String newName);
     public abstract boolean copyTo(Folder destination);
+    public abstract boolean moveTo(Folder destination);
     //public abstract String getRelativePath();
     // public abstract float getSize();
     //public abstract AbstractFile getCopy();

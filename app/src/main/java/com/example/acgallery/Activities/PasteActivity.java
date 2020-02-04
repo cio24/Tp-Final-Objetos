@@ -1,6 +1,7 @@
 package com.example.acgallery.Activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,11 +19,14 @@ import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.R;
 
-public class CopyActivity extends AppCompatActivity {
+public class PasteActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private Folder folderToShow;
-    private static Picture pictureToMove;
+    private static Picture pictureToPaste;
+    private final int COPY_CODE = 0;
+    private final int MOVE_CODE = 1;
+    private static int opCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +38,13 @@ public class CopyActivity extends AppCompatActivity {
 
         //getting the folder_thumbnail from to be displayed
         folderToShow = (Folder) getIntent().getSerializableExtra("idFolder");
-        if(pictureToMove == null)
-            pictureToMove = (Picture) getIntent().getSerializableExtra("idPicToMove");
+        if(pictureToPaste == null) {
+            pictureToPaste = (Picture) getIntent().getSerializableExtra("idPicToPaste");
+            opCode = (int) getIntent().getSerializableExtra("opCode");
+        }
 
-        //defining the adapter which will handle the buinding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow,this, CopyActivity.class, true);
+        //defining the adapter which will handle the binding between the views and the layout
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow,this, PasteActivity.class, true);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -46,7 +52,7 @@ public class CopyActivity extends AppCompatActivity {
         //setting a grid layout manager to the recycler
         recyclerView.setLayoutManager(new GridLayoutManager(this,ROWS_OF_GRID));
 
-        //setting the adapter definied previously to the recycler
+        //setting the adapter defined previously to the recycler
         recyclerView.setAdapter(adapter);
     }
 
@@ -62,10 +68,19 @@ public class CopyActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.paste_picture_op){
-            Log.d("revrev","foldername: " + folderToShow.getName() + " Picture name: " + pictureToMove.getName());
-            Toast.makeText(this,"picture: " + pictureToMove.getName(), Toast.LENGTH_SHORT).show();
-            pictureToMove.copyTo(folderToShow);
+            if (opCode == COPY_CODE){
+                Log.d("Operation", "Estoy copiando");
+                pictureToPaste.copyTo(folderToShow);
+            }
+            else { // opCode == MOVE_CODE
+                Log.d("Operation", "Estoy moviendo");
+                pictureToPaste.moveTo(folderToShow);
+            }
+            pictureToPaste = null;
+            opCode = -1;
         }
+        folderToShow.open(this,ThumbnailsActivity.class);
+        this.finish();
         return super.onOptionsItemSelected(item);
     }
 

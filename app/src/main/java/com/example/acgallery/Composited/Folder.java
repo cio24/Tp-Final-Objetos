@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class Folder extends AbstractFile {
+
 
     private ArrayList<AbstractFile> files;
 
@@ -71,6 +73,11 @@ public class Folder extends AbstractFile {
         return false;
     }
 
+    @Override
+    public boolean moveTo(Folder destination) {
+        return false;
+    }
+
 
     public boolean add(AbstractFile f) {
         /*
@@ -95,11 +102,19 @@ public class Folder extends AbstractFile {
         la carpeta que eliminamos.
         Entonces, a lo que voy es, ¿deberíamos hacer el deleteFile en profundidad?
          */
-        if(f.innerFile.delete()){
-            return files.remove(f);
+        return files.remove(f);
+    }
+
+    public boolean removeByName(String name){
+        Log.d("Cantidad", "Cantidad de elementos antes de borrar: " + files.size());
+        for (AbstractFile f: files) {
+            if (f.getName().equals(name)){
+                files.remove(f);
+                Log.d("Cantidad", "Cantidad de elementos despues de borrar: " + files.size());
+                return true;
+            }
         }
         return false;
-
     }
 
     public boolean existName(String name) {

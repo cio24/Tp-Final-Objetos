@@ -20,7 +20,7 @@
         </activity>
         <activity android:name=".Activities.FullPictureActivity" />
         <activity android:name=".Activities.ThumbnailsActivity" />
-        <activity android:name=".Activities.CopyActivity" />
+        <activity android:name=".Activities.PasteActivity" />
     </application>
 
 </manifest>

@@ -121,8 +121,38 @@ public class Picture extends AbstractFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Picture newPic = new Picture(fileCopy);
+        destination.add(newPic);
         return true;
     }
+
+    @Override
+    public boolean moveTo(Folder destination) {
+        copyTo(destination);
+        this.delete();
+        return true;
+    }
+
+    /*
+    @Override
+    public boolean moveTo(Folder destination) {
+        this.getContainer().removeByName(this.getName());
+        File renamed = new File(destination.getAbsolutePath() + "/" + this.getName());
+        int copyNumber = 1;
+        while(renamed.exists()){
+            renamed = new File(destination.getAbsolutePath() + "/" + this.getBaseName() + " (" + copyNumber + ")" + getExtension());
+            copyNumber++;
+        }
+        if(getInnerFile().renameTo(renamed)){
+            setInnerFile(renamed);
+            Picture newPic = new Picture(renamed);
+            destination.add(newPic);
+            return true;
+        }
+        return false;
+    }
+    */
+
 
     //END IMPLEMENTATION OF INHERIT METHODS-----------------------------
 }

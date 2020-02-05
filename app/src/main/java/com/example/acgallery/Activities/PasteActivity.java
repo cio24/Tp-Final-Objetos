@@ -75,11 +75,15 @@ public class PasteActivity extends AppCompatActivity {
             else { // opCode == MOVE_CODE
                 Log.d("Operation", "Estoy moviendo");
                 pictureToPaste.moveTo(folderToShow);
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureToPaste.innerFile)));
             }
             pictureToPaste = null;
             opCode = -1;
         }
-        folderToShow.open(this,ThumbnailsActivity.class);
+        //then we comeback to the folder where the picture was
+        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+        intent.putExtra("idFolder",folderToShow);
+        startActivity(intent);
         this.finish();
         return super.onOptionsItemSelected(item);
     }

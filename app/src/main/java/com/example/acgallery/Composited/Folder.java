@@ -102,7 +102,13 @@ public class Folder extends AbstractFile {
         la carpeta que eliminamos.
         Entonces, a lo que voy es, ¿deberíamos hacer el deleteFile en profundidad?
          */
-        return files.remove(f);
+        if(f.innerFile.delete()) {
+            Log.d("radeon", "tamaño de la carpeta " + getName() + " ANTES: " + this.getFilesAmount());
+            files.remove(f);
+            Log.d("radeon", "tamaño de la carpeta " + getName() + " DESPUES: " + this.getFilesAmount());
+            return true;
+        }
+        return false;
     }
 
     public boolean removeByName(String name){

@@ -23,6 +23,15 @@ public class ThumbnailsActivity extends AppCompatActivity {
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private Folder folderToShow;
 
+    private void clean(){
+        for(int i = 0; i < folderToShow.getFilesAmount(); i++){
+            if(!folderToShow.getFileAt(i).getInnerFile().exists()){
+                Log.d("panasonic","hay un file empty!!!");
+                folderToShow.removeByName(folderToShow.getFileAt(i).getName());
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -31,9 +40,11 @@ public class ThumbnailsActivity extends AppCompatActivity {
         //buinding the activity to the activity_thumbnails_layout layout.
         setContentView(R.layout.activity_thumbnails_layout);
 
+
         //getting the folder_thumbnail from to be displayed
         folderToShow = (Folder) getIntent().getSerializableExtra("idFolder");
 
+        clean();
         //defining the adapter which will handle the buinding between the views and the layout
         RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow,this,ThumbnailsActivity.class,false);
 

@@ -125,15 +125,15 @@ public class Picture extends AbstractFile {
         destination.add(newPic);
         return true;
     }
-
+    /*
     @Override
     public boolean moveTo(Folder destination) {
         copyTo(destination);
         this.delete();
         return true;
     }
+     */
 
-    /*
     @Override
     public boolean moveTo(Folder destination) {
         this.getContainer().removeByName(this.getName());
@@ -151,7 +151,6 @@ public class Picture extends AbstractFile {
         }
         return false;
     }
-    */
 
 
     //END IMPLEMENTATION OF INHERIT METHODS-----------------------------

@@ -14,14 +14,18 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
+import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.R;
+
+import java.util.ArrayList;
 
 public class ThumbnailsActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private Folder folderToShow;
+    private ArrayList<AbstractFile> filesToShow;
 
     private void clean(){
         for(int i = 0; i < folderToShow.getFilesAmount(); i++){
@@ -59,7 +63,7 @@ public class ThumbnailsActivity extends AppCompatActivity {
     }
 
     //this method shows a menu layout over the activity_thumbnails_layout layout
-    /*
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -67,13 +71,25 @@ public class ThumbnailsActivity extends AppCompatActivity {
         return true;
     }
 
-     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.all_pictures_op) {
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
 
     /*
-        in order to get an up-to-date screen we create a new intent to go back,
-        when the container of the displayed folder_thumbnail is null it means the folder_thumbnail root
-        is shown, in this situation the back event will close the app
-     */
+                in order to get an up-to-date screen we create a new intent to go back,
+                when the container of the displayed folder_thumbnail is null it means the folder_thumbnail root
+                is shown, in this situation the back event will close the app
+             */
     @Override
     public void onBackPressed() {
         if(folderToShow.getContainer() != null){

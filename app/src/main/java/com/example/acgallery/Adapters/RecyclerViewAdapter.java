@@ -15,6 +15,8 @@ import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.R;
 
+import java.util.ArrayList;
+
 /*
     Esta clase es la encargada de administrar todas las imagenes que se van a mostrar en la interfaz,
     basciamente crea todos los vies para las imagenes.
@@ -46,14 +48,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     // Una vez que tenemos el holder listo, pasamos a implementar los métodos del adaptador.
 
-    private Folder folderToShow; //De acá es de donde se van a tomar todas las imagenes a mostrar.
+    private ArrayList<AbstractFile> filesToShow; //De acá es de donde se van a tomar todas las imagenes a mostrar.
     private Context context; //el contexto es necesario pero no tengo bien claro xq.
     private boolean pasteMode;
     private Class cls;
 
     // Constructor
-    public RecyclerViewAdapter(Folder folderToShow, Context context, Class cls, boolean pasteMode){
-        this.folderToShow = folderToShow;
+    public RecyclerViewAdapter(ArrayList<AbstractFile> filesToShow, Context context, Class cls, boolean pasteMode){
+        this.filesToShow = filesToShow;
         this.cls = cls;
         this.context = context;
         this.pasteMode = pasteMode;
@@ -103,7 +105,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             la aplicación termina consumiendo mucha memoria y hace que se cierre por el error
             Java.lang.outOfMemory
         */
-        final AbstractFile thumbnail = folderToShow.getFileAt(position);
+        final AbstractFile thumbnail = filesToShow.get(position);
         thumbnail.bindThumbnailToView(holder.thumbnailToShow,holder.folderNameToShow);
 
         /*
@@ -125,12 +127,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     thumbnail.open(context,cls);
                 }
             });
-        Toast.makeText(context, "Cantidad de elementos: " + folderToShow.getFilesAmount(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Cantidad de elementos: " + filesToShow.size(), Toast.LENGTH_SHORT).show();
     }
 
     //Acá simplemente le damos la cantidad de datos que tenemos para que no haga cagada con el indice (position)
     @Override
     public int getItemCount() {
-        return folderToShow.getFilesAmount();
+        return filesToShow.size();
     }
 }

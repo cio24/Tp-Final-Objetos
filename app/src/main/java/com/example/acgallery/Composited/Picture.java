@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.acgallery.Activities.FullPictureActivity;
+import com.example.acgallery.Filters.CriterionFilter;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class Picture extends AbstractFile {
 
@@ -150,6 +152,16 @@ public class Picture extends AbstractFile {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public ArrayList<AbstractFile> deepCopy(CriterionFilter c) {
+        ArrayList<AbstractFile> toReturn = new ArrayList<>();
+        if (c.satisfy(this)){
+            toReturn.add(this);
+            return toReturn;
+        }
+        return null;
     }
 
 

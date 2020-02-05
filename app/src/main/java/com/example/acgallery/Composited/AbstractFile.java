@@ -4,8 +4,11 @@ import android.content.Context;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.acgallery.Filters.CriterionFilter;
+
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public abstract class AbstractFile implements Serializable {
 
@@ -74,6 +77,7 @@ public abstract class AbstractFile implements Serializable {
     public abstract boolean rename(String newName);
     public abstract boolean copyTo(Folder destination);
     public abstract boolean moveTo(Folder destination);
+    public abstract ArrayList<AbstractFile> deepCopy(CriterionFilter c);
     //public abstract String getRelativePath();
     // public abstract float getSize();
     //public abstract AbstractFile getCopy();

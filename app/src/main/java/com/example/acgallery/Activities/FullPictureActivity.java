@@ -23,6 +23,7 @@ import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.Filters.FolderFilter;
+import com.example.acgallery.Filters.PictureFilter;
 import com.example.acgallery.R;
 
 import java.io.IOException;
@@ -66,7 +67,7 @@ public class FullPictureActivity extends AppCompatActivity {
      */
     private void showFullPicture(AbstractFile picture){
         viewPager = findViewById(R.id.view_pager);
-        pictures = picture.getContainer().getFilteredFiles(new FolderFilter());
+        pictures = picture.getContainer().getFilteredFiles(new PictureFilter());
         int currentPicturePos = 0;
         for(AbstractFile pic: pictures){
             if(pic.equals(picture))

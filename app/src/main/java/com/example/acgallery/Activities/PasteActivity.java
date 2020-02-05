@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
+import com.example.acgallery.Filters.CriterionFilter;
+import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 
 public class PasteActivity extends AppCompatActivity {
@@ -42,9 +44,10 @@ public class PasteActivity extends AppCompatActivity {
             pictureToPaste = (Picture) getIntent().getSerializableExtra("idPicToPaste");
             opCode = (int) getIntent().getSerializableExtra("opCode");
         }
+        CriterionFilter c = new TrueFilter();
 
         //defining the adapter which will handle the binding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow,this, PasteActivity.class, true);
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(c),this, PasteActivity.class, true);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);

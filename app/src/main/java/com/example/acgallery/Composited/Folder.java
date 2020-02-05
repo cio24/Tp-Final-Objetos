@@ -18,6 +18,7 @@ import com.example.acgallery.Sorters.TypeSort;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Folder extends AbstractFile {
@@ -194,10 +195,25 @@ public class Folder extends AbstractFile {
     public ArrayList<AbstractFile> getFilteredFiles(CriterionFilter filter){
         ArrayList<AbstractFile> pictures = new ArrayList<>();
         for(AbstractFile file: files){
-            if(!filter.satisfy(file))
+            if(filter.satisfy(file))
                 pictures.add(file);
         }
         return pictures;
+    }
+
+    public ArrayList<AbstractFile> deepCopy(CriterionFilter c){
+        ArrayList<AbstractFile> toReturn = new ArrayList<>();
+        ArrayList<AbstractFile> aux = new ArrayList<>();
+        for (AbstractFile f:files) {
+            aux = f.deepCopy(c);
+            if (aux != null){
+                toReturn.addAll(aux);
+            }
+        }
+        if (toReturn.isEmpty()){
+            return null;
+        }
+        return toReturn;
     }
 
 
@@ -237,7 +253,6 @@ public class Folder extends AbstractFile {
     }
 
      */
-
 
     //END IMPLEMENTATION OF INHERIT METHODS-------------------------------
 }

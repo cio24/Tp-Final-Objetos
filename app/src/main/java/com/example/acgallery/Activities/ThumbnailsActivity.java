@@ -17,6 +17,8 @@ import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
+import com.example.acgallery.Filters.CriterionFilter;
+import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 
 import java.util.ArrayList;
@@ -50,7 +52,8 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
         clean();
         //defining the adapter which will handle the buinding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow,this,ThumbnailsActivity.class,false);
+        CriterionFilter c = new TrueFilter();
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(c),this,ThumbnailsActivity.class,false);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);

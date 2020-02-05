@@ -18,12 +18,13 @@ import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.Filters.CriterionFilter;
+import com.example.acgallery.Filters.PictureFilter;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 
 import java.util.ArrayList;
 
-public class ThumbnailsActivity extends AppCompatActivity {
+public class AllPicturesActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private Folder folderToShow;
@@ -53,8 +54,8 @@ public class ThumbnailsActivity extends AppCompatActivity {
         clean();
 
         //defining the adapter which will handle the buinding between the views and the layout
-        CriterionFilter c = new TrueFilter();
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(c),this,ThumbnailsActivity.class,false);
+        CriterionFilter c = new PictureFilter();
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.deepCopy(c),this,AllPicturesActivity.class,false);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -68,6 +69,7 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
     //this method shows a menu layout over the activity_thumbnails_layout layout
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -77,10 +79,9 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Folder folderRoot = getFolderRoot();
         if(item.getItemId() == R.id.all_pictures_op) {
-            Intent intent = new Intent(this, AllPicturesActivity.class);
-            intent.putExtra("idFolder", folderRoot);
+            Intent intent = new Intent(this, ThumbnailsActivity.class);
+            intent.putExtra("idFolder", folderToShow.getContainer());
             startActivity(intent);
             finish();
 
@@ -89,18 +90,14 @@ public class ThumbnailsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private Folder getFolderRoot(){
-        Folder folderRoot = folderToShow;
-        while(folderRoot.getContainer() != null){
-            folderRoot = folderRoot.getContainer();
-        }
-        return folderRoot;
-    }
+
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         return super.onPrepareOptionsMenu(menu);
     }
+
+     */
 
     /*
                 in order to get an up-to-date screen we create a new intent to go back,
@@ -109,13 +106,10 @@ public class ThumbnailsActivity extends AppCompatActivity {
              */
     @Override
     public void onBackPressed() {
-        if(folderToShow.getContainer() != null){
-            Intent intent = new Intent(this, ThumbnailsActivity.class);
-            intent.putExtra("idFolder", folderToShow.getContainer());
-            startActivity(intent);
-            finish();
-        }
-        else
-            super.onBackPressed();
+        Intent intent = new Intent(this, ThumbnailsActivity.class);
+        intent.putExtra("idFolder", folderToShow);
+        startActivity(intent);
+        finish();
+        //super.onBackPressed();
     }
 }

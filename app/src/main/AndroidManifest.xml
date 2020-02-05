@@ -21,6 +21,7 @@
         <activity android:name=".Activities.FullPictureActivity" />
         <activity android:name=".Activities.ThumbnailsActivity" />
         <activity android:name=".Activities.PasteActivity" />
+        <activity android:name=".Activities.AllPicturesActivity" />
     </application>
 
 </manifest>

@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/all_pictures_op"
-        android:icon="@drawable/delete_icon"
         android:title="All pictures"
         app:showAsAction="ifRoom"/>
 

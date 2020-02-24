@@ -28,4 +28,8 @@
         android:title="Rename"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/classify_picture_op"
+        android:title="Classify"
+        app:showAsAction="never"/>
+
 </menu>

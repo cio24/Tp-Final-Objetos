@@ -1,0 +1,169 @@
+maltese dog
+old English sheepdog
+shetland sheepdog
+french bulldog
+african hunting dog
+eskimo dog
+greater Swiss Mountain dog
+bernese mountain dog
+wood rabbit
+albatross
+alligator lizard
+american alligator
+amphibian
+ant
+armadillo
+baboon
+badger
+bald eagle
+bear
+beaver
+bee
+beetle
+bison
+boa
+boar
+butterfly
+camel
+madagascar cat
+tiger cat
+persian cat
+siamese cat
+egyptian cat
+centipede
+chameleon
+cheetah
+chickadee
+chicken
+chimpanzee
+cobra
+cockroach
+constrictor
+coral
+cougar
+coyote
+crab
+crane
+crayfish
+cricket
+crocodile
+cicada
+damselfly
+dingo
+dragonfly
+dragon
+dung beetle
+eagle
+echidna
+eel
+egret
+elephant
+ferret
+finch
+fish
+flamingo
+fly
+fox
+frog
+gazelle
+gecko
+giant panda
+gibbon
+goldfish
+goose
+gorilla
+grasshopper
+great white shark
+grouse
+guinea pig
+hamster
+hare
+hermit crab
+heron
+hippopotamus
+hummingbird
+hyena
+iguana
+impala
+jaguar
+jay
+jellyfish
+kite
+koala
+ladybug
+leopard
+lion
+lizard
+llama
+lobster
+lynx
+macaw
+magpie
+marmoset
+marmot
+meerkat
+mink
+mongoose
+monkey
+mosquito
+mouse
+newt
+orangutan
+ostrich
+otter
+owl
+ox
+panda
+partridge
+peacock
+pelican
+penguin
+platypus
+porcupine
+ptarmigan
+python
+quail
+rhinoceros
+salamander
+scorpion
+sea lion
+sea slug
+shark
+skunk
+sloth
+slug
+snail
+snake
+snow leopard
+spider
+spider monkey
+spoonbill
+squirrel
+starfish
+stingray
+stork
+sturgeon
+swan
+tarantula
+tick
+tiger
+tiger shark
+toucan
+tree frog
+turtle
+viper
+vulture
+wallaby
+water buffalo
+weasel
+whale
+whippet
+wolf
+wombat
+worm
+zebra
+chicken
+ferret
+goldfish
+llama
+water buffalo

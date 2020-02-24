@@ -6,5 +6,9 @@
         android:title="All pictures"
         app:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/animal_picutres_op"
+        android:title="Animal Pictures"
+        app:showAsAction="ifRoom"/>
+
 
 </menu>

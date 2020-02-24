@@ -155,7 +155,7 @@ public class Picture extends AbstractFile {
     }
 
     @Override
-    public ArrayList<AbstractFile> deepCopy(CriterionFilter c) {
+    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c) {
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
         if (c.satisfy(this)){
             toReturn.add(this);

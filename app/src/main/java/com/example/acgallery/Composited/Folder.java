@@ -79,7 +79,6 @@ public class Folder extends AbstractFile {
         return false;
     }
 
-
     public boolean add(AbstractFile f) {
         /*
         for(AbstractFile file: files){
@@ -201,11 +200,11 @@ public class Folder extends AbstractFile {
         return pictures;
     }
 
-    public ArrayList<AbstractFile> deepCopy(CriterionFilter c){
+    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c){
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
         ArrayList<AbstractFile> aux = new ArrayList<>();
         for (AbstractFile f:files) {
-            aux = f.deepCopy(c);
+            aux = f.getDeepFilteredFiles(c);
             if (aux != null){
                 toReturn.addAll(aux);
             }

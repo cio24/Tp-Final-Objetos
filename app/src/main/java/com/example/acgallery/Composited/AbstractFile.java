@@ -77,7 +77,7 @@ public abstract class AbstractFile implements Serializable {
     public abstract boolean rename(String newName);
     public abstract boolean copyTo(Folder destination);
     public abstract boolean moveTo(Folder destination);
-    public abstract ArrayList<AbstractFile> deepCopy(CriterionFilter c);
+    public abstract ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c);
     //public abstract String getRelativePath();
     // public abstract float getSize();
     //public abstract AbstractFile getCopy();

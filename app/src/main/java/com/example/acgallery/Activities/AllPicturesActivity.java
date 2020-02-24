@@ -17,12 +17,17 @@ import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
+import com.example.acgallery.Filters.ClassifierFilter;
 import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.Filters.PictureFilter;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AllPicturesActivity extends AppCompatActivity {
 
@@ -44,6 +49,17 @@ public class AllPicturesActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        ArrayList<String> labels = null;
+
+        try {
+            labels = loadLabelList();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        Log.d("PIA", "tamaño de labels: " + labels.size());
+
         //buinding the activity to the activity_thumbnails_layout layout.
         setContentView(R.layout.activity_thumbnails_layout);
 
@@ -53,9 +69,12 @@ public class AllPicturesActivity extends AppCompatActivity {
 
         clean();
 
+
+
         //defining the adapter which will handle the buinding between the views and the layout
-        CriterionFilter c = new PictureFilter();
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.deepCopy(c),this,AllPicturesActivity.class,false);
+        //CriterionFilter c = new PictureFilter();
+        ClassifierFilter c = new ClassifierFilter(this,labels);
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getDeepFilteredFiles(c),this,AllPicturesActivity.class,false);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -65,6 +84,25 @@ public class AllPicturesActivity extends AppCompatActivity {
 
         //setting the adapter definied previously to the recycler
         recyclerView.setAdapter(adapter);
+    }
+
+
+    private ArrayList<String> loadLabelList() throws IOException {
+        ArrayList<String> labelList = new ArrayList<>();
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(this.getAssets().open("animals.txt")));
+        String line;
+        int i = 0;
+        while ((line = reader.readLine()) != null) {
+            labelList.add(line);
+            i++;
+            if(i == 50)
+                break;
+        }
+        reader.close();
+        if(labelList == null)
+            Log.d("hipofisis","labelist es null!");
+        return labelList;
     }
 
     //this method shows a menu layout over the activity_thumbnails_layout layout

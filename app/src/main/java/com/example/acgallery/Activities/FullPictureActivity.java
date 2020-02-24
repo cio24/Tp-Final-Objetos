@@ -217,6 +217,7 @@ public class FullPictureActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+        //else if(item.getItemId() == R.id.classify_picture_op){
 
 
         return super.onOptionsItemSelected(item);

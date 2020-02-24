@@ -21,7 +21,11 @@ import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ThumbnailsActivity extends AppCompatActivity {
 
@@ -80,7 +84,15 @@ public class ThumbnailsActivity extends AppCompatActivity {
         Folder folderRoot = getFolderRoot();
         if(item.getItemId() == R.id.all_pictures_op) {
             Intent intent = new Intent(this, AllPicturesActivity.class);
-            intent.putExtra("idFolder", folderRoot);
+            intent.putExtra("idFolder", folderToShow);
+            startActivity(intent);
+            finish();
+
+        }
+
+        if(item.getItemId() == R.id.animal_picutres_op) {
+            Intent intent = new Intent(this, AllPicturesActivity.class);
+            intent.putExtra("idFolder", folderToShow);
             startActivity(intent);
             finish();
 
@@ -88,6 +100,7 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 
     private Folder getFolderRoot(){
         Folder folderRoot = folderToShow;

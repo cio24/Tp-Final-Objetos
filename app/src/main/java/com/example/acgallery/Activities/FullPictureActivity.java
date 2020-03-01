@@ -2,15 +2,18 @@ package com.example.acgallery.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 import com.example.acgallery.Adapters.SwipeAdapter;
+import com.example.acgallery.Classifiers.TensorFlowClassifier;
 import com.example.acgallery.Composited.AbstractFile;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
@@ -38,6 +42,8 @@ public class FullPictureActivity extends AppCompatActivity {
     private Picture fullPictureDisplayed;
     private ViewPager viewPager;
     private ArrayList<AbstractFile> pictures;
+    private ArrayList<Pair<String,Float>> results;
+    private TensorFlowClassifier classifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +55,9 @@ public class FullPictureActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
         }
         fullPictureDisplayed = (Picture) getIntent().getSerializableExtra("fullPicture");
+
+
+        classifier = new TensorFlowClassifier(this);
 
         showFullPicture(fullPictureDisplayed);
     }
@@ -217,7 +226,27 @@ public class FullPictureActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-        //else if(item.getItemId() == R.id.classify_picture_op){
+        else if(item.getItemId() == R.id.classify_picture_op){
+            ImageView image = new ImageView(this);
+            Bitmap myBitmap = BitmapFactory.decodeFile(fullPictureDisplayed.getAbsolutePath());
+            image.setImageBitmap(myBitmap);
+            results = classifier.classify(image);
+            new AlertDialog.Builder(this)
+                    .setTitle(fullPictureDisplayed.getName())
+                    .setMessage(
+                            "top 1: label " + results.get(0).first + " confidence " + results.get(0).second + "\n" +
+                            "top 2: label " + results.get(1).first + " confidence " + results.get(1).second + "\n" +
+                            "top 3: label " + results.get(2).first + " confidence " + results.get(2).second + "\n"
+
+                    )
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //close the Alert Dialog
+                        }
+                    })
+                    .create().show();
+        }
 
 
         return super.onOptionsItemSelected(item);

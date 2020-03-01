@@ -27,29 +27,26 @@ import java.util.PriorityQueue;
 public class TensorFlowClassifier implements Classifier {
 
     private Context context;
-    private ArrayList<Pair<String, Float>> result;
 
     // presets for rgb conversion
     private static final int RESULTS_TO_SHOW = 3;
-    private static final int IMAGE_MEAN = 128;
-    private static final float IMAGE_STD = 128.0f;
 
-    // options for model interpreter
-    private final Interpreter.Options tfliteOptions = new Interpreter.Options();
-    // tflite graph
     private Interpreter tflite;
+
     // holds all the possible labels for model
     private List<String> labelList;
+
     // holds the selected image data as bytes
-    private ByteBuffer imgData = null;
-    // holds the probabilities of each label for non-quantized graphs
-    private float[][] labelProbArray = null;
+    private ByteBuffer imgData;
+
     // holds the probabilities of each label for quantized graphs
-    private byte[][] labelProbArrayB = null;
+    private byte[][] labelProbArrayB;
+
     // array that holds the labels with the highest probabilities
-    private String[] topLables = null;
+    private String[] topLables;
+
     // array that holds the highest probabilities
-    private String[] topConfidence = null;
+    private String[] topConfidence;
 
 
     // input image dimensions for the Inception Model
@@ -60,28 +57,22 @@ public class TensorFlowClassifier implements Classifier {
     // int array to hold image data
     private int[] intValues;
 
-    // activity elements
-    private ImageView selected_image;
-
-
     // priority queue that will hold the top results from the CNN
-    private PriorityQueue<Map.Entry<String, Float>> sortedLabels =
-            new PriorityQueue<>(
-                    RESULTS_TO_SHOW,
-                    new Comparator<Map.Entry<String, Float>>() {
-                        @Override
-                        public int compare(Map.Entry<String, Float> o1, Map.Entry<String, Float> o2) {
-                            return (o1.getValue()).compareTo(o2.getValue());
-                        }
-                    });
+    private PriorityQueue<Map.Entry<String, Float>> sortedLabels;
 
     public TensorFlowClassifier(Context context){
-        this.context = context;
-        result = new ArrayList<>();
-    }
 
-    @Override
-    public ArrayList<Pair<String, Float>> classify(ImageView image) {
+        this.context = context;
+
+        // options for model interpreter
+        Interpreter.Options tfliteOptions = new Interpreter.Options();
+
+        sortedLabels = new PriorityQueue<>( RESULTS_TO_SHOW, new Comparator<Map.Entry<String, Float>>() {
+            @Override
+            public int compare(Map.Entry<String, Float> o1, Map.Entry<String, Float> o2) {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
 
         // initialize array that holds image data
         intValues = new int[DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y];
@@ -94,40 +85,60 @@ public class TensorFlowClassifier implements Classifier {
             ex.printStackTrace();
         }
 
-
         // initialize byte array. The size depends if the input data needs to be quantized or not
         imgData = ByteBuffer.allocateDirect(DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y * DIM_PIXEL_SIZE);
         imgData.order(ByteOrder.nativeOrder());
 
         // initialize probabilities array. The datatypes that array holds depends if the input data needs to be quantized or not
-        labelProbArrayB= new byte[1][labelList.size()];
-
-
-
-        // initialize imageView that displays selected image to the user
-        selected_image = image;
+        labelProbArrayB = new byte[1][labelList.size()];
 
         // initialize array to hold top labels
         topLables = new String[RESULTS_TO_SHOW];
+
         // initialize array to hold top probabilities
         topConfidence = new String[RESULTS_TO_SHOW];
 
-
-        // get current bitmap from imageView
-        Bitmap bitmap_orig = ((BitmapDrawable)selected_image.getDrawable()).getBitmap();
-        // resize the bitmap to the required input size to the CNN
-        Bitmap bitmap = getResizedBitmap(bitmap_orig, DIM_IMG_SIZE_X, DIM_IMG_SIZE_Y);
-        // convert bitmap to byte array
-        convertBitmapToByteBuffer(bitmap);
-        // pass byte data to the graph
-        tflite.run(imgData, labelProbArrayB);
-        // display the results
-        printTopKLabels();
-        return result;
     }
 
-    // loads tflite grapg from file
+    @Override
+    public ArrayList<Pair<String, Float>> classify(ImageView image) {
 
+        ArrayList<Pair<String, Float>> results = new ArrayList<>();
+
+        // get current bitmap from imageView
+        Bitmap bitmap_orig = ((BitmapDrawable) image.getDrawable()).getBitmap();
+
+        // resize the bitmap to the required input size to the CNN
+        Bitmap bitmap = getResizedBitmap(bitmap_orig, DIM_IMG_SIZE_X, DIM_IMG_SIZE_Y);
+
+        // convert bitmap to byte array
+        convertBitmapToByteBuffer(bitmap);
+
+        // pass byte data to the graph
+        tflite.run(imgData, labelProbArrayB);
+
+        // add all results to priority queue
+        for (int i = 0; i < labelList.size(); ++i) {
+            sortedLabels.add(new AbstractMap.SimpleEntry<>(labelList.get(i), (labelProbArrayB[0][i] & 0xff) / 255.0f));
+            if (sortedLabels.size() > RESULTS_TO_SHOW) {
+                sortedLabels.poll();
+            }
+        }
+
+        // get top results from priority queue
+        final int size = sortedLabels.size();
+        Pair <String,Float> p;
+        for (int i = 0; i < size; ++i) {
+            Map.Entry<String, Float> label = sortedLabels.poll();
+            p = new Pair(label.getKey(), String.format("%.0f%%", label.getValue() * 100));
+            results.add(p);
+        }
+
+        return results;
+    }
+
+
+    // loads tflite grapg from file
     private MappedByteBuffer loadModelFile() throws IOException {
         AssetFileDescriptor fileDescriptor = context.getAssets().openFd("inception_quant.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
@@ -168,35 +179,7 @@ public class TensorFlowClassifier implements Classifier {
             labelList.add(line);
         }
         reader.close();
-        if(labelList == null)
-            Log.d("hipofisis","labelist es null!");
         return labelList;
-    }
-
-    // print the top labels and respective confidences
-    private void printTopKLabels() {
-
-        // add all results to priority queue
-        for (int i = 0; i < labelList.size(); ++i) {
-            sortedLabels.add(new AbstractMap.SimpleEntry<>(labelList.get(i), (labelProbArrayB[0][i] & 0xff) / 255.0f));
-            if (sortedLabels.size() > RESULTS_TO_SHOW) {
-                sortedLabels.poll();
-            }
-        }
-
-        // get top results from priority queue
-        final int size = sortedLabels.size();
-        for (int i = 0; i < size; ++i) {
-            Map.Entry<String, Float> label = sortedLabels.poll();
-            topLables[i] = label.getKey();
-            topConfidence[i] = String.format("%.0f%%", label.getValue() * 100);
-        }
-
-
-        for(int i = 0; i < RESULTS_TO_SHOW ; i++) {
-            Pair p = new Pair(topLables[i], topConfidence[i]);
-            result.add(p);
-        }
     }
 
 

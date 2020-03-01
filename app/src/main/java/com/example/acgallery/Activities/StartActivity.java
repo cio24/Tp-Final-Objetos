@@ -5,16 +5,23 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.example.acgallery.ClassifierService;
+import com.example.acgallery.Classifiers.Classifier;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
+import com.example.acgallery.InternalStorage;
 import com.example.acgallery.R;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -29,19 +36,24 @@ public class StartActivity extends AppCompatActivity {
     final static int START_SCREEN_DELAY = 1000;
 
     // internal and external storage directory path
-    final static String ROOT_PATH = "/mnt";
+    final static String EXTERNAL_PATH = "/storage", INTERNAL_PATH = "/mnt";
 
     // Images extensions
-    final static String JPG_EXTENSION = ".jpg", PNG_EXTENSION = ".png";
+    final static String JPG_EXTENSION = ".jpg", PNG_EXTENSION = ".png", JPEG_EXTENSION = ".jpeg";
 
     // Folders we want to track
-    final static String DCIM = "DCIM", DOWNLOADS = "Download", SCREENSHOTS = "Screenshots";
+    final static String DCIM = "DCIM", DOWNLOADS = "Download", CAMERA = "Camera", SCREENSHOTS = "Screenshots";
+
+
+    // Folders we want to exclude
+    final static String THUMBNAILS = ".thumbnails";
 
 
     private boolean firstRequirement = true; //it is used to prevent the dialog screen to be shown when the app runs the first time.
-    private List<String> extensions, directories;
+    private List<String> extensions, directories, excludedDirectories, innerDataPaths;
     private String [] permissions;
-    private File directoryRoot;
+    private File externalDirectory;
+    private Folder rootFolder;
 
 
     @Override
@@ -55,9 +67,11 @@ public class StartActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-        directoryRoot = new File(ROOT_PATH);
-        extensions = Arrays.asList(JPG_EXTENSION, PNG_EXTENSION);
-        directories = Arrays.asList(DCIM,DOWNLOADS,SCREENSHOTS);
+        externalDirectory = new File(EXTERNAL_PATH);
+        extensions = Arrays.asList(JPG_EXTENSION, PNG_EXTENSION, JPEG_EXTENSION);
+        directories = Arrays.asList(DCIM,DOWNLOADS,/*CAMERA,*/SCREENSHOTS);
+        innerDataPaths = Arrays.asList(/*EXTERNAL_PATH,*/INTERNAL_PATH);
+        excludedDirectories = Arrays.asList(THUMBNAILS);
 
         Timer timer = new Timer();
 
@@ -68,14 +82,34 @@ public class StartActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(isPermissionsGranted())
+                        if(isPermissionsGranted()){
+                            rootFolder = getFolderRootLoaded();
+                            if(isServiceFinished())
+                                ClassifierService.setFinished();
+                            else
+                                runService();
                             startThumbnailsActivity();
+                        }
                         else
                             askForPermissions();
                     }
                 });
             }
         }, START_SCREEN_DELAY);
+    }
+
+    private boolean isServiceFinished(){
+        Object o = null;
+        try {
+            o = InternalStorage.readObject(getApplicationContext(),"pictures");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        if(o == null)
+            return false;
+        return true;
     }
 
     /*
@@ -89,6 +123,11 @@ public class StartActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PERMISSION){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(getApplicationContext(), "Permission Granted!", Toast.LENGTH_SHORT).show();
+                rootFolder = getFolderRootLoaded();
+                if(isServiceFinished())
+                    ClassifierService.setFinished();
+                else
+                    runService();
                 startThumbnailsActivity();
             }
             else{
@@ -121,11 +160,16 @@ public class StartActivity extends AppCompatActivity {
     then starts the activity_thumbnails_layout activity so it can get the folder_thumbnail to displayed
     */
     private void startThumbnailsActivity(){
-        Folder rootFolder = getFolderRootLoaded();
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
         intent.putExtra("idFolder", rootFolder);
         startActivity(intent);
         finish();
+    }
+
+    private void runService(){
+        Intent intent = new Intent(this, ClassifierService.class);
+        intent.putExtra("idFolder",rootFolder);
+        startService(intent);
     }
 
     //it asks the user for permissions so the app can have access to the files.
@@ -141,14 +185,18 @@ public class StartActivity extends AppCompatActivity {
         loaded with pictures and other folders
      */
     private Folder getFolderRootLoaded(){
-        Folder folderRoot = new Folder(directoryRoot);
+
+        Folder folderRoot = new Folder(Environment.getDataDirectory());
         File directory;
         for (String directoryName: directories) {
-            directory = findDirectory(directoryName, directoryRoot);
-            if(directory != null) {
-                Folder folder = new Folder(directory);
-                loadFolder(folder, directory); // load pictures and folders into the BIG folder_thumbnail
-                folderRoot.add(folder);
+            for(String innerPath: innerDataPaths){
+                directory = findDirectory(directoryName, new File(innerPath));
+                if(directory != null) {
+                    Folder folder = new Folder(directory);
+                    loadFolder(folder, directory); // load pictures and folders into the BIG folder_thumbnail
+                    //Log.d("countinggg", "folder :" + folder.getName() + " size: " + folder.getFilesAmount());
+                    folderRoot.add(folder);
+                }
             }
         }
         return folderRoot;
@@ -167,7 +215,8 @@ public class StartActivity extends AppCompatActivity {
                         }
                     }
                 }
-                else { // the file is a directory
+                else if(!isExcludedDirectory(files[i])){
+                    // the file is a directory
                     Folder folder = new Folder(files[i]);
                     loadFolder(folder, files[i]); // deep loading
                     if(folder.getFilesAmount() > 0)
@@ -181,6 +230,13 @@ public class StartActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private boolean isExcludedDirectory(File directory){
+        for(String excludedDirectory : excludedDirectories)
+            if(excludedDirectory.equals(directory.getName()))
+                return true;
+        return false;
     }
 
     //it searchs for a directory with the given name in the directory source

@@ -1,169 +1,53 @@
-maltese dog
-old English sheepdog
-shetland sheepdog
-french bulldog
-african hunting dog
-eskimo dog
-greater Swiss Mountain dog
-bernese mountain dog
-wood rabbit
-albatross
-alligator lizard
-american alligator
-amphibian
-ant
-armadillo
-baboon
-badger
-bald eagle
-bear
-beaver
-bee
-beetle
-bison
-boa
-boar
-butterfly
-camel
-madagascar cat
-tiger cat
-persian cat
-siamese cat
-egyptian cat
-centipede
-chameleon
-cheetah
-chickadee
-chicken
-chimpanzee
-cobra
-cockroach
-constrictor
-coral
-cougar
-coyote
-crab
-crane
-crayfish
-cricket
-crocodile
-cicada
-damselfly
-dingo
-dragonfly
-dragon
-dung beetle
-eagle
-echidna
-eel
-egret
-elephant
-ferret
-finch
-fish
-flamingo
-fly
-fox
-frog
-gazelle
-gecko
-giant panda
-gibbon
-goldfish
-goose
-gorilla
-grasshopper
-great white shark
-grouse
-guinea pig
-hamster
-hare
-hermit crab
-heron
-hippopotamus
-hummingbird
-hyena
-iguana
-impala
-jaguar
-jay
-jellyfish
-kite
+pug
+Labrador retriever
+Indian elephant
+African elephant
+Bedlington terrier
+ram
 koala
-ladybug
-leopard
-lion
-lizard
+hog
+white wolf
+Artic fox
+kelpie
+bighorn
 llama
-lobster
-lynx
-macaw
-magpie
-marmoset
-marmot
-meerkat
-mink
-mongoose
-monkey
-mosquito
-mouse
-newt
-orangutan
-ostrich
-otter
-owl
-ox
-panda
-partridge
-peacock
-pelican
-penguin
-platypus
-porcupine
-ptarmigan
-python
-quail
-rhinoceros
-salamander
-scorpion
-sea lion
-sea slug
-shark
-skunk
-sloth
-slug
-snail
-snake
-snow leopard
-spider
-spider monkey
-spoonbill
-squirrel
-starfish
-stingray
-stork
-sturgeon
-swan
+barn spider
+garden spider
+wolf spider
 tarantula
-tick
-tiger
-tiger shark
-toucan
-tree frog
-turtle
-viper
-vulture
+sulphur butterfly
+oxcart
+ibex
+saluki
+afghan hound
+ox
+bison
+ringlet
+lycaenid
+monarch
+basset
+cabbage butterfly
+admiral
+horse cart
+hartebeest
+water buffalo
+squirrel monkey
+grey fox
+fox squirrel
+hare
 wallaby
-water buffalo
-weasel
-whale
-whippet
-wolf
-wombat
-worm
-zebra
-chicken
-ferret
-goldfish
-llama
-water buffalo
+tiger cat
+tabby
+Persian cat
+Egyptian cat
+American Staffordshire terrier
+boxer
+Staffordshire bullterrier
+collie
+Border collie
+Appenzeller
+toy terrier
+papillon
+cock
+partridge
+hen

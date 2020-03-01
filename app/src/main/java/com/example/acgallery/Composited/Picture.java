@@ -2,6 +2,7 @@ package com.example.acgallery.Composited;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +20,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class Picture extends AbstractFile {
+
+    static int count = 0;
 
     //BEGIN PICTURE EXCLUSIVE BEHAVIOR-------------------------------------
 
@@ -157,6 +160,9 @@ public class Picture extends AbstractFile {
     @Override
     public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c) {
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
+
+        count++;
+        Log.d("countinggg", "Count: " + count);
         if (c.satisfy(this)){
             toReturn.add(this);
             return toReturn;

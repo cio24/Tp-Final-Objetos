@@ -201,14 +201,22 @@ public class Folder extends AbstractFile {
     }
 
     public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c){
+        //Log.d("countinggg", "FOLDER TO SHOW: " + getName());
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
-        ArrayList<AbstractFile> aux = new ArrayList<>();
+        ArrayList<AbstractFile> aux;
         for (AbstractFile f:files) {
             aux = f.getDeepFilteredFiles(c);
             if (aux != null){
                 toReturn.addAll(aux);
+                /*
+                Log.d("countinggg", "SIZE OF FOLDER TO SHOW: " + toReturn.size());
+                if(toReturn.size()>= 50)
+                    return toReturn;
+
+                 */
             }
         }
+
         if (toReturn.isEmpty()){
             return null;
         }

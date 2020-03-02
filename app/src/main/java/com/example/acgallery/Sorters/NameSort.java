@@ -6,6 +6,7 @@ public class NameSort implements CriterionSorter {
 
     @Override
     public boolean lessThan(AbstractFile a, AbstractFile b) {
-        return (a.getName().compareToIgnoreCase(b.getName()) < 0); //a is less than b if the return is negative
+        int result = a.getName().compareToIgnoreCase(b.getName());
+        return (result < 0); //a is less than b if the result is negative
     }
 }

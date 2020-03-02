@@ -80,7 +80,7 @@ public class ThumbnailsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Folder folderRoot = getFolderRoot();
         if(item.getItemId() == R.id.all_pictures_op) {
-            Intent intent = new Intent(this, ServicePicturesActivity.class);
+            Intent intent = new Intent(this, AllPicturesActivity.class);
             clean();
 
             //paso la carpeta de retorno

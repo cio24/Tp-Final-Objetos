@@ -37,6 +37,15 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 
+/* Tensor flow
+
+import org.tensorflow.yolo.R;
+import org.tensorflow.yolo.TensorFlowImageRecognizer;
+import org.tensorflow.yolo.model.Recognition;
+import org.tensorflow.yolo.util.ImageUtils;
+import org.tensorflow.yolo.view.components.BorderedText;
+*/
+
 public class FullPictureActivity extends AppCompatActivity {
 
     private Picture fullPictureDisplayed;
@@ -234,9 +243,9 @@ public class FullPictureActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle(fullPictureDisplayed.getName())
                     .setMessage(
-                            "top 1: label " + results.get(0).first + " confidence " + results.get(0).second + "\n" +
-                            "top 2: label " + results.get(1).first + " confidence " + results.get(1).second + "\n" +
-                            "top 3: label " + results.get(2).first + " confidence " + results.get(2).second + "\n"
+                            "TOP 1: label " + results.get(2).first + ", confidence " + results.get(2).second + "\n" +
+                            "TOP 2: label " + results.get(1).first + ", confidence " + results.get(1).second + "\n" +
+                            "TOP 3: label " + results.get(0).first + ", confidence " + results.get(0).second + "\n"
 
                     )
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {

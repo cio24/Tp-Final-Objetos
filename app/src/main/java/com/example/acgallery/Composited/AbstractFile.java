@@ -1,13 +1,19 @@
 package com.example.acgallery.Composited;
 
 import android.content.Context;
+import android.os.Build;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.acgallery.Filters.CriterionFilter;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 
 public abstract class AbstractFile implements Serializable {
@@ -44,6 +50,22 @@ public abstract class AbstractFile implements Serializable {
 
     public String getName(){//return the entire name with the extension file.
         return innerFile.getName();
+    }
+
+    public String getCreationTime(){
+        String time = null;
+        BasicFileAttributes attributes = null;
+        Path filePath = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            filePath = Paths.get(this.getAbsolutePath());
+            try {
+                attributes = Files.readAttributes(filePath,BasicFileAttributes.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            time = attributes.creationTime().toString();
+        }
+        return time.substring(0,time.indexOf("T"));
     }
 
 

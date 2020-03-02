@@ -2,23 +2,18 @@ package com.example.acgallery.Composited;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.acgallery.Activities.ThumbnailsActivity;
 import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.R;
 import com.example.acgallery.Sorters.CriterionSorter;
 import com.example.acgallery.Sorters.NameSort;
-import com.example.acgallery.Sorters.OrSort;
 import com.example.acgallery.Sorters.TypeSort;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Folder extends AbstractFile {

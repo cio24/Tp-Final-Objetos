@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.R;
+import com.example.acgallery.Sorters.AndSort;
 import com.example.acgallery.Sorters.CriterionSorter;
 import com.example.acgallery.Sorters.NameSort;
 import com.example.acgallery.Sorters.TypeSort;
@@ -40,8 +41,8 @@ public class Folder extends AbstractFile {
     public void open(Context context, Class cls) {
         CriterionSorter c1 = new TypeSort();
         CriterionSorter c2 = new NameSort();
-        CriterionSorter c = new OrSort(c1, c2);
-        this.sort(c1);
+        CriterionSorter c = new AndSort(c2);
+        this.sort(c);
         Intent intent = new Intent(context, cls);
         /*
             se agrega al canal el path de la imagen que se quiere mostrar, además

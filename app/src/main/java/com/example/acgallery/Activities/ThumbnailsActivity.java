@@ -51,7 +51,7 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
         clean();
 
-        //defining the adapter which will handle the buinding between the views and the layout
+        //defining the adapter which will handle the binding between the views and the layout
         CriterionFilter c = new TrueFilter();
         RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(c),this,ThumbnailsActivity.class,false);
 

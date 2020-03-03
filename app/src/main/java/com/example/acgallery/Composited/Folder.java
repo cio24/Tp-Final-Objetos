@@ -2,15 +2,11 @@ package com.example.acgallery.Composited;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.R;
-import com.example.acgallery.Sorters.AndSort;
 import com.example.acgallery.Sorters.CriterionSorter;
-import com.example.acgallery.Sorters.NameSort;
 import com.example.acgallery.Sorters.TypeSort;
 import com.squareup.picasso.Picasso;
 
@@ -19,140 +15,67 @@ import java.util.ArrayList;
 
 public class Folder extends AbstractFile {
 
-
     private ArrayList<AbstractFile> files;
+    private CriterionSorter criterion;
 
-
-    //BEGIN FOLDER EXCLUSIVE BEHAVIOR-------------------------------------
-
+    //we initially sort the files by type so we first show the folder and then the pictures
     public Folder(File innerFile) {
         super(innerFile);
         files = new ArrayList<>();
+        criterion = new TypeSort();
     }
 
+    //This methods binds the image of a folder and the name of it to the view
     @Override
     public void bindThumbnailToView(ImageView image, TextView text) {
-
+        //we change the size of the picture to prevent a stack overflow then we bind the picture with the view
         Picasso.get().load(R.drawable.folder_thumbnail).resize(300,300).into(image);
+
+        //we also put the name of the folder on the view
         text.setText(getName());
     }
 
+    //this methods opens the thumbnails activity to show all the pictures that this folder has
     @Override
     public void open(Context context, Class cls) {
-        CriterionSorter c1 = new TypeSort();
-        CriterionSorter c2 = new NameSort();
-        CriterionSorter c = new AndSort(c2);
-        this.sort(c);
-        Intent intent = new Intent(context, cls);
-        /*
-            se agrega al canal el path de la imagen que se quiere mostrar, además
-            se agrega un nombre, que es como una id que permite obtener el dato desde
-            la activity ImageActivity. Es necesario este id por si se quieren pasar muchos
-            datos...
-        */
 
+        this.sort(criterion);
+
+        Intent intent = new Intent(context, cls);
         intent.putExtra("idFolder",this);
+
+        //before start the thumbnail activity we make sure to close the current activity displayed
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-
-
-        // Una vez hecha todas las configuraciones, se inicia la nueva activity con la imagen que tocamos
         context.startActivity(intent);
     }
 
-    @Override
-    public boolean rename(String newName) {
-        return false;
-    }
-
-    @Override
-    public boolean copyTo(Folder destination) {
-        return false;
-    }
-
-    @Override
-    public boolean moveTo(Folder destination) {
-        return false;
-    }
-
     public boolean add(AbstractFile f) {
-        /*
-        for(AbstractFile file: files){
-            if(file.equals(f)){
-                f.setCopyNumber(f.getCopyNumber() + 1);
-                return add(f);
-            }
-        }
-        */
         f.setContainer(this);
         files.add(f);
         return true;
     }
 
     public boolean deleteFile(AbstractFile f) {
-        /*
-        Acá hablando un poco de interfaz... ¿Qué pasa si lo que queremos eliminar es una carpeta?
-        Porque si eliminamos la carpeta así nomás, los archivos que estaban dentro de la misma
-        seguirían existiendo. De esta manera, al estar procesando miniaturas, quizás estaríamos
-        mostrando algunas que sean erróneas, es decir, de archivos que se encontraban dentro de
-        la carpeta que eliminamos.
-        Entonces, a lo que voy es, ¿deberíamos hacer el deleteFile en profundidad?
-         */
         if(f.innerFile.delete()) {
-            Log.d("radeon", "tamaño de la carpeta " + getName() + " ANTES: " + this.getFilesAmount());
             files.remove(f);
-            Log.d("radeon", "tamaño de la carpeta " + getName() + " DESPUES: " + this.getFilesAmount());
             return true;
         }
         return false;
     }
 
     public boolean removeByName(String name){
-        Log.d("Cantidad", "Cantidad de elementos antes de borrar: " + files.size());
         for (AbstractFile f: files) {
             if (f.getName().equals(name)){
                 files.remove(f);
-                Log.d("Cantidad", "Cantidad de elementos despues de borrar: " + files.size());
                 return true;
             }
-        }
-        return false;
-    }
-
-    public boolean existName(String name) {
-        for (AbstractFile f : files) {
-            if (f.getName().equalsIgnoreCase(name))
-                return true;
         }
         return false;
     }
 
     public int getFilesAmount() {
-        /*
-        Acá otra cosa. Revisando el explorador de archivos de windows, la cantidad de archivos la
-        cuenta en profundidad. ¿Lo hacemos igual o lo dejamos así como está?
-         */
         return files.size();
-    }
-
-    public int getPicturesAmount(){
-        int amount = 0;
-        for (AbstractFile file: files) {
-            if (!file.getInnerFile().isDirectory()){
-                amount++;
-            }
-        }
-        return amount;
-    }
-
-    public int getFoldersAmount(){
-        int amount = 0;
-        for (AbstractFile file: files) {
-            if (file.getInnerFile().isDirectory()){
-                amount++;
-            }
-        }
-        return amount;
     }
 
     public AbstractFile getFileAt(int index) {
@@ -160,18 +83,6 @@ public class Folder extends AbstractFile {
             return files.get(index);
         }
         return null;
-    }
-
-    public int getFilePos(AbstractFile f) {
-        for(int i = 0; i < files.size(); i++){
-            if(files.get(i).getName().equals(f.getName()))
-                return i;
-        }
-        return -1;
-    }
-
-    public Object getImageFolder() {
-        return R.drawable.folder_thumbnail;
     }
 
     public void sort(CriterionSorter criterion){
@@ -196,66 +107,36 @@ public class Folder extends AbstractFile {
         return pictures;
     }
 
-    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c){
-        //Log.d("countinggg", "FOLDER TO SHOW: " + getName());
+    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter filter){
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
         ArrayList<AbstractFile> aux;
         for (AbstractFile f:files) {
-            aux = f.getDeepFilteredFiles(c);
-            if (aux != null){
+            aux = f.getDeepFilteredFiles(filter);
+            if (aux != null)
                 toReturn.addAll(aux);
-                /*
-                Log.d("countinggg", "SIZE OF FOLDER TO SHOW: " + toReturn.size());
-                if(toReturn.size()>= 50)
-                    return toReturn;
-
-                 */
-            }
         }
-
         if (toReturn.isEmpty()){
             return null;
         }
         return toReturn;
     }
 
-
-    //END FOLDER EXCLUSIVE BEHAVIOR---------------------------------------
-
-    //BEGIN IMPLEMENTATION OF INHERIT METHODS-----------------------------
-
     /*
-    @Override
-    public String getPath() {
-        Folder container = getContainer();
-        if(container == null){ //if this is a root folder_thumbnail
-            return "/" + this.getName(); //with the copyNumber included
-        }
-        return container.getPath() + "/" + this.getName(); //with the copyNumber included
-    }
-
-    @Override
-    public float getSize() {
-        float counter = 0;
-        for(AbstractFile file: files){
-            counter += file.getSize();
-        }
-        return counter;
-    }
+        the following methods are not implemented because they're not related
+        with object oriented programming concepts
      */
-
-    /*
     @Override
-    public AbstractFile getCopy() {
-        Folder folderCopy = new Folder(this.originalDirectory);
-        for(AbstractFile file: files){
-            folderCopy.add(file.getCopy());
-        }
-        return folderCopy;
-        return null;
+    public boolean rename(String newName) {
+        return false;
     }
 
-     */
+    @Override
+    public boolean copyTo(Folder destination) {
+        return false;
+    }
 
-    //END IMPLEMENTATION OF INHERIT METHODS-------------------------------
+    @Override
+    public boolean moveTo(Folder destination) {
+        return false;
+    }
 }

@@ -17,6 +17,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+/*
+    This acitivity shows the pictures the service classifies that is to say
+    the pictures of animals
+ */
+
 public class ServicePicturesActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
@@ -27,18 +32,6 @@ public class ServicePicturesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-        /*
-        ArrayList<String> labels = null;
-
-        try {
-            labels = loadLabelList();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-         */
-
 
         //buinding the activity to the activity_thumbnails_layout layout.
         setContentView(R.layout.activity_thumbnails_layout);

@@ -22,6 +22,7 @@
         <activity android:name=".Activities.ThumbnailsActivity" />
         <activity android:name=".Activities.PasteActivity" />
         <activity android:name=".Activities.ServicePicturesActivity" />
+        <activity android:name=".Activities.AllPicturesActivity" />
 
         <service android:name=".ClassifierService" />
     </application>

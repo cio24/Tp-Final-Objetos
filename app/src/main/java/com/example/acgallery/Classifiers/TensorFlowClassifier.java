@@ -5,7 +5,6 @@ import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.util.Pair;
 import android.widget.ImageView;
 import org.tensorflow.lite.Interpreter;
@@ -27,10 +26,7 @@ import java.util.PriorityQueue;
 public class TensorFlowClassifier implements Classifier {
 
     private Context context;
-
-    // presets for rgb conversion
     private static final int RESULTS_TO_SHOW = 3;
-
     private Interpreter tflite;
 
     // holds all the possible labels for model
@@ -41,13 +37,6 @@ public class TensorFlowClassifier implements Classifier {
 
     // holds the probabilities of each label for quantized graphs
     private byte[][] labelProbArrayB;
-
-    // array that holds the labels with the highest probabilities
-    private String[] topLables;
-
-    // array that holds the highest probabilities
-    private String[] topConfidence;
-
 
     // input image dimensions for the Inception Model
     private int DIM_IMG_SIZE_X = 299;
@@ -92,11 +81,15 @@ public class TensorFlowClassifier implements Classifier {
         // initialize probabilities array. The datatypes that array holds depends if the input data needs to be quantized or not
         labelProbArrayB = new byte[1][labelList.size()];
 
-        // initialize array to hold top labels
-        topLables = new String[RESULTS_TO_SHOW];
+        /*
+        // array that holds the labels with the highest probabilities
+        String[] topLables = new String[RESULTS_TO_SHOW];
 
         // initialize array to hold top probabilities
-        topConfidence = new String[RESULTS_TO_SHOW];
+        // array that holds the highest probabilities
+        String[] topConfidence = new String[RESULTS_TO_SHOW];
+
+         */
 
     }
 
@@ -138,7 +131,7 @@ public class TensorFlowClassifier implements Classifier {
     }
 
 
-    // loads tflite grapg from file
+    // loads tflite graph from file
     private MappedByteBuffer loadModelFile() throws IOException {
         AssetFileDescriptor fileDescriptor = context.getAssets().openFd("inception_quant.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
@@ -182,7 +175,6 @@ public class TensorFlowClassifier implements Classifier {
         return labelList;
     }
 
-
     // resizes bitmap to given dimensions
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
@@ -195,5 +187,4 @@ public class TensorFlowClassifier implements Classifier {
                 bm, 0, 0, width, height, matrix, false);
         return resizedBitmap;
     }
-
 }

@@ -6,16 +6,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import com.example.acgallery.ClassifierService;
-import com.example.acgallery.Classifiers.Classifier;
 import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Composited.Picture;
 import com.example.acgallery.InternalStorage;
@@ -27,6 +24,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/*
+    this is the starting activity that has to search for pictures in some directories
+    also has to request for permissions to read an write the internal and external storage
+    and run a background service that classifies pictures in order to create a dinamic album
+    in this case of animal pictures
+ */
 public class StartActivity extends AppCompatActivity {
 
     // Request permission code
@@ -35,7 +38,7 @@ public class StartActivity extends AppCompatActivity {
     //time the icon of the app remains in the activity_start_layout screen
     final static int START_SCREEN_DELAY = 1000;
 
-    // internal and external storage directory path
+    // internal and external storage directories paths
     final static String EXTERNAL_PATH = "/storage", INTERNAL_PATH = "/mnt";
 
     // Images extensions
@@ -44,17 +47,13 @@ public class StartActivity extends AppCompatActivity {
     // Folders we want to track
     final static String DCIM = "DCIM", DOWNLOADS = "Download", CAMERA = "Camera", SCREENSHOTS = "Screenshots";
 
-
     // Folders we want to exclude
     final static String THUMBNAILS = ".thumbnails";
-
 
     private boolean firstRequirement = true; //it is used to prevent the dialog screen to be shown when the app runs the first time.
     private List<String> extensions, directories, excludedDirectories, innerDataPaths;
     private String [] permissions;
-    private File externalDirectory;
     private Folder rootFolder;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +66,6 @@ public class StartActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-        externalDirectory = new File(EXTERNAL_PATH);
         extensions = Arrays.asList(JPG_EXTENSION, PNG_EXTENSION, JPEG_EXTENSION);
         directories = Arrays.asList(DCIM,DOWNLOADS,/*CAMERA,*/SCREENSHOTS);
         innerDataPaths = Arrays.asList(/*EXTERNAL_PATH,*/INTERNAL_PATH);
@@ -85,7 +83,7 @@ public class StartActivity extends AppCompatActivity {
                         if(isPermissionsGranted()){
                             rootFolder = getFolderRootLoaded();
                             if(isServiceFinished())
-                                ClassifierService.setFinished();
+                                ClassifierService.setFinished(true);
                             else
                                 runService();
                             startThumbnailsActivity();
@@ -96,20 +94,6 @@ public class StartActivity extends AppCompatActivity {
                 });
             }
         }, START_SCREEN_DELAY);
-    }
-
-    private boolean isServiceFinished(){
-        Object o = null;
-        try {
-            o = InternalStorage.readObject(getApplicationContext(),"pictures");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        if(o == null)
-            return false;
-        return true;
     }
 
     /*
@@ -125,7 +109,7 @@ public class StartActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Permission Granted!", Toast.LENGTH_SHORT).show();
                 rootFolder = getFolderRootLoaded();
                 if(isServiceFinished())
-                    ClassifierService.setFinished();
+                    ClassifierService.setFinished(true);
                 else
                     runService();
                 startThumbnailsActivity();
@@ -155,9 +139,24 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+    //this method checks wheter the service has finished with the classification of the pictures or not
+    private boolean isServiceFinished(){
+        Object o = null;
+        try {
+            o = InternalStorage.readObject(getApplicationContext(),"pictures");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        if(o == null)
+            return false;
+        return true;
+    }
+
     /*
-    this method load the root folder_thumbnail and puts it in an intent
-    then starts the activity_thumbnails_layout activity so it can get the folder_thumbnail to displayed
+        this method puts the folder root in an intent then starts the thumbnails
+        activity so it can get the folder_thumbnail to displayed
     */
     private void startThumbnailsActivity(){
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
@@ -166,6 +165,7 @@ public class StartActivity extends AppCompatActivity {
         finish();
     }
 
+    //this method runs in the background with a thread, the service that classifies the pictures
     private void runService(){
         Intent intent = new Intent(this, ClassifierService.class);
         intent.putExtra("idFolder",rootFolder);
@@ -185,7 +185,6 @@ public class StartActivity extends AppCompatActivity {
         loaded with pictures and other folders
      */
     private Folder getFolderRootLoaded(){
-
         Folder folderRoot = new Folder(Environment.getDataDirectory());
         File directory;
         for (String directoryName: directories) {
@@ -193,8 +192,7 @@ public class StartActivity extends AppCompatActivity {
                 directory = findDirectory(directoryName, new File(innerPath));
                 if(directory != null) {
                     Folder folder = new Folder(directory);
-                    loadFolder(folder, directory); // load pictures and folders into the BIG folder_thumbnail
-                    //Log.d("countinggg", "folder :" + folder.getName() + " size: " + folder.getFilesAmount());
+                    loadFolder(folder, directory);
                     folderRoot.add(folder);
                 }
             }
@@ -205,7 +203,7 @@ public class StartActivity extends AppCompatActivity {
     //it loads all the pictures from the directory source into the given folder_thumbnail
     private void loadFolder(Folder folderToLoad,File directorySource){
         File[] files = directorySource.listFiles();
-        if(files != null){ // Directory not empty
+        if(files != null){
             for (int i = 0; i < files.length; i++) {
                 if (!files[i].isDirectory()) {
                     for(String extension: extensions){
@@ -216,7 +214,6 @@ public class StartActivity extends AppCompatActivity {
                     }
                 }
                 else if(!isExcludedDirectory(files[i])){
-                    // the file is a directory
                     Folder folder = new Folder(files[i]);
                     loadFolder(folder, files[i]); // deep loading
                     if(folder.getFilesAmount() > 0)

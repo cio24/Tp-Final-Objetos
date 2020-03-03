@@ -5,14 +5,11 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.example.acgallery.Activities.FullPictureActivity;
 import com.example.acgallery.Filters.CriterionFilter;
 import com.squareup.picasso.Picasso;
-
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,71 +18,27 @@ import java.util.ArrayList;
 
 public class Picture extends AbstractFile {
 
-    static int count = 0;
-
-    //BEGIN PICTURE EXCLUSIVE BEHAVIOR-------------------------------------
-
     public Picture(File innerFile) {
         super(innerFile);
     }
 
-    public String getType() {
-        return null;
-    }
-
-    //END PICTURE EXCLUSIVE BEHAVIOR---------------------------------------
-
-    //BEGIN IMPLEMENTATION OF INHERIT METHODS---------------------------
-
-    /*
-    @Override
-    public float getSize() {
-        return size;
-    }
-
-    @Override
-    public String getPath() {
-        Folder container = super.getContainer();
-        return container.getPath() + "/" + this.getName() + "." + this.getType();
-    }
-
-    @Override
-    public AbstractFile getCopy() {
-
-        Picture copy  = new Picture(this.getName(), this.getSize(), this.getType(), this.originalPic);
-        copy.setContainer(this.getContainer());
-        copy.setCopyNumber(this.getCopyNumber());
-        return copy;
-
-        return null;
-    }
-    */
-
+    //This methods binds the image of a folder and the name of it to the view
     @Override
     public void bindThumbnailToView(ImageView image, TextView text) {
+        //we change the size of the picture to prevent a stack overflow then we bind the picture with the view
         Picasso.get().load(new File(getAbsolutePath())).resize(300,300).centerCrop().into(image);
+
+        //when we bind pictures to the view holder we don't put any text over the picture
         text.setText("");
     }
 
-    public String getBaseName(){
-        return getName().substring(0,getName().lastIndexOf("."));
-    }
-
-    public String getExtension(){
-        return getName().substring(getName().lastIndexOf("."));
-    }
-
+    //this methods opens the thumbnails activity to show all the pictures that this folder has
     @Override
     public void open(Context context,Class cls) {
         Intent intent = new Intent(context, FullPictureActivity.class);
-
-        /*
-            se agrega al canal la foto que se quiere mostrar, además
-            se agrega un id que permite obtener el dato desde
-            la activity FullPictureActivity. Es necesario este id por si se quieren pasar muchos
-            datos...
-        */
         intent.putExtra("fullPicture",this);
+
+        //before start the thumbnail activity we make sure to close the current activity displayed
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
     }
@@ -130,14 +83,6 @@ public class Picture extends AbstractFile {
         destination.add(newPic);
         return true;
     }
-    /*
-    @Override
-    public boolean moveTo(Folder destination) {
-        copyTo(destination);
-        this.delete();
-        return true;
-    }
-     */
 
     @Override
     public boolean moveTo(Folder destination) {
@@ -160,9 +105,6 @@ public class Picture extends AbstractFile {
     @Override
     public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c) {
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
-
-        count++;
-        Log.d("countinggg", "Count: " + count);
         if (c.satisfy(this)){
             toReturn.add(this);
             return toReturn;
@@ -170,6 +112,12 @@ public class Picture extends AbstractFile {
         return null;
     }
 
+    public String getBaseName(){
+        return getName().substring(0,getName().lastIndexOf("."));
+    }
 
-    //END IMPLEMENTATION OF INHERIT METHODS-----------------------------
+    public String getExtension(){
+        return getName().substring(getName().lastIndexOf("."));
+    }
+
 }

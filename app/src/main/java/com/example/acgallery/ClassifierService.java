@@ -89,7 +89,7 @@ public class ClassifierService extends IntentService {
         return finished;
     }
 
-    public static void setFinished(){
-        finished = true;
+    public static void setFinished(boolean b){
+        finished = b;
     }
 }

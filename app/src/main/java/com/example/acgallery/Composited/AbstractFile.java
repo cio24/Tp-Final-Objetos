@@ -4,9 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.example.acgallery.Filters.CriterionFilter;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -21,16 +19,10 @@ public abstract class AbstractFile implements Serializable {
     private Folder container; //in order to delete this file we must have a reference of the folder_thumbnail that has it.
     public File innerFile; //file allocated in phone storage
 
-    //BEGIN CONSTRUCTORS------------------------------------------------
-
     public AbstractFile(File innerFile){
         this.innerFile = innerFile;
         container = null;
     }
-
-    //END CONSTRUCTORS----------------------------------------------------
-
-    //BEGIN SETTERS & GETTERS---------------------------------------------
 
     public String getAbsolutePath(){
         return this.innerFile.getAbsolutePath();
@@ -40,7 +32,7 @@ public abstract class AbstractFile implements Serializable {
         this.innerFile = innerFile;
     }
 
-    protected void setContainer(Folder container){ // Check. Shouldn't we do the comprobation of an AbstractFile on the same container?
+    protected void setContainer(Folder container){
         this.container = container; //Protected because we use this method on Folder (add()) & Picture.
     }
 
@@ -68,8 +60,6 @@ public abstract class AbstractFile implements Serializable {
         return time.substring(0,time.indexOf("T"));
     }
 
-
-
     public File getInnerFile() { return this.innerFile; }
 
     public boolean delete() {
@@ -80,7 +70,6 @@ public abstract class AbstractFile implements Serializable {
         return false;
     }
 
-
     public boolean equals(Object o) { //it only compare the names of the objects..
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -90,21 +79,14 @@ public abstract class AbstractFile implements Serializable {
     }
 
 
-    //END SETTERS & GETTERS-----------------------------------------------
-
-    //BEGIN ABSTRACT METHODS----------------------------------------------
+    //This methods binds the image of a folder and the name of it to the view
     public abstract void bindThumbnailToView(ImageView image, TextView text);
 
+    //this methods opens the thumbnails activity to show all the pictures that this folder has
     public abstract void open(Context context, Class cls);
+
     public abstract boolean rename(String newName);
     public abstract boolean copyTo(Folder destination);
     public abstract boolean moveTo(Folder destination);
     public abstract ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c);
-    //public abstract String getRelativePath();
-    // public abstract float getSize();
-    //public abstract AbstractFile getCopy();
-
-
-    //END ABSTRACT METHODS------------------------------------------------
-
 }

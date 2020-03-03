@@ -10,6 +10,9 @@ import com.example.acgallery.Composited.Folder;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 
+/*
+    This activity shows all the pictures without folders.
+ */
 public class AllPicturesActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
@@ -39,39 +42,6 @@ public class AllPicturesActivity extends AppCompatActivity {
         //setting the adapter defined previously to the recycler
         recyclerView.setAdapter(adapter);
     }
-
-
-    //this method shows a menu layout over the activity_thumbnails_layout layout
-
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.folder_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.all_pictures_op) {
-            Intent intent = new Intent(this, ThumbnailsActivity.class);
-            intent.putExtra("idFolder", folderToShow.getContainer());
-            startActivity(intent);
-            finish();
-
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-     */
 
     /*
         in order to get an up-to-date screen we create a new intent to go back,

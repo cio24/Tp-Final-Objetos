@@ -23,11 +23,11 @@ import java.util.ArrayList;
 public class SwipeAdapter extends PagerAdapter {
 
     /*
-        context is required when we want to create a view when there's no xml file to asociate with,
+        context is required when we want to create a view when there's no xml file to associate with,
         only in classes that implements AppCompatActivity the context is the instance of the class itself
-        so you can use this or getContextApplication() (something like that) when you create a thread that
+        so you can use the reserved word this or getContextApplication() (something like that) when you create a thread that
         needs that context.
-        For this reason, any other clase that required a context must get it as one of his parameters.
+        For this reason, any other class that required a context must get it as one of his parameters.
      */
     private Context context;
 
@@ -43,7 +43,6 @@ public class SwipeAdapter extends PagerAdapter {
     //staff required to change to full screen mode
     private boolean mVisible;
     private final Handler mHideHandler = new Handler();
-
 
     /*
         this adapter, unlike the RecyclerViewAdapter, does show only one view at a time
@@ -104,7 +103,6 @@ public class SwipeAdapter extends PagerAdapter {
         container.removeView((SubsamplingScaleImageView) object);
     }
 
-
     /*
         Thw following methods are needed for giving the picture the capability of
         hide the navigation and status bar in order to see it in full screen
@@ -117,7 +115,6 @@ public class SwipeAdapter extends PagerAdapter {
             show();
         }
     }
-
 
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -133,6 +130,7 @@ public class SwipeAdapter extends PagerAdapter {
     };
 
     private final Runnable mShowPart2Runnable = new Runnable() {
+
         @Override
         public void run() {
             if (actionBar != null) {

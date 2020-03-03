@@ -27,7 +27,6 @@ public class PasteActivity extends AppCompatActivity {
     private Folder folderToShow;
     private static Picture pictureToPaste;
     private final int COPY_CODE = 0;
-    private final int MOVE_CODE = 1;
     private static int opCode;
 
     @Override
@@ -44,10 +43,9 @@ public class PasteActivity extends AppCompatActivity {
             pictureToPaste = (Picture) getIntent().getSerializableExtra("idPicToPaste");
             opCode = (int) getIntent().getSerializableExtra("opCode");
         }
-        CriterionFilter c = new TrueFilter();
 
         //defining the adapter which will handle the binding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(c),this, PasteActivity.class, true);
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this, PasteActivity.class, true);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -59,8 +57,7 @@ public class PasteActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    //this method shows a menu layout over the activity_thumbnails_layout layout
-
+    //this method shows a menu layout over the paste_menu layout
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -68,21 +65,22 @@ public class PasteActivity extends AppCompatActivity {
         return true;
     }
 
+    //in this method we indicate the actions to be taken for each option of the menu
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.paste_picture_op){
-            if (opCode == COPY_CODE){
-                Log.d("Operation", "Estoy copiando");
+            if (opCode == COPY_CODE)
                 pictureToPaste.copyTo(folderToShow);
-            }
-            else { // opCode == MOVE_CODE
-                Log.d("Operation", "Estoy moviendo");
+            else { //move
                 pictureToPaste.moveTo(folderToShow);
+
+                //we do this to prevent the remaining of a empty file in the directory origin
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureToPaste.innerFile)));
             }
             pictureToPaste = null;
             opCode = -1;
         }
+
         //then we comeback to the folder where the picture was
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
         intent.putExtra("idFolder",folderToShow);
@@ -90,8 +88,6 @@ public class PasteActivity extends AppCompatActivity {
         this.finish();
         return super.onOptionsItemSelected(item);
     }
-
-
 
     /*
         in order to get an up-to-date screen we create a new intent to go back,
@@ -108,5 +104,4 @@ public class PasteActivity extends AppCompatActivity {
         }
         super.onBackPressed();
     }
-
 }

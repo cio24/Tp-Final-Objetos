@@ -1,8 +1,9 @@
 package com.example.acgallery.Sorters;
 
 import com.example.acgallery.Composited.AbstractFile;
+import java.io.Serializable;
 
-public class DateSort implements CriterionSorter {
+public class DateSort implements CriterionSorter, Serializable {
 
     @Override
     public boolean lessThan(AbstractFile a, AbstractFile b) {

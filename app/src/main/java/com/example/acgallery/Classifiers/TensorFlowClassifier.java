@@ -80,17 +80,6 @@ public class TensorFlowClassifier implements Classifier {
 
         // initialize probabilities array. The datatypes that array holds depends if the input data needs to be quantized or not
         labelProbArrayB = new byte[1][labelList.size()];
-
-        /*
-        // array that holds the labels with the highest probabilities
-        String[] topLables = new String[RESULTS_TO_SHOW];
-
-        // initialize array to hold top probabilities
-        // array that holds the highest probabilities
-        String[] topConfidence = new String[RESULTS_TO_SHOW];
-
-         */
-
     }
 
     @Override
@@ -113,9 +102,8 @@ public class TensorFlowClassifier implements Classifier {
         // add all results to priority queue
         for (int i = 0; i < labelList.size(); ++i) {
             sortedLabels.add(new AbstractMap.SimpleEntry<>(labelList.get(i), (labelProbArrayB[0][i] & 0xff) / 255.0f));
-            if (sortedLabels.size() > RESULTS_TO_SHOW) {
+            if (sortedLabels.size() > RESULTS_TO_SHOW)
                 sortedLabels.poll();
-            }
         }
 
         // get top results from priority queue
@@ -126,10 +114,8 @@ public class TensorFlowClassifier implements Classifier {
             p = new Pair(label.getKey(), String.format("%.0f%%", label.getValue() * 100));
             results.add(p);
         }
-
         return results;
     }
-
 
     // loads tflite graph from file
     private MappedByteBuffer loadModelFile() throws IOException {
@@ -148,6 +134,7 @@ public class TensorFlowClassifier implements Classifier {
         }
         imgData.rewind();
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+
         // loop through all pixels
         int pixel = 0;
         for (int i = 0; i < DIM_IMG_SIZE_X; ++i) {

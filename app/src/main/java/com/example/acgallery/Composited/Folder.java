@@ -85,7 +85,8 @@ public class Folder extends AbstractFile {
         return null;
     }
 
-    public void sort(CriterionSorter criterion){
+    private void sort(CriterionSorter criterion){
+        this.criterion = criterion;
         AbstractFile aux;
         for(int i = 0; i < files.size() - 1; i++){
             for (int j = i+1; j < files.size(); j++){
@@ -96,6 +97,10 @@ public class Folder extends AbstractFile {
                 }
             }
         }
+    }
+
+    public void setCriterionSorter(CriterionSorter criterion){
+        this.criterion = criterion;
     }
 
     public ArrayList<AbstractFile> getFilteredFiles(CriterionFilter filter){

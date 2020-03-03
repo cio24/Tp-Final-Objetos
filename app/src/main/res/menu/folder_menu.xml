@@ -10,5 +10,17 @@
         android:title="Animal Pictures"
         app:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/order_by_op"
+        android:title="Order by"
+        app:showAsAction="ifRoom">
+        <!-- "file" submenu -->
+        <menu>
+            <item android:id="@+id/order_by_name_op"
+                android:title="name"/>
+            <item android:id="@+id/order_by_date_op"
+                android:title="Date" />
+        </menu>
+    </item>
+
 
 </menu>

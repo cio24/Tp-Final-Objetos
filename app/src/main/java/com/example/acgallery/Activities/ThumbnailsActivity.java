@@ -17,6 +17,9 @@ import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.Filters.PictureFilter;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
+import com.example.acgallery.Sorters.CriterionSorter;
+import com.example.acgallery.Sorters.DateSort;
+import com.example.acgallery.Sorters.NameSort;
 
 import java.util.ArrayList;
 
@@ -87,6 +90,14 @@ public class ThumbnailsActivity extends AppCompatActivity {
             intent.putExtra("idFolder", folderToShow);
             startActivity(intent);
             finish();
+        }
+        else if(item.getItemId() == R.id.order_by_name_op) {
+            folderToShow.setCriterionSorter(new NameSort());
+            folderToShow.open(this,ThumbnailsActivity.class);
+        }
+        else if(item.getItemId() == R.id.order_by_date_op) {
+            folderToShow.setCriterionSorter(new DateSort());
+            folderToShow.open(this,ThumbnailsActivity.class);
         }
         return super.onOptionsItemSelected(item);
     }

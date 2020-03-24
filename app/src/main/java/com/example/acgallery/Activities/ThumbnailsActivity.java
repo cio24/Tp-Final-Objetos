@@ -6,22 +6,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.ClassifierService;
-import com.example.acgallery.Composited.Folder;
-import com.example.acgallery.Filters.CriterionFilter;
-import com.example.acgallery.Filters.PictureFilter;
+import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
-import com.example.acgallery.Sorters.CriterionSorter;
 import com.example.acgallery.Sorters.DateSort;
 import com.example.acgallery.Sorters.NameSort;
-
-import java.util.ArrayList;
 
 /*
     this activity shows the thumbnails of all the pictures and a image of a folder for folders
@@ -46,6 +42,8 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
         //we make sure that there's no empty files inside the folder to displayed
         clean();
+
+        Log.d("creopatra", "Se abrio la carpeta "+ folderToShow.getName() + " con " + folderToShow.getFilesAmount() + " archivos");
 
         //defining the adapter which will handle the binding between the views and the layout
         RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this,ThumbnailsActivity.class,false);
@@ -98,6 +96,24 @@ public class ThumbnailsActivity extends AppCompatActivity {
         else if(item.getItemId() == R.id.order_by_date_op) {
             folderToShow.setCriterionSorter(new DateSort());
             folderToShow.open(this,ThumbnailsActivity.class);
+        }
+        else if(item.getItemId() == R.id.copy_folder_op) {
+            Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
+            intent.putExtra("idFolder", getFolderRoot());
+            intent.putExtra("idPicToPaste", folderToShow);
+            intent.putExtra("opCode", 0);
+            startActivity(intent);
+            finish();
+            folderToShow.copyTo(getFolderRoot());
+        }
+        else if(item.getItemId() == R.id.move_folder_op) {
+            Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
+            intent.putExtra("idFolder", getFolderRoot());
+            intent.putExtra("idPicToPaste", folderToShow);
+            intent.putExtra("opCode", 1);
+            startActivity(intent);
+            finish();
+            folderToShow.copyTo(getFolderRoot());
         }
         return super.onOptionsItemSelected(item);
     }

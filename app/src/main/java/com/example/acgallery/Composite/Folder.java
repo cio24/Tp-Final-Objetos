@@ -1,9 +1,12 @@
-package com.example.acgallery.Composited;
+package com.example.acgallery.Composite;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.R;
 import com.example.acgallery.Sorters.CriterionSorter;
@@ -11,6 +14,11 @@ import com.example.acgallery.Sorters.TypeSort;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class Folder extends AbstractFile {
@@ -136,12 +144,35 @@ public class Folder extends AbstractFile {
     }
 
     @Override
-    public boolean copyTo(Folder destination) {
-        return false;
+    public boolean copyTo(Folder destination){
+        File directoryCopy = new File(destination.getAbsolutePath()+ "/" + getName());
+        int copyNumber = 1;
+        while(directoryCopy.exists()){
+            directoryCopy = new File(destination.getAbsolutePath() + "/" + getName() + " (" + copyNumber +")");
+        }
+        directoryCopy.mkdir();
+        Folder newFolder = new Folder(directoryCopy);
+        destination.add(newFolder);
+        for(AbstractFile file: files)
+            file.copyTo(newFolder);
+        return true;
     }
 
     @Override
     public boolean moveTo(Folder destination) {
+        this.getContainer().removeByName(this.getName());
+        File renamed = new File(destination.getAbsolutePath() + "/" + this.getName());
+        int copyNumber = 1;
+        while(renamed.exists()){
+            renamed = new File(destination.getAbsolutePath() + "/" + this.getName() + " (" + copyNumber + ")");
+            copyNumber++;
+        }
+        //renamed.mkdir();
+        if(getInnerFile().renameTo(renamed)){
+            setInnerFile(renamed);
+            destination.add(this);
+            return true;
+        }
         return false;
     }
 }

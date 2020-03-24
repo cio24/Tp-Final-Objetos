@@ -1,6 +1,6 @@
 package com.example.acgallery.Sorters;
 
-import com.example.acgallery.Composited.AbstractFile;
+import com.example.acgallery.Composite.AbstractFile;
 import java.io.Serializable;
 
 public class NameSort implements CriterionSorter, Serializable {

@@ -10,6 +10,14 @@
         android:title="Animal Pictures"
         app:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/copy_folder_op"
+        android:title="Copy"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/move_folder_op"
+        android:title="Move"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/order_by_op"
         android:title="Order by"
         app:showAsAction="ifRoom">

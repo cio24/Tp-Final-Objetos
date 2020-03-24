@@ -3,11 +3,9 @@ package com.example.acgallery.Activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,9 +13,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
-import com.example.acgallery.Composited.Folder;
-import com.example.acgallery.Composited.Picture;
-import com.example.acgallery.Filters.CriterionFilter;
+import com.example.acgallery.Composite.AbstractFile;
+import com.example.acgallery.Composite.Folder;
+import com.example.acgallery.Composite.Picture;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 
@@ -25,7 +23,7 @@ public class PasteActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private Folder folderToShow;
-    private static Picture pictureToPaste;
+    private static AbstractFile pictureToPaste;
     private final int COPY_CODE = 0;
     private static int opCode;
 
@@ -40,7 +38,7 @@ public class PasteActivity extends AppCompatActivity {
         //getting the folder_thumbnail from to be displayed
         folderToShow = (Folder) getIntent().getSerializableExtra("idFolder");
         if(pictureToPaste == null) {
-            pictureToPaste = (Picture) getIntent().getSerializableExtra("idPicToPaste");
+            pictureToPaste = (AbstractFile) getIntent().getSerializableExtra("idPicToPaste");
             opCode = (int) getIntent().getSerializableExtra("opCode");
         }
 

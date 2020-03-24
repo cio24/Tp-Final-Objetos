@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
-import com.example.acgallery.Composited.Folder;
+import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 

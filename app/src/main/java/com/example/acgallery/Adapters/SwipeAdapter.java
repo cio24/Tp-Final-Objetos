@@ -5,18 +5,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-import com.example.acgallery.Composited.AbstractFile;
-import com.example.acgallery.Composited.Folder;
+import com.example.acgallery.Composite.AbstractFile;
 
 import java.util.ArrayList;
 

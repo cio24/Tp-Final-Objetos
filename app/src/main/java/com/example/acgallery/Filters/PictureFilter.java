@@ -1,6 +1,6 @@
 package com.example.acgallery.Filters;
 
-import com.example.acgallery.Composited.AbstractFile;
+import com.example.acgallery.Composite.AbstractFile;
 
 public class PictureFilter implements CriterionFilter {
     @Override

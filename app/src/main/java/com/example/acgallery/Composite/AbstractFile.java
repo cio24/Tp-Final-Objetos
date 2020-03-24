@@ -1,4 +1,4 @@
-package com.example.acgallery.Composited;
+package com.example.acgallery.Composite;
 
 import android.content.Context;
 import android.os.Build;
@@ -79,13 +79,11 @@ public abstract class AbstractFile implements Serializable {
     }
 
 
-    //This methods binds the image of a folder and the name of it to the view
-    public abstract void bindThumbnailToView(ImageView image, TextView text);
-
     //this methods opens the thumbnails activity to show all the pictures that this folder has
     public abstract void open(Context context, Class cls);
 
     public abstract boolean rename(String newName);
+    public abstract void bindThumbnailToView(ImageView image, TextView text);
     public abstract boolean copyTo(Folder destination);
     public abstract boolean moveTo(Folder destination);
     public abstract ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c);

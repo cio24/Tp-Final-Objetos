@@ -1,21 +1,20 @@
 package com.example.acgallery.Adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.acgallery.Composited.AbstractFile;
-import com.example.acgallery.Composited.Folder;
+import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.R;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /*

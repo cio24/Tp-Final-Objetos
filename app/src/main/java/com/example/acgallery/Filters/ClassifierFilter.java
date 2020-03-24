@@ -3,11 +3,10 @@ package com.example.acgallery.Filters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.util.Pair;
 import android.widget.ImageView;
 import com.example.acgallery.Classifiers.Classifier;
-import com.example.acgallery.Composited.AbstractFile;
+import com.example.acgallery.Composite.AbstractFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 

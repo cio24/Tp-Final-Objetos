@@ -4,10 +4,10 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 import androidx.annotation.Nullable;
-import com.example.acgallery.Activities.ThumbnailsActivity;
+
 import com.example.acgallery.Classifiers.TensorFlowClassifier;
-import com.example.acgallery.Composited.AbstractFile;
-import com.example.acgallery.Composited.Folder;
+import com.example.acgallery.Composite.AbstractFile;
+import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.ClassifierFilter;
 import java.io.BufferedReader;
 import java.io.IOException;

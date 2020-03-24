@@ -1,8 +1,7 @@
-package com.example.acgallery.Composited;
+package com.example.acgallery.Composite;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.acgallery.Activities.FullPictureActivity;

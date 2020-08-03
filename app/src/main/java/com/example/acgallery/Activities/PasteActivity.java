@@ -33,7 +33,7 @@ public class PasteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //buinding the activity to the activity_thumbnails_layout layout.
-        setContentView(R.layout.activity_thumbnails_layout);
+        setContentView(R.layout.activity_paste_layout);
 
         //getting the folder_thumbnail from to be displayed
         folderToShow = (Folder) getIntent().getSerializableExtra("idFolder");
@@ -95,7 +95,7 @@ public class PasteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if(folderToShow.getContainer() != null){
-            Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+            Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
             intent.putExtra("idFolder", folderToShow.getContainer());
             startActivity(intent);
             finish();

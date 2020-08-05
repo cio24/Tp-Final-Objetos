@@ -10,6 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.acgallery.Activities.FileManager;
+import com.example.acgallery.Activities.FullPictureActivity;
+import com.example.acgallery.Activities.PasteActivity;
+import com.example.acgallery.Activities.ThumbnailsActivity;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.R;
 import com.squareup.picasso.Picasso;
@@ -28,23 +32,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView thumbnailToShow;
-        private TextView folderNameToShow;
+        private TextView nameToShow;
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             thumbnailToShow = (ImageView) itemView.findViewById(R.id.thumbnail_holder);
-            folderNameToShow = (TextView) itemView.findViewById(R.id.folder_name_holder);
+            nameToShow = (TextView) itemView.findViewById(R.id.folder_name_holder);
         }
     }
 
     private ArrayList<AbstractFile> filesToShow;
     private Context context;
     private boolean pasteMode;
-    private Class cls;
+    private final Class FULL_PICTURE_ACTIVITY = FullPictureActivity.class,
+                        THUMBNAILS_ACTIVITY = ThumbnailsActivity.class,
+                        PASTE_ACTIVITY = PasteActivity.class;
 
-    public RecyclerViewAdapter(ArrayList<AbstractFile> filesToShow, Context context, Class cls, boolean pasteMode){
+
+    public RecyclerViewAdapter(ArrayList<AbstractFile> filesToShow, Context context, boolean pasteMode){
         this.filesToShow = filesToShow;
-        this.cls = cls;
         this.context = context;
         this.pasteMode = pasteMode;
     }
@@ -63,7 +69,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
         final AbstractFile thumbnail = filesToShow.get(position);
-        thumbnail.bindThumbnailToView(holder.thumbnailToShow,holder.folderNameToShow);
+        //thumbnail.bindThumbnailToView(holder.thumbnailToShow,holder.folderNameToShow);
+        bindThumbnailToView(holder.thumbnailToShow,holder.nameToShow,thumbnail);
 
         /*
            if the folder was opened to paste a picture then we don't add the listener
@@ -71,20 +78,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
            if the folder was opened to show the pictures then we add the listener to each picture
            and in both cases we always add the listener that open a folder
          */
+        setListener(holder,thumbnail);
+    }
 
-        if(pasteMode)
+    public void bindThumbnailToView(ImageView image, TextView text, AbstractFile thumbnail) {
+        if(thumbnail.getRealFile().isDirectory()) {
+            //we change the size of the picture to prevent a stack overflow then we bind the picture with the view
+            Picasso.get().load(R.drawable.folder_thumbnail).resize(300, 300).into(image);
+            //we also put the name of the folder on the view
+            text.setText(thumbnail.getName());
+        }
+        else{
+            //we change the size of the picture to prevent a stack overflow then we bind the picture with the view
+            Picasso.get().load(new File(thumbnail.getAbsolutePath())).resize(300,300).centerCrop().into(image);
+
+            //when we bind pictures to the view holder we don't put any text over the picture
+            text.setText("");
+        }
+    }
+
+    private void setListener(ViewHolder holder, final AbstractFile thumbnail){
             holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(thumbnail.getInnerFile().isDirectory())
-                        thumbnail.open(context,cls);
-                }
-            });
-        else
-            holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    thumbnail.open(context,cls);
+                    if(thumbnail.getRealFile().isDirectory())
+                        if(!pasteMode)
+                            FileManager.sendFile(thumbnail,context,THUMBNAILS_ACTIVITY);
+                        else
+                            FileManager.sendFile(thumbnail,context,PASTE_ACTIVITY);
+                    else if(!pasteMode)
+                        FileManager.sendFile(thumbnail,context,FULL_PICTURE_ACTIVITY);
+                    //thumbnail.open(context,cls);
                 }
             });
     }

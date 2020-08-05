@@ -15,9 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Composite.Folder;
-import com.example.acgallery.Composite.Picture;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
+
+import java.io.File;
 
 public class PasteActivity extends AppCompatActivity {
 
@@ -43,7 +44,7 @@ public class PasteActivity extends AppCompatActivity {
         }
 
         //defining the adapter which will handle the binding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this, PasteActivity.class, true);
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this, true);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -73,7 +74,7 @@ public class PasteActivity extends AppCompatActivity {
                 pictureToPaste.moveTo(folderToShow);
 
                 //we do this to prevent the remaining of a empty file in the directory origin
-                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureToPaste.innerFile)));
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureToPaste.realFile)));
             }
             pictureToPaste = null;
             opCode = -1;
@@ -94,9 +95,9 @@ public class PasteActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        if(folderToShow.getContainer() != null){
+        if(folderToShow.getParent() != null){
             Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
-            intent.putExtra("idFolder", folderToShow.getContainer());
+            intent.putExtra("idFolder", folderToShow.getParent());
             startActivity(intent);
             finish();
         }

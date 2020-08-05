@@ -24,9 +24,9 @@
         <!-- "file" submenu -->
         <menu>
             <item android:id="@+id/order_by_name_op"
-                android:title="name"/>
+                android:title="Name"/>
             <item android:id="@+id/order_by_date_op"
-                android:title="Date" />
+                android:title="Recent Date" />
         </menu>
     </item>
 

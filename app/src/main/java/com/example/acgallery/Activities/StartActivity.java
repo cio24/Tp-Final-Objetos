@@ -17,6 +17,8 @@ import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Composite.Picture;
 import com.example.acgallery.InternalStorage;
 import com.example.acgallery.R;
+import com.example.acgallery.Sorters.TypeSort;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -159,16 +161,18 @@ public class StartActivity extends AppCompatActivity {
         activity so it can get the folder_thumbnail to displayed
     */
     private void startThumbnailsActivity(){
-        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        intent.putExtra("idFolder", rootFolder);
-        startActivity(intent);
-        finish();
+        FileManager.sendFile(rootFolder,getApplicationContext(),ThumbnailsActivity.class);
+        //Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+        //intent.putExtra(rootFolder.getName(), rootFolder);
+        //startActivity(intent);
+        //finish();
     }
 
     //this method runs in the background with a thread, the service that classifies the pictures
     private void runService(){
+        //FileManager.sendFile(rootFolder,this,ClassifierService.class);
         Intent intent = new Intent(this, ClassifierService.class);
-        intent.putExtra("idFolder",rootFolder);
+        intent.putExtra("service",rootFolder);
         startService(intent);
     }
 
@@ -221,12 +225,13 @@ public class StartActivity extends AppCompatActivity {
                 }
             }
             if(folderToLoad.getFilesAmount() == 0){
-                Folder container = folderToLoad.getContainer();
+                Folder container = folderToLoad.getParent();
                 if(container != null){
                     container.deleteFile(folderToLoad);
                 }
             }
         }
+        folderToLoad.sort(new TypeSort());
     }
 
     private boolean isExcludedDirectory(File directory){

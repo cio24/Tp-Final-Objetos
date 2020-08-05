@@ -53,7 +53,7 @@ public class FullPictureActivity extends AppCompatActivity {
         }
 
         //retrieving the picture to be shown
-        fullPictureDisplayed = (Picture) getIntent().getSerializableExtra("fullPicture");
+        fullPictureDisplayed = (Picture) getIntent().getSerializableExtra(FileManager.getId());
 
         showFullPicture(fullPictureDisplayed);
     }
@@ -83,15 +83,16 @@ public class FullPictureActivity extends AppCompatActivity {
 
                             //we delete the picture and make sure that won't remain an empty file of it.
                             fullPictureDisplayed.delete();
-                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fullPictureDisplayed.innerFile)));
+                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fullPictureDisplayed.realFile)));
 
                             //then we comeback to the folder where the picture was
-                            Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-                            intent.putExtra("idFolder", fullPictureDisplayed.getContainer());
-                            startActivity(intent);
+                            FileManager.sendFile(fullPictureDisplayed.getParent(),getApplicationContext(),ThumbnailsActivity.class);
+                            //Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+                            //intent.putExtra("idFolder", fullPictureDisplayed.getParent());
+                            //startActivity(intent);
 
                             //and close this activity
-                            finish();
+                            //finish();
                         }
                     })
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -129,7 +130,7 @@ public class FullPictureActivity extends AppCompatActivity {
 
             String units;
             Float size;
-            Float pictureSize = Float.valueOf(fullPictureDisplayed.getInnerFile().length());
+            Float pictureSize = Float.valueOf(fullPictureDisplayed.getRealFile().length());
             if(pictureSize/(1024*1024) > 1.0){
                 size = pictureSize/(1024*1024);
                 units = "MB";
@@ -181,8 +182,9 @@ public class FullPictureActivity extends AppCompatActivity {
                     .create().show();
         }
         else if(item.getItemId() == R.id.copy_picture_op) {
+            Folder folderRoot = getFolderRoot();
             Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
-            intent.putExtra("idFolder", getFolderRoot());
+            intent.putExtra("idFolder", folderRoot);
             intent.putExtra("idPicToPaste", getPictureDisplayed());
             intent.putExtra("opCode", 0);
             startActivity(intent);
@@ -205,11 +207,12 @@ public class FullPictureActivity extends AppCompatActivity {
     */
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        intent.putExtra("idFolder", fullPictureDisplayed.getContainer());
-        startActivity(intent);
-        finish();
-        super.onBackPressed();
+        FileManager.sendFile(fullPictureDisplayed.getParent(),this,ThumbnailsActivity.class);
+        //Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+        //intent.putExtra("idFolder", fullPictureDisplayed.getParent());
+        //startActivity(intent);
+        //finish();
+        //super.onBackPressed();
     }
 
     /*
@@ -219,7 +222,7 @@ public class FullPictureActivity extends AppCompatActivity {
      */
     private void showFullPicture(AbstractFile picture){
         viewPager = findViewById(R.id.view_pager);
-        pictures = picture.getContainer().getFilteredFiles(new PictureFilter());
+        pictures = picture.getParent().getFilteredFiles(new PictureFilter());
         int currentPicturePos = 0;
         for(AbstractFile pic: pictures){
             if(pic.equals(picture))
@@ -243,9 +246,9 @@ public class FullPictureActivity extends AppCompatActivity {
     }
 
     private Folder getFolderRoot(){
-        Folder folderRoot = getPictureDisplayed().getContainer();
-        while(folderRoot.getContainer() != null){
-            folderRoot = folderRoot.getContainer();
+        Folder folderRoot = getPictureDisplayed().getParent();
+        while(folderRoot.getParent() != null){
+            folderRoot = folderRoot.getParent();
         }
         return folderRoot;
     }

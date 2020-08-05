@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.util.Log;
 import androidx.annotation.Nullable;
 
+import com.example.acgallery.Activities.FileManager;
 import com.example.acgallery.Classifiers.TensorFlowClassifier;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.ClassifierFilter;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class ClassifierService extends IntentService {
         finished = false;
 
         //getting the folder_thumbnail from to be displayed
-        folderToClassify = (Folder) intent.getSerializableExtra("idFolder");
+        folderToClassify = (Folder) intent.getSerializableExtra("service");
 
         ArrayList<String> animalLabels = null;
 

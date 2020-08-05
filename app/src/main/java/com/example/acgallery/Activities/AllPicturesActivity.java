@@ -31,7 +31,7 @@ public class AllPicturesActivity extends AppCompatActivity {
 
 
         //defining the adapter which will handle the buinding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getDeepFilteredFiles(new TrueFilter()),this, ServicePicturesActivity.class,false);
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getDeepFilteredFiles(new TrueFilter()),this,false);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);

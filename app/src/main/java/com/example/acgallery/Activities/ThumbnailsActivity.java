@@ -16,7 +16,7 @@ import com.example.acgallery.ClassifierService;
 import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
-import com.example.acgallery.Sorters.DateSort;
+import com.example.acgallery.Sorters.RecentDateSort;
 import com.example.acgallery.Sorters.NameSort;
 
 /*
@@ -38,15 +38,16 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
 
         //getting the folder_thumbnail from to be displayed
-        folderToShow = (Folder) getIntent().getSerializableExtra("idFolder");
+        Log.d("xoxo",FileManager.getId());
+        folderToShow = (Folder) getIntent().getSerializableExtra(FileManager.getId());
 
-        //we make sure that there's no empty files inside the folder to displayed
-        clean();
+        //we make sure that there's no empty files inside the folder to displsayed
+        //clean();
 
         Log.d("creopatra", "Se abrio la carpeta "+ folderToShow.getName() + " con " + folderToShow.getFilesAmount() + " archivos");
 
         //defining the adapter which will handle the binding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this,ThumbnailsActivity.class,false);
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this,false);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -90,12 +91,17 @@ public class ThumbnailsActivity extends AppCompatActivity {
             finish();
         }
         else if(item.getItemId() == R.id.order_by_name_op) {
-            folderToShow.setCriterionSorter(new NameSort());
-            folderToShow.open(this,ThumbnailsActivity.class);
+            //folderToShow.setCriterionSorter(new NameSort());
+            folderToShow.sort(new NameSort());
+            //IS_SORTED = true;
+            FileManager.sendFile(folderToShow,this,ThumbnailsActivity.class);
+            //folderToShow.open(this,ThumbnailsActivity.class);
         }
         else if(item.getItemId() == R.id.order_by_date_op) {
-            folderToShow.setCriterionSorter(new DateSort());
-            folderToShow.open(this,ThumbnailsActivity.class);
+            //folderToShow.setCriterionSorter();
+            folderToShow.sort(new RecentDateSort());
+            FileManager.sendFile(folderToShow,this,ThumbnailsActivity.class);
+            //folderToShow.open(this,ThumbnailsActivity.class);
         }
         else if(item.getItemId() == R.id.copy_folder_op) {
             Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
@@ -139,23 +145,24 @@ public class ThumbnailsActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        if(folderToShow.getContainer() != null){
-            Intent intent = new Intent(this, ThumbnailsActivity.class);
-            intent.putExtra("idFolder", folderToShow.getContainer());
-            startActivity(intent);
-            finish();
+        if(folderToShow.getParent() != null){
+            FileManager.sendFile(folderToShow.getParent(),this,ThumbnailsActivity.class);
+            //Intent intent = new Intent(this, ThumbnailsActivity.class);
+            //intent.putExtra("idFolder", folderToShow.getParent());
+            //startActivity(intent);
+            //finish();
         }
         else
-            super.onBackPressed();
+            moveTaskToBack(true); //it sends the app to the background without closing it.
     }
 
     /*
         this method remove all the abstract files that don't have a inner file which path is linked
-        wieth a real file in the phone.
+        with a real file in the phone.
      */
     private void clean(){
         for(int i = 0; i < folderToShow.getFilesAmount(); i++){
-            if(!folderToShow.getFileAt(i).getInnerFile().exists()){
+            if(!folderToShow.getFileAt(i).getRealFile().exists()){
                 folderToShow.removeByName(folderToShow.getFileAt(i).getName());
             }
         }
@@ -163,8 +170,8 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
     private Folder getFolderRoot(){
         Folder folderRoot = folderToShow;
-        while(folderRoot.getContainer() != null){
-            folderRoot = folderRoot.getContainer();
+        while(folderRoot.getParent() != null){
+            folderRoot = folderRoot.getParent();
         }
         return folderRoot;
     }

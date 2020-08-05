@@ -58,7 +58,7 @@ public class ServicePicturesActivity extends AppCompatActivity {
         //defining the adapter which will handle the buinding between the views and the layout
         //CriterionFilter c = new PictureFilter();
         //ClassifierFilter c = new ClassifierFilter(this,labels, new TensorFlowClassifier(this));
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(picturesToShow,this, ServicePicturesActivity.class,false);
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(picturesToShow,this,false);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);

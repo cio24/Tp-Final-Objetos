@@ -87,7 +87,7 @@ public class FullPictureActivity extends AppCompatActivity {
 
                             //we delete the picture and make sure that won't remain an empty file of it.
                             pictureDisplayed.delete();
-                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureDisplayed.realFile)));
+                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureDisplayed.getRealFile())));
 
                             //then we comeback to the folder where the picture was
                             Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);

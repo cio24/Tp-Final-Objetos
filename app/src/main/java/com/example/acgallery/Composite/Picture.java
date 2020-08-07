@@ -40,7 +40,7 @@ public class Picture extends AbstractFile {
         while(fileCopy.exists()){
             fileCopy = new File(destination.getAbsolutePath() + "/" + getBaseName() + " (" + copyNumber +")" + getExtension());
         }
-        try (InputStream in = new FileInputStream(realFile)) {
+        try (InputStream in = new FileInputStream(this.getRealFile())) {
             try (OutputStream out = new FileOutputStream(fileCopy)) {
                 // Transfer bytes from in to out
                 byte[] buf = new byte[1024];
@@ -59,19 +59,8 @@ public class Picture extends AbstractFile {
 
     @Override
     public boolean moveTo(Folder destination) {
-        this.getParent().removeByName(this.getName());
-        File renamed = new File(destination.getAbsolutePath() + "/" + this.getName());
-        int copyNumber = 1;
-        while(renamed.exists()){
-            renamed = new File(destination.getAbsolutePath() + "/" + this.getBaseName() + " (" + copyNumber + ")" + getExtension());
-            copyNumber++;
-        }
-        if(getRealFile().renameTo(renamed)){
-            setRealFile(renamed);
-            Picture newPic = new Picture(renamed);
-            destination.add(newPic);
-            return true;
-        }
+        if(this.copyTo(destination))
+            return this.delete();
         return false;
     }
 

@@ -4,7 +4,7 @@ import com.example.acgallery.Composite.AbstractFile;
 
 public class PictureFilter implements CriterionFilter {
     @Override
-    public boolean satisfy(AbstractFile file) {
-        return(file.realFile.isFile());
+    public boolean satisfy(AbstractFile abstractFile) {
+        return(abstractFile.getRealFile().isFile());
     }
 }

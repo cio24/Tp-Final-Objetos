@@ -14,11 +14,10 @@ import java.util.ArrayList;
 public abstract class AbstractFile implements Serializable {
 
     private Folder parent; //in order to delete this file we must have a reference of the folder that contains it.
-    public File realFile; //file allocated in phone storage
+    private File realFile; //file allocated in phone storage
 
     public AbstractFile(File realFile){
         this.realFile = realFile;
-        parent = null;
     }
 
     public String getAbsolutePath(){
@@ -44,7 +43,6 @@ public abstract class AbstractFile implements Serializable {
             }
             time = attributes.creationTime().toString();
         }
-        assert time != null;
         return time.substring(0,time.indexOf("T"));
     }
 
@@ -70,7 +68,6 @@ public abstract class AbstractFile implements Serializable {
         return false;
     }
 
-    //this methods opens the thumbnails activity to show all the pictures that this folder has
     public abstract boolean rename(String newName);
     public abstract boolean copyTo(Folder destination);
     public abstract boolean moveTo(Folder destination);

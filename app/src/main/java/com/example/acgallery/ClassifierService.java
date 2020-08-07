@@ -32,7 +32,7 @@ public class ClassifierService extends IntentService {
         finished = false;
 
         //getting the folder_thumbnail from to be displayed
-        folderToClassify = (Folder) intent.getSerializableExtra("service");
+        folderToClassify = (Folder) intent.getSerializableExtra("file");
 
         ArrayList<String> animalLabels = null;
 

@@ -152,6 +152,7 @@ public class ThumbnailsActivity extends AppCompatActivity {
         this method remove all the abstract files that don't have a inner file which path is linked
         with a real file in the phone.
      */
+    /*
     private void clean(){
         for(int i = 0; i < folderToShow.getFilesAmount(); i++){
             if(!folderToShow.getFileAt(i).getRealFile().exists()){
@@ -159,5 +160,7 @@ public class ThumbnailsActivity extends AppCompatActivity {
             }
         }
     }
+
+     */
 
 }

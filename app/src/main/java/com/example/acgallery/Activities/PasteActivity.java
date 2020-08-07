@@ -75,7 +75,7 @@ public class PasteActivity extends AppCompatActivity {
                 pictureToPaste.moveTo(folderToShow);
 
                 //we do this to prevent the remaining of a empty file in the directory origin
-                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureToPaste.realFile)));
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureToPaste.getRealFile())));
             }
             pictureToPaste = null;
             opCode = -1;
@@ -83,7 +83,7 @@ public class PasteActivity extends AppCompatActivity {
 
         //then we comeback to the folder where the picture was
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        intent.putExtra("folder",folderToShow);
+        intent.putExtra("file",folderToShow);
         startActivity(intent);
         this.finish();
         return super.onOptionsItemSelected(item);
@@ -99,13 +99,13 @@ public class PasteActivity extends AppCompatActivity {
         Intent intent;
         if(folderToShow.getParent() != null) {
             intent = new Intent(getApplicationContext(), PasteActivity.class);
-            intent.putExtra("folder", folderToShow.getParent());
+            intent.putExtra("file", folderToShow.getParent());
             startActivity(intent);
             finish();
         }
         else {
             intent = new Intent(getApplicationContext(),ThumbnailsActivity.class);
-            intent.putExtra("folder",folderToShow);
+            intent.putExtra("file",folderToShow);
         }
             startActivity(intent);
             finish();

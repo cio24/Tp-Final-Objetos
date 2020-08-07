@@ -2,21 +2,16 @@ package com.example.acgallery.Composite;
 
 import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.Sorters.CriterionSorter;
-import com.example.acgallery.Sorters.TypeSort;
 import java.io.File;
 import java.util.ArrayList;
 
 public class Folder extends AbstractFile {
 
     private ArrayList<AbstractFile> files;
-    //private CriterionSorter criterion;
 
-    public Folder(File innerFile) {
-        super(innerFile);
+    public Folder(File realFile) {
+        super(realFile);
         files = new ArrayList<>();
-
-        //we initially sort the files by type so we first show the folder and then the pictures
-        //criterion = new TypeSort();
     }
 
     public int getFilesAmount() {
@@ -49,13 +44,6 @@ public class Folder extends AbstractFile {
         }
         return toReturn;
     }
-
-    /*
-    public void setCriterionSorter(CriterionSorter criterion){
-        this.criterion = criterion;
-    }
-
-     */
     public  Folder getFolderRoot(){
         Folder folderRoot = this;
         while(folderRoot.getParent() != null){
@@ -64,28 +52,13 @@ public class Folder extends AbstractFile {
         return folderRoot;
     }
 
-    public boolean add(AbstractFile f) {
-        f.setParent(this);
-        files.add(f);
-        return true;
+    public boolean add(AbstractFile abstractFile) {
+        abstractFile.setParent(this);
+        return files.add(abstractFile);
     }
-    public boolean deleteFile(AbstractFile f) {
-        if(f.realFile.delete()) {
-            files.remove(f);
-            return true;
-        }
-        return false;
-    }
-
-    //se usa para un método de control que todavía no se si hace falta
-
-    public boolean removeByName(String name){
-        for (AbstractFile f: files) {
-            if (f.getName().equals(name)){
-                files.remove(f);
-                return true;
-            }
-        }
+    public boolean deleteFile(AbstractFile abstractFile) {
+        if(abstractFile.getRealFile().delete())
+            return files.remove(abstractFile);
         return false;
     }
 
@@ -128,6 +101,7 @@ public class Folder extends AbstractFile {
 
     @Override
     public boolean moveTo(Folder destination) {
+        /*
         this.getParent().removeByName(this.getName());
         File renamed = new File(destination.getAbsolutePath() + "/" + this.getName());
         int copyNumber = 1;
@@ -141,6 +115,8 @@ public class Folder extends AbstractFile {
             destination.add(this);
             return true;
         }
+
+         */
         return false;
     }
 }

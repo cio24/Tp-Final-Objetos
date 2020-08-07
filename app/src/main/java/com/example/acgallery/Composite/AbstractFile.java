@@ -62,11 +62,11 @@ public abstract class AbstractFile implements Serializable {
         }
         return false;
     }
-    public boolean equals(Object o) { //it only compare the names of the objects..
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractFile file = (AbstractFile) o;
-        if(file.getName() == this.getName()) return true;
+        if(file.getAbsolutePath() == this.getAbsolutePath()) return true;
         return false;
     }
 

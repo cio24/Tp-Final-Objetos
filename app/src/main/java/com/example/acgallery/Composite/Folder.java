@@ -56,6 +56,13 @@ public class Folder extends AbstractFile {
     }
 
      */
+    public  Folder getFolderRoot(){
+        Folder folderRoot = this;
+        while(folderRoot.getParent() != null){
+            folderRoot = folderRoot.getParent();
+        }
+        return folderRoot;
+    }
 
     public boolean add(AbstractFile f) {
         f.setParent(this);

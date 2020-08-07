@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
+import com.example.acgallery.Adapters.ThumbnailsAdapter;
 import com.example.acgallery.ClassifierService;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Composite.Folder;
@@ -49,16 +50,13 @@ public class ServicePicturesActivity extends AppCompatActivity {
         if(picturesToShow == null)
             picturesToShow = ClassifierService.getPictures();
         else
-            Log.d("xenon","FUNCIONA, GUARDE EL OBJETO!!");
-        folderToComeBack = (Folder) getIntent().getSerializableExtra("idFolder");
-
-
+        folderToComeBack = (Folder) getIntent().getSerializableExtra("file");
 
 
         //defining the adapter which will handle the buinding between the views and the layout
         //CriterionFilter c = new PictureFilter();
         //ClassifierFilter c = new ClassifierFilter(this,labels, new TensorFlowClassifier(this));
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(picturesToShow,this,false);
+        RecyclerView.Adapter adapter = new ThumbnailsAdapter(picturesToShow,this);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -69,7 +67,6 @@ public class ServicePicturesActivity extends AppCompatActivity {
         //setting the adapter defined previously to the recycler
         recyclerView.setAdapter(adapter);
     }
-
 
     private ArrayList<String> loadLabelList() throws IOException {
         ArrayList<String> labelList = new ArrayList<>();

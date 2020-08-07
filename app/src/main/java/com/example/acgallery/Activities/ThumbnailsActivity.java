@@ -6,12 +6,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import com.example.acgallery.Adapters.RecyclerViewAdapter;
+import com.example.acgallery.Adapters.ThumbnailsAdapter;
 import com.example.acgallery.ClassifierService;
 import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.TrueFilter;
@@ -20,7 +18,7 @@ import com.example.acgallery.Sorters.RecentDateSort;
 import com.example.acgallery.Sorters.NameSort;
 
 /*
-    this activity shows the thumbnails of all the pictures and a image of a folder for folders
+    this activity shows the thumbnails of all the pictures and a thumbnail of a folder for folders
     that are inside in the given folder
  */
 public class ThumbnailsActivity extends AppCompatActivity {
@@ -33,29 +31,25 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        //buinding the activity to the activity_thumbnails_layout layout.
+        //binding the activity to the activity_thumbnails_layout layout.
         setContentView(R.layout.activity_thumbnails_layout);
 
+        //getting the folder to display
+        folderToShow = (Folder) getIntent().getSerializableExtra("file");
 
-        //getting the folder_thumbnail from to be displayed
-        Log.d("xoxo",FileManager.getId());
-        folderToShow = (Folder) getIntent().getSerializableExtra(FileManager.getId());
-
-        //we make sure that there's no empty files inside the folder to displsayed
+        //we make sure that there's no empty files inside the folder to be displayed
         //clean();
 
-        Log.d("creopatra", "Se abrio la carpeta "+ folderToShow.getName() + " con " + folderToShow.getFilesAmount() + " archivos");
-
         //defining the adapter which will handle the binding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this,false);
+        RecyclerView.Adapter adapter = new ThumbnailsAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this);
 
-        //getting the referece of the recycler view inside the activity_thumbnails_layout layout
+        //getting the reference of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         //setting a grid layout manager to the recycler
         recyclerView.setLayoutManager(new GridLayoutManager(this,ROWS_OF_GRID));
 
-        //setting the adapter definied previously to the recycler
+        //setting the adapter defined previously to the recycler
         recyclerView.setAdapter(adapter);
     }
 
@@ -71,55 +65,55 @@ public class ThumbnailsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        Folder folderRoot = getFolderRoot();
+        Folder folderRoot = folderToShow.getFolderRoot();
 
         if(item.getItemId() == R.id.all_pictures_op) {
             Intent intent = new Intent(this, AllPicturesActivity.class);
 
-            //then send the folder root that will be filtered in order to get only the pictures
-            intent.putExtra("idFolder",folderRoot);
+            //then send the folder where the option was chosen so the user can comeback
+            intent.putExtra("file",folderToShow);
             startActivity(intent);
             finish();
-
         }
         else if(item.getItemId() == R.id.animal_picutres_op) {
             Intent intent = new Intent(getApplicationContext(), ServicePicturesActivity.class);
 
             //we have to send the current folder so the back event knows where to comeback
-            intent.putExtra("idFolder", folderToShow);
+            intent.putExtra("file", folderToShow);
             startActivity(intent);
             finish();
         }
         else if(item.getItemId() == R.id.order_by_name_op) {
-            //folderToShow.setCriterionSorter(new NameSort());
             folderToShow.sort(new NameSort());
-            //IS_SORTED = true;
-            FileManager.sendFile(folderToShow,this,ThumbnailsActivity.class);
-            //folderToShow.open(this,ThumbnailsActivity.class);
+            Intent intent = new Intent(this, ThumbnailsActivity.class);
+            intent.putExtra("file",folderToShow);
+            startActivity(intent);
+            finish();
         }
         else if(item.getItemId() == R.id.order_by_date_op) {
-            //folderToShow.setCriterionSorter();
             folderToShow.sort(new RecentDateSort());
-            FileManager.sendFile(folderToShow,this,ThumbnailsActivity.class);
-            //folderToShow.open(this,ThumbnailsActivity.class);
+            Intent intent = new Intent(this, ThumbnailsActivity.class);
+            intent.putExtra("file",folderToShow);
+            startActivity(intent);
+            finish();
         }
         else if(item.getItemId() == R.id.copy_folder_op) {
             Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
-            intent.putExtra("idFolder", getFolderRoot());
-            intent.putExtra("idPicToPaste", folderToShow);
+            intent.putExtra("file", folderRoot);
+            intent.putExtra("paste", folderToShow);
             intent.putExtra("opCode", 0);
             startActivity(intent);
             finish();
-            folderToShow.copyTo(getFolderRoot());
+            //folderToShow.copyTo(folderRoot);
         }
         else if(item.getItemId() == R.id.move_folder_op) {
             Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
-            intent.putExtra("idFolder", getFolderRoot());
-            intent.putExtra("idPicToPaste", folderToShow);
+            intent.putExtra("file", folderRoot);
+            intent.putExtra("paste", folderToShow);
             intent.putExtra("opCode", 1);
             startActivity(intent);
             finish();
-            folderToShow.copyTo(getFolderRoot());
+            //folderToShow.copyTo(folderRoot);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -139,21 +133,19 @@ public class ThumbnailsActivity extends AppCompatActivity {
     }
 
     /*
-        in order to get an up-to-date screen we create a new intent to go back,
-        when the container of the displayed folder_thumbnail is null it means the folder_thumbnail root
-        is shown, in this situation the back event will close the app
+        in order to get an up-to-date screen we create a new intent to go back, when the container of
+         the displayed folder_thumbnail is null it means the folder_thumbnail root is shown
      */
     @Override
     public void onBackPressed() {
         if(folderToShow.getParent() != null){
-            FileManager.sendFile(folderToShow.getParent(),this,ThumbnailsActivity.class);
-            //Intent intent = new Intent(this, ThumbnailsActivity.class);
-            //intent.putExtra("idFolder", folderToShow.getParent());
-            //startActivity(intent);
-            //finish();
+            Intent intent = new Intent(this, ThumbnailsActivity.class);
+            intent.putExtra("file", folderToShow.getParent());
+            startActivity(intent);
+            finish();
         }
         else
-            moveTaskToBack(true); //it sends the app to the background without closing it.
+            this.moveTaskToBack(true); //it sends the app to the background without closing it.
     }
 
     /*
@@ -168,11 +160,4 @@ public class ThumbnailsActivity extends AppCompatActivity {
         }
     }
 
-    private Folder getFolderRoot(){
-        Folder folderRoot = folderToShow;
-        while(folderRoot.getParent() != null){
-            folderRoot = folderRoot.getParent();
-        }
-        return folderRoot;
-    }
 }

@@ -55,7 +55,7 @@ public class StartActivity extends AppCompatActivity {
     private boolean firstRequirement = true; //it is used to prevent the dialog screen to be shown when the app runs the first time.
     private List<String> extensions, directories, excludedDirectories, innerDataPaths;
     private String [] permissions;
-    private Folder rootFolder;
+    private Folder folderRoot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class StartActivity extends AppCompatActivity {
 
         permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
         extensions = Arrays.asList(JPG_EXTENSION, PNG_EXTENSION, JPEG_EXTENSION);
-        directories = Arrays.asList(DCIM,DOWNLOADS,/*CAMERA,*/SCREENSHOTS);
+        directories = Arrays.asList(DCIM,DOWNLOADS,CAMERA,SCREENSHOTS);
         innerDataPaths = Arrays.asList(/*EXTERNAL_PATH,*/INTERNAL_PATH);
         excludedDirectories = Arrays.asList(THUMBNAILS);
 
@@ -83,7 +83,7 @@ public class StartActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if(isPermissionsGranted()){
-                            rootFolder = getFolderRootLoaded();
+                            folderRoot = getFolderRootLoaded();
                             if(isServiceFinished())
                                 ClassifierService.setFinished(true);
                             else
@@ -101,7 +101,7 @@ public class StartActivity extends AppCompatActivity {
     /*
         this methods runs automatically when the app starts, so
         we have to control the result of the request of the permissions
-        so we show a message explaining the user why we need them when the permissions are noy accepted
+        so we show a message explaining the user why we need them when the permissions are not accepted
         in the other case we continue loading the pictures and showing them
      */
     @Override
@@ -109,7 +109,7 @@ public class StartActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PERMISSION){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(getApplicationContext(), "Permission Granted!", Toast.LENGTH_SHORT).show();
-                rootFolder = getFolderRootLoaded();
+                folderRoot = getFolderRootLoaded();
                 if(isServiceFinished())
                     ClassifierService.setFinished(true);
                 else
@@ -141,14 +141,12 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    //this method checks wheter the service has finished with the classification of the pictures or not
+    //this method checks whether the service has finished with the classification of the pictures or not
     private boolean isServiceFinished(){
         Object o = null;
         try {
             o = InternalStorage.readObject(getApplicationContext(),"pictures");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         if(o == null)
@@ -161,18 +159,16 @@ public class StartActivity extends AppCompatActivity {
         activity so it can get the folder_thumbnail to displayed
     */
     private void startThumbnailsActivity(){
-        FileManager.sendFile(rootFolder,getApplicationContext(),ThumbnailsActivity.class);
-        //Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        //intent.putExtra(rootFolder.getName(), rootFolder);
-        //startActivity(intent);
-        //finish();
+        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
+        intent.putExtra("file", folderRoot);
+        startActivity(intent);
+        finish();
     }
 
     //this method runs in the background with a thread, the service that classifies the pictures
     private void runService(){
-        //FileManager.sendFile(rootFolder,this,ClassifierService.class);
         Intent intent = new Intent(this, ClassifierService.class);
-        intent.putExtra("service",rootFolder);
+        intent.putExtra("file",folderRoot);
         startService(intent);
     }
 
@@ -261,7 +257,7 @@ public class StartActivity extends AppCompatActivity {
         return null; // the directory is not on the storage
     }
 
-    //it checks wether the app has the required permissions or not
+    //it checks whether the app has the required permissions or not
     private boolean isPermissionsGranted(){
         for(String permission: permissions)
             if(ContextCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED) {

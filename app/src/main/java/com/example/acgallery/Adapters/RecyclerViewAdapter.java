@@ -1,6 +1,7 @@
 package com.example.acgallery.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.acgallery.Activities.FileManager;
 import com.example.acgallery.Activities.FullPictureActivity;
 import com.example.acgallery.Activities.PasteActivity;
 import com.example.acgallery.Activities.ThumbnailsActivity;
@@ -27,11 +27,11 @@ import java.util.ArrayList;
     in order to adapt it to our needs, this means that the holder has two views, one for the picture or the folder image
     and another for the text that indicates the name of the folder.
 */
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView thumbnailToShow;
+        protected ImageView thumbnailToShow;
         private TextView nameToShow;
 
         private ViewHolder(@NonNull View itemView) {
@@ -42,17 +42,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     private ArrayList<AbstractFile> filesToShow;
-    private Context context;
-    private boolean pasteMode;
-    private final Class FULL_PICTURE_ACTIVITY = FullPictureActivity.class,
-                        THUMBNAILS_ACTIVITY = ThumbnailsActivity.class,
-                        PASTE_ACTIVITY = PasteActivity.class;
+    protected Context context;
+    protected Class destinationActivity;
 
 
-    public RecyclerViewAdapter(ArrayList<AbstractFile> filesToShow, Context context, boolean pasteMode){
+    public RecyclerViewAdapter(ArrayList<AbstractFile> filesToShow, Context context){
         this.filesToShow = filesToShow;
         this.context = context;
-        this.pasteMode = pasteMode;
     }
 
     //this methods creates new viewHolder and it is used for the layoutmanager
@@ -97,21 +93,38 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    private void setListener(ViewHolder holder, final AbstractFile thumbnail){
-            holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(thumbnail.getRealFile().isDirectory())
-                        if(!pasteMode)
-                            FileManager.sendFile(thumbnail,context,THUMBNAILS_ACTIVITY);
-                        else
-                            FileManager.sendFile(thumbnail,context,PASTE_ACTIVITY);
-                    else if(!pasteMode)
-                        FileManager.sendFile(thumbnail,context,FULL_PICTURE_ACTIVITY);
-                    //thumbnail.open(context,cls);
+    public abstract void setListener(ViewHolder holder, final AbstractFile thumbnail);
+
+    /*
+    public abstract void setListener(ViewHolder holder, final AbstractFile thumbnail){
+
+        holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                if(thumbnail.getRealFile().isDirectory()){
+                    if(pasteMode)
+                        intent = new Intent(context, PASTE_ACTIVITY);
+                    else
+                        intent = new Intent(context, THUMBNAILS_ACTIVITY);
+                    intent.putExtra("folder",thumbnail);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    context.startActivity(intent);
                 }
-            });
+                else if(!pasteMode){
+                    intent = new Intent(context, FULL_PICTURE_ACTIVITY);
+                    //intent.putExtra("allPictures",true);
+                    intent.putExtra("pictureToShow",thumbnail);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    context.startActivity(intent);
+                }
+            }
+        });
     }
+
+     */
+
+
 
     @Override
     public int getItemCount() {

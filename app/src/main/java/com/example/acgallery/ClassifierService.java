@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.util.Log;
 import androidx.annotation.Nullable;
 
-import com.example.acgallery.Activities.FileManager;
 import com.example.acgallery.Classifiers.TensorFlowClassifier;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.ClassifierFilter;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -22,6 +20,7 @@ public class ClassifierService extends IntentService {
     private static ArrayList<AbstractFile> pictures = null;
     private Folder folderToClassify;
     private static boolean finished;
+    private final int MAX_LABELS = 50;
 
     public ClassifierService(){
         super("Classifier Service");
@@ -30,8 +29,6 @@ public class ClassifierService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.d("xenon","THE SERVICE HAS STARTED!");
-
         finished = false;
 
         //getting the folder_thumbnail from to be displayed
@@ -53,13 +50,6 @@ public class ClassifierService extends IntentService {
             e.printStackTrace();
         }
         finished = true;
-
-        Log.d("xenon","THE SERVICE HAS FINISHED!");
-        /*
-        Intent i = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        i.putExtra("pictures", files);
-
-         */
     }
 
     private ArrayList<String> loadAnimalLabelList() throws IOException {
@@ -69,15 +59,12 @@ public class ClassifierService extends IntentService {
         String line;
         int i = 0;
         while ((line = reader.readLine()) != null) {
-            //Log.d("LAAABEL","label of animals: " + line);
             labelList.add(line);
             i++;
-            if(i == 50)
+            if(i == MAX_LABELS)
                 break;
         }
         reader.close();
-        if(labelList == null)
-            Log.d("hipofisis","labelist es null!");
         return labelList;
     }
 

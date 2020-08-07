@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.acgallery.Adapters.PasteAdapter;
 import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Composite.Folder;
@@ -37,14 +38,14 @@ public class PasteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_paste_layout);
 
         //getting the folder_thumbnail from to be displayed
-        folderToShow = (Folder) getIntent().getSerializableExtra("idFolder");
+        folderToShow = (Folder) getIntent().getSerializableExtra("file");
         if(pictureToPaste == null) {
-            pictureToPaste = (AbstractFile) getIntent().getSerializableExtra("idPicToPaste");
+            pictureToPaste = (AbstractFile) getIntent().getSerializableExtra("paste");
             opCode = (int) getIntent().getSerializableExtra("opCode");
         }
 
         //defining the adapter which will handle the binding between the views and the layout
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this, true);
+        RecyclerView.Adapter adapter = new PasteAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this);
 
         //getting the referece of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -82,7 +83,7 @@ public class PasteActivity extends AppCompatActivity {
 
         //then we comeback to the folder where the picture was
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        intent.putExtra("idFolder",folderToShow);
+        intent.putExtra("folder",folderToShow);
         startActivity(intent);
         this.finish();
         return super.onOptionsItemSelected(item);
@@ -95,12 +96,18 @@ public class PasteActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        if(folderToShow.getParent() != null){
-            Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
-            intent.putExtra("idFolder", folderToShow.getParent());
+        Intent intent;
+        if(folderToShow.getParent() != null) {
+            intent = new Intent(getApplicationContext(), PasteActivity.class);
+            intent.putExtra("folder", folderToShow.getParent());
             startActivity(intent);
             finish();
         }
-        super.onBackPressed();
+        else {
+            intent = new Intent(getApplicationContext(),ThumbnailsActivity.class);
+            intent.putExtra("folder",folderToShow);
+        }
+            startActivity(intent);
+            finish();
     }
 }

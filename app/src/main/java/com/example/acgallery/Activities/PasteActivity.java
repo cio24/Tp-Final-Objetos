@@ -38,10 +38,13 @@ public class PasteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_paste_layout);
 
         //getting the folder_thumbnail from to be displayed
-        folderToShow = (Folder) getIntent().getSerializableExtra("file");
+        folderToShow = (Folder) ActivitiesHandler.getData("folderToShow");
+        //folderToShow = (Folder) getIntent().getSerializableExtra("folderToShow");
         if(pictureToPaste == null) {
-            pictureToPaste = (AbstractFile) getIntent().getSerializableExtra("paste");
-            opCode = (int) getIntent().getSerializableExtra("opCode");
+            pictureToPaste = (AbstractFile) ActivitiesHandler.getData("fileToPaste");
+            //pictureToPaste = (AbstractFile) getIntent().getSerializableExtra("fileToPaste");
+            opCode = (int) ActivitiesHandler.getData("opCode");
+            //opCode = (int) getIntent().getSerializableExtra("opCode");
         }
 
         //defining the adapter which will handle the binding between the views and the layout
@@ -82,10 +85,15 @@ public class PasteActivity extends AppCompatActivity {
         }
 
         //then we comeback to the folder where the picture was
+        ActivitiesHandler.addData("folderToShow",folderToShow);
+        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
+        /*
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
         intent.putExtra("file",folderToShow);
         startActivity(intent);
         this.finish();
+
+         */
         return super.onOptionsItemSelected(item);
     }
 

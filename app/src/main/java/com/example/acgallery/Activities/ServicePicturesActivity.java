@@ -27,7 +27,7 @@ public class ServicePicturesActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private ArrayList<AbstractFile> picturesToShow;
-    private Folder folderToComeBack;
+    private Folder folderToReturn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,8 @@ public class ServicePicturesActivity extends AppCompatActivity {
         if(picturesToShow == null)
             picturesToShow = ClassifierService.getPictures();
         else
-        folderToComeBack = (Folder) getIntent().getSerializableExtra("file");
+            folderToReturn = (Folder) ActivitiesHandler.getData("folderToReturn");
+            //folderToReturn = (Folder) getIntent().getSerializableExtra("file");
 
 
         //defining the adapter which will handle the buinding between the views and the layout
@@ -126,10 +127,15 @@ public class ServicePicturesActivity extends AppCompatActivity {
              */
     @Override
     public void onBackPressed() {
+        ActivitiesHandler.addData("folderToShow",folderToReturn);
+        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
+        /*
         Intent intent = new Intent(this, ThumbnailsActivity.class);
-        intent.putExtra("idFolder", folderToComeBack);
+        intent.putExtra("folderToShow", folderToReturn);
         startActivity(intent);
         finish();
         //super.onBackPressed();
+
+         */
     }
 }

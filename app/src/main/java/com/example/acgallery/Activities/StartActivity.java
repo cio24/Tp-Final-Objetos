@@ -18,7 +18,6 @@ import com.example.acgallery.Composite.Picture;
 import com.example.acgallery.InternalStorage;
 import com.example.acgallery.R;
 import com.example.acgallery.Sorters.TypeSort;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -35,22 +34,22 @@ import java.util.TimerTask;
 public class StartActivity extends AppCompatActivity {
 
     // Request permission code
-    final static int REQUEST_PERMISSION = 1;
+    final int REQUEST_PERMISSION = 1;
 
     //time the icon of the app remains in the activity_start_layout screen
-    final static int START_SCREEN_DELAY = 1000;
+    final int START_SCREEN_DELAY = 1000;
 
     // internal and external storage directories paths
-    final static String EXTERNAL_PATH = "/storage", INTERNAL_PATH = "/mnt";
+    final String EXTERNAL_PATH = "/storage", INTERNAL_PATH = "/mnt";
 
     // Images extensions
-    final static String JPG_EXTENSION = ".jpg", PNG_EXTENSION = ".png", JPEG_EXTENSION = ".jpeg";
+    final String JPG_EXTENSION = ".jpg", PNG_EXTENSION = ".png", JPEG_EXTENSION = ".jpeg";
 
     // Folders we want to track
-    final static String DCIM = "DCIM", DOWNLOADS = "Download", CAMERA = "Camera", SCREENSHOTS = "Screenshots";
+    final  String DCIM = "DCIM", DOWNLOADS = "Download", CAMERA = "Camera", SCREENSHOTS = "Screenshots";
 
     // Folders we want to exclude
-    final static String THUMBNAILS = ".thumbnails";
+    final  String THUMBNAILS = ".thumbnails";
 
     private boolean firstRequirement = true; //it is used to prevent the dialog screen to be shown when the app runs the first time.
     private List<String> extensions, directories, excludedDirectories, innerDataPaths;
@@ -159,10 +158,15 @@ public class StartActivity extends AppCompatActivity {
         activity so it can get the folder_thumbnail to displayed
     */
     private void startThumbnailsActivity(){
+        ActivitiesHandler.addData("folderToShow",folderRoot);
+        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
+        /*
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
         intent.putExtra("file", folderRoot);
         startActivity(intent);
         finish();
+
+         */
     }
 
     //this method runs in the background with a thread, the service that classifies the pictures

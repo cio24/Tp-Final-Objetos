@@ -35,7 +35,8 @@ public class ThumbnailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_thumbnails_layout);
 
         //getting the folder to display
-        folderToShow = (Folder) getIntent().getSerializableExtra("file");
+        folderToShow = (Folder) ActivitiesHandler.getData("folderToShow");
+        //folderToShow = (Folder) getIntent().getSerializableExtra("file");
 
         //we make sure that there's no empty files inside the folder to be displayed
         //clean();
@@ -68,36 +69,48 @@ public class ThumbnailsActivity extends AppCompatActivity {
         Folder folderRoot = folderToShow.getFolderRoot();
 
         if(item.getItemId() == R.id.all_pictures_op) {
-            Intent intent = new Intent(this, AllPicturesActivity.class);
+            //Intent intent = new Intent(this, AllPicturesActivity.class);
 
             //then send the folder where the option was chosen so the user can comeback
-            intent.putExtra("file",folderToShow);
-            startActivity(intent);
-            finish();
+            ActivitiesHandler.addData("folderToReturn",folderToShow);
+            ActivitiesHandler.sendData(this,AllPicturesActivity.class);
+            //intent.putExtra("file",folderToShow);
+            //startActivity(intent);
+            //finish();
         }
         else if(item.getItemId() == R.id.animal_picutres_op) {
             Intent intent = new Intent(getApplicationContext(), ServicePicturesActivity.class);
 
             //we have to send the current folder so the back event knows where to comeback
-            intent.putExtra("file", folderToShow);
+            intent.putExtra("folderToReturn", folderToShow);
             startActivity(intent);
             finish();
         }
-        else if(item.getItemId() == R.id.order_by_name_op) {
-            folderToShow.sort(new NameSort());
+        else if(item.getItemId() == R.id.order_by_name_op || item.getItemId() == R.id.order_by_date_op) {
+            if(item.getItemId() == R.id.order_by_name_op)
+                folderToShow.sort(new NameSort());
+            else
+                folderToShow.sort(new RecentDateSort());
+            ActivitiesHandler.addData("folderToShow",folderToShow);
+            ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
+            /*
             Intent intent = new Intent(this, ThumbnailsActivity.class);
-            intent.putExtra("file",folderToShow);
+            intent.putExtra("folderToShow",folderToShow);
             startActivity(intent);
             finish();
+
+             */
         }
-        else if(item.getItemId() == R.id.order_by_date_op) {
-            folderToShow.sort(new RecentDateSort());
-            Intent intent = new Intent(this, ThumbnailsActivity.class);
-            intent.putExtra("file",folderToShow);
-            startActivity(intent);
-            finish();
-        }
-        else if(item.getItemId() == R.id.copy_folder_op) {
+        else if(item.getItemId() == R.id.copy_picture_op || item.getItemId() == R.id.move_picture_op) {
+            ActivitiesHandler.addData("folderToShow",folderRoot);
+            ActivitiesHandler.addData("fileToPaste",folderToShow);
+            if(item.getItemId() == R.id.copy_picture_op)
+                ActivitiesHandler.addData("opCode",0);
+            else
+                ActivitiesHandler.addData("opCode",1);
+
+            ActivitiesHandler.sendData(this,PasteActivity.class);
+            /*
             Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
             intent.putExtra("file", folderRoot);
             intent.putExtra("paste", folderToShow);
@@ -105,15 +118,8 @@ public class ThumbnailsActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
             //folderToShow.copyTo(folderRoot);
-        }
-        else if(item.getItemId() == R.id.move_folder_op) {
-            Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
-            intent.putExtra("file", folderRoot);
-            intent.putExtra("paste", folderToShow);
-            intent.putExtra("opCode", 1);
-            startActivity(intent);
-            finish();
-            //folderToShow.copyTo(folderRoot);
+
+             */
         }
         return super.onOptionsItemSelected(item);
     }
@@ -139,10 +145,15 @@ public class ThumbnailsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if(folderToShow.getParent() != null){
+            ActivitiesHandler.addData("folderToShow",folderToShow.getParent());
+            ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
+            /*
             Intent intent = new Intent(this, ThumbnailsActivity.class);
-            intent.putExtra("file", folderToShow.getParent());
+            intent.putExtra("folderToShow", folderToShow.getParent());
             startActivity(intent);
             finish();
+
+             */
         }
         else
             this.moveTaskToBack(true); //it sends the app to the background without closing it.

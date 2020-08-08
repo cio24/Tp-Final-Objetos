@@ -22,7 +22,6 @@ import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Composite.Picture;
 import com.example.acgallery.Filters.PictureFilter;
-import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,8 +36,8 @@ import java.util.ArrayList;
  */
 public class FullPictureActivity extends AppCompatActivity {
 
-    private Picture pictureToDisplay;
-    private ArrayList<AbstractFile> picturesToDisplay;
+    private Picture pictureToShow;
+    private ArrayList<AbstractFile> picturesToShow;
     private ViewPager viewPager;
     private Picture pictureDisplayed;
 
@@ -53,13 +52,25 @@ public class FullPictureActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
 
         //retrieving the picture to be shown
-        pictureToDisplay = (Picture) getIntent().getSerializableExtra("file");
-        boolean showAllPictures = (boolean) getIntent().getSerializableExtra("allPictures");
+        pictureToShow = (Picture) ActivitiesHandler.getData("pictureToShow");
+        //pictureToDisplay = (Picture) getIntent().getSerializableExtra("file");
+        boolean showAllPictures = (boolean) ActivitiesHandler.getData("allPictures");
         if(showAllPictures)
-            picturesToDisplay = pictureToDisplay.getParent().getFolderRoot().getDeepFilteredFiles(new PictureFilter());
+            picturesToShow = pictureToShow.getParent().getFolderRoot().getDeepFilteredFiles(new PictureFilter());
         else
-            picturesToDisplay = pictureToDisplay.getParent().getFilteredFiles(new PictureFilter());
-        showPictureFullScreen();
+            picturesToShow = pictureToShow.getParent().getFilteredFiles(new PictureFilter());
+
+        viewPager = findViewById(R.id.view_pager);
+
+        int currentPicturePos = 0;
+        for(AbstractFile picture: picturesToShow){
+            if(picture.equals(pictureToShow))
+                break;
+            currentPicturePos++;
+        }
+        SwipeAdapter adapter = new SwipeAdapter(this, picturesToShow, getSupportActionBar());
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(currentPicturePos);
     }
 
     //this method shows a menu layout over the activity_thumbnails_layout layout
@@ -73,9 +84,7 @@ public class FullPictureActivity extends AppCompatActivity {
     //in this method we indicate the actions to be taken for each option of the menu
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        //the action selected must
-        pictureDisplayed = getPictureDisplayed();
+        pictureDisplayed = (Picture) picturesToShow.get(viewPager.getCurrentItem());
 
         if(item.getItemId() == R.id.delete_picture_op){
             new AlertDialog.Builder(this)
@@ -90,12 +99,17 @@ public class FullPictureActivity extends AppCompatActivity {
                             sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureDisplayed.getRealFile())));
 
                             //then we comeback to the folder where the picture was
+                            ActivitiesHandler.addData("file",pictureDisplayed.getParent());
+                            ActivitiesHandler.sendData((AppCompatActivity) getApplicationContext(),ThumbnailsActivity.class);
+                            /*
                             Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
                             intent.putExtra("file", pictureDisplayed.getParent());
                             startActivity(intent);
 
                             //and close this activity
                             finish();
+
+                             */
                         }
                     })
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -165,7 +179,7 @@ public class FullPictureActivity extends AppCompatActivity {
         else if(item.getItemId() == R.id.rename_picture_op){
             //we defined an editText to read the input of the user and let the user select all the text of old name
             final EditText inputNewName = new EditText(this);
-            inputNewName.setText(pictureDisplayed.getBaseName());
+            inputNewName.setText(pictureDisplayed.getName().substring(0,pictureDisplayed.getName().lastIndexOf(".")));
             inputNewName.setSelectAllOnFocus(true);
 
             new AlertDialog.Builder(this)
@@ -188,21 +202,25 @@ public class FullPictureActivity extends AppCompatActivity {
         }
         else {
             Folder folderRoot = pictureDisplayed.getParent().getFolderRoot();
-            if(item.getItemId() == R.id.copy_picture_op) {
+            if(item.getItemId() == R.id.copy_picture_op || item.getItemId() == R.id.move_picture_op) {
+                ActivitiesHandler.addData("folderToShow",folderRoot);
+                ActivitiesHandler.addData("fileToPaste",pictureDisplayed);
+                if(item.getItemId() == R.id.copy_picture_op)
+                    ActivitiesHandler.addData("opCode",0);
+                else
+                    ActivitiesHandler.addData("opCode",1);
+
+                ActivitiesHandler.sendData(this,PasteActivity.class);
+                /*
                 Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
                 intent.putExtra("file", folderRoot);
                 intent.putExtra("paste", getPictureDisplayed());
+
+
                 intent.putExtra("opCode", 0);
                 startActivity(intent);
                 finish();
-            }
-            else if(item.getItemId() == R.id.move_picture_op){
-                Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
-                intent.putExtra("file", folderRoot);
-                intent.putExtra("paste", getPictureDisplayed());
-                intent.putExtra("opCode", 1);
-                startActivity(intent);
-                finish();
+                 */
             }
         }
         return super.onOptionsItemSelected(item);
@@ -214,39 +232,14 @@ public class FullPictureActivity extends AppCompatActivity {
     */
     @Override
     public void onBackPressed() {
+        ActivitiesHandler.addData("folderToShow", pictureToShow.getParent());
+        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
+        /*
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
         intent.putExtra("file", pictureToDisplay.getParent());
         startActivity(intent);
         finish();
-    }
 
-    /*
-        we have to give only the pictures to the adapter so the app don't crush
-        trying to show a folder, then we have to find what is the position of the
-        picture to be shown in the arraylist so we can set it up as the current item
-     */
-    private void showPictureFullScreen(){
-        viewPager = findViewById(R.id.view_pager);
-
-        int currentPicturePos = 0;
-        for(AbstractFile picture: picturesToDisplay){
-            if(picture.equals(pictureToDisplay))
-               break;
-            currentPicturePos++;
-        }
-        SwipeAdapter adapter = new SwipeAdapter(this, picturesToDisplay, getSupportActionBar());
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(currentPicturePos);
-    }
-
-    //this method gets the picture that is currently displayed
-    private Picture getPictureDisplayed(){
-        int currentPicPosition = viewPager.getCurrentItem();
-        for (int i = 0; i < picturesToDisplay.size(); i++){
-            if (i == currentPicPosition){
-                return (Picture) picturesToDisplay.get(i);
-            }
-        }
-        return null;
+         */
     }
 }

@@ -1,7 +1,6 @@
 package com.example.acgallery.Composite;
 
 import com.example.acgallery.Filters.CriterionFilter;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,20 +11,20 @@ import java.util.ArrayList;
 
 public class Picture extends AbstractFile {
 
-    public Picture(File innerFile) {
-        super(innerFile);
+    public Picture(File realFile) {
+        super(realFile);
     }
 
     @Override
     public boolean rename(String newName) {
-        File renamed = new File(getParent().getAbsolutePath() +
-                "/" + newName + getExtension());
+        File renamed = new File(getParent().getAbsolutePath() + "/" + newName + getName().substring(getName().lastIndexOf(".")));
         int copyNumber = 1;
+
         while(renamed.exists()){
-            renamed = new File(getParent().getAbsolutePath() +
-                    "/" + newName + " (" + copyNumber + ")" + getExtension());
+            renamed = new File(getParent().getAbsolutePath() + "/" + newName + " (" + copyNumber + ")" + getName().substring(getName().lastIndexOf(".")));
             copyNumber++;
         }
+
         if(getRealFile().renameTo(renamed)){
             setRealFile(renamed);
             return true;
@@ -35,15 +34,15 @@ public class Picture extends AbstractFile {
 
     @Override
     public boolean copyTo(Folder destination) {
-        File fileCopy = new File(destination.getAbsolutePath()+"/"+getName());
+        File fileCopy = new File(destination.getAbsolutePath() + "/" + getName());
         int copyNumber = 1;
-        while(fileCopy.exists()){
-            fileCopy = new File(destination.getAbsolutePath() + "/" + getBaseName() + " (" + copyNumber +")" + getExtension());
-        }
+
+        while(fileCopy.exists())
+            fileCopy = new File(destination.getAbsolutePath() + "/" + getName().substring(0,getName().lastIndexOf(".")) + " (" + copyNumber +")" + getName().substring(getName().lastIndexOf(".")));
+
         try (InputStream in = new FileInputStream(this.getRealFile())) {
             try (OutputStream out = new FileOutputStream(fileCopy)) {
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
+                byte[] buf = new byte[1024]; // Transfer bytes from in to out
                 int len;
                 while ((len = in.read(buf)) > 0) {
                     out.write(buf, 0, len);
@@ -52,9 +51,9 @@ public class Picture extends AbstractFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Picture newPic = new Picture(fileCopy);
-        destination.add(newPic);
-        return true;
+
+        Picture copy = new Picture(fileCopy);
+        return destination.add(copy);
     }
 
     @Override
@@ -65,21 +64,12 @@ public class Picture extends AbstractFile {
     }
 
     @Override
-    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c) {
+    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter criterionFilter) {
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
-        if (c.satisfy(this)){
+        if (criterionFilter.satisfy(this)){
             toReturn.add(this);
             return toReturn;
         }
         return null;
     }
-
-    public String getBaseName(){
-        return getName().substring(0,getName().lastIndexOf("."));
-    }
-
-    public String getExtension(){
-        return getName().substring(getName().lastIndexOf("."));
-    }
-
 }

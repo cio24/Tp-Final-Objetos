@@ -7,10 +7,8 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.viewpager.widget.PagerAdapter;
-
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.example.acgallery.Composite.AbstractFile;
@@ -34,7 +32,7 @@ public class SwipeAdapter extends PagerAdapter {
      */
     private ActionBar actionBar;
 
-    private SubsamplingScaleImageView fullPictureToShow; //the current picture to be displated
+    private SubsamplingScaleImageView fullPictureToShow; //the current picture to be displayed
     private ArrayList<AbstractFile> picturesToShow; //its folder container
 
     //staff required to change to full screen mode

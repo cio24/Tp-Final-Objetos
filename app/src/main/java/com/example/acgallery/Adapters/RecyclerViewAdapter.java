@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.acgallery.Activities.FullPictureActivity;
@@ -42,20 +43,18 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     private ArrayList<AbstractFile> filesToShow;
-    protected Context context;
-    protected Class destinationActivity;
+    protected AppCompatActivity originActivity;
 
-
-    public RecyclerViewAdapter(ArrayList<AbstractFile> filesToShow, Context context){
+    public RecyclerViewAdapter(ArrayList<AbstractFile> filesToShow, AppCompatActivity originActivity){
         this.filesToShow = filesToShow;
-        this.context = context;
+        this.originActivity = originActivity;
     }
 
     //this methods creates new viewHolder and it is used for the layoutmanager
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        LayoutInflater mInflater = LayoutInflater.from(context);
+        LayoutInflater mInflater = LayoutInflater.from(originActivity.getApplicationContext());
         View view = mInflater.inflate(R.layout.item_image_layout,viewGroup,false);
         return new ViewHolder(view);
     }
@@ -65,7 +64,6 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
         final AbstractFile thumbnail = filesToShow.get(position);
-        //thumbnail.bindThumbnailToView(holder.thumbnailToShow,holder.folderNameToShow);
         bindThumbnailToView(holder.thumbnailToShow,holder.nameToShow,thumbnail);
 
         /*
@@ -94,37 +92,6 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     public abstract void setListener(ViewHolder holder, final AbstractFile thumbnail);
-
-    /*
-    public abstract void setListener(ViewHolder holder, final AbstractFile thumbnail){
-
-        holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent;
-                if(thumbnail.getRealFile().isDirectory()){
-                    if(pasteMode)
-                        intent = new Intent(context, PASTE_ACTIVITY);
-                    else
-                        intent = new Intent(context, THUMBNAILS_ACTIVITY);
-                    intent.putExtra("folder",thumbnail);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    context.startActivity(intent);
-                }
-                else if(!pasteMode){
-                    intent = new Intent(context, FULL_PICTURE_ACTIVITY);
-                    //intent.putExtra("allPictures",true);
-                    intent.putExtra("pictureToShow",thumbnail);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    context.startActivity(intent);
-                }
-            }
-        });
-    }
-
-     */
-
-
 
     @Override
     public int getItemCount() {

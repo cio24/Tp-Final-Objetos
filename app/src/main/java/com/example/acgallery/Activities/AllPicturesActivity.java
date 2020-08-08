@@ -25,7 +25,8 @@ public class AllPicturesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_thumbnails_layout);
 
         //getting the folder where the all pictures option was selected
-        folderToReturn = (Folder) getIntent().getSerializableExtra("file");
+        folderToReturn = (Folder) ActivitiesHandler.getData("folderToReturn");
+        //folderToReturn = (Folder) getIntent().getSerializableExtra("file");
 
         RecyclerView.Adapter adapter = new AllPicturesAdapter(folderToReturn.getFolderRoot().getDeepFilteredFiles(new TrueFilter()),this);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -35,9 +36,14 @@ public class AllPicturesActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        ActivitiesHandler.addData("file",folderToReturn);
+        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
+        /*
         Intent intent = new Intent(this, ThumbnailsActivity.class);
         intent.putExtra("file", folderToReturn);
         startActivity(intent);
         finish();
+
+         */
     }
 }

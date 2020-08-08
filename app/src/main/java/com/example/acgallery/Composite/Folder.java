@@ -17,12 +17,6 @@ public class Folder extends AbstractFile {
     public int getFilesAmount() {
         return files.size();
     }
-    public AbstractFile getFileAt(int index) {
-        if ((index >= 0) && (index < files.size())) {
-            return files.get(index);
-        }
-        return null;
-    }
     public ArrayList<AbstractFile> getFilteredFiles(CriterionFilter filter){
         ArrayList<AbstractFile> pictures = new ArrayList<>();
         for(AbstractFile file: files){
@@ -62,11 +56,11 @@ public class Folder extends AbstractFile {
         return false;
     }
 
-    public void sort(CriterionSorter criterion){
+    public void sort(CriterionSorter criterionSorter){
         AbstractFile aux;
         for(int i = 0; i < files.size() - 1; i++){
             for (int j = i+1; j < files.size(); j++){
-                if (!criterion.lessThan(files.get(i), files.get(j))){
+                if (!criterionSorter.lessThan(files.get(i), files.get(j))){
                     aux = files.remove(i);
                     files.add(i, files.remove(j-1));
                     files.add(j, aux);

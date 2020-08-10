@@ -4,11 +4,16 @@
 
     <item android:id="@+id/all_pictures_op"
         android:title="All pictures"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 
     <item android:id="@+id/animal_picutres_op"
         android:title="Animal Pictures"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/delete_folder_op"
+        android:icon="@drawable/delete_icon"
+        android:title="Details"
+        app:showAsAction="always"/>
 
     <item android:id="@+id/copy_folder_op"
         android:title="Copy"

@@ -64,6 +64,13 @@ public class Picture extends AbstractFile {
     }
 
     @Override
+    public boolean delete() {
+        if(getRealFile().delete())
+            return getParent().removeFile(this);
+        return false;
+    }
+
+    @Override
     public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter criterionFilter) {
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
         if (criterionFilter.satisfy(this)){

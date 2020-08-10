@@ -26,7 +26,6 @@ public class ClassifierService extends IntentService {
         super("Classifier Service");
     }
 
-
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         finished = false;

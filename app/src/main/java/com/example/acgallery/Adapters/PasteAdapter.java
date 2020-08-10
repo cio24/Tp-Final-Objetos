@@ -19,8 +19,8 @@ public class PasteAdapter extends RecyclerViewAdapter {
             @Override
             public void onClick(View v) {
                 if (thumbnail.getRealFile().isDirectory()) {
-                    ActivitiesHandler.addData("folderToShow",thumbnail);
-                    ActivitiesHandler.sendData(originActivity,PasteActivity.class);
+                    ActivitiesHandler.sendData("folderToShow",thumbnail);
+                    ActivitiesHandler.changeActivity(originActivity,PasteActivity.class);
                     /*
                     intent = new Intent(context, PasteActivity.class);
                     intent.putExtra("file", thumbnail);

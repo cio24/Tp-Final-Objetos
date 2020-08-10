@@ -3,6 +3,7 @@ package com.example.acgallery.Filters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.util.Pair;
 import android.widget.ImageView;
 import com.example.acgallery.Classifiers.Classifier;
@@ -34,9 +35,14 @@ public class ClassifierFilter implements CriterionFilter {
         Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
         image.setImageBitmap(myBitmap);
         results = classifier.classify(image);
-        String key = results.get(2).first.toLowerCase();
-        if(this.labels.get(key) == null)
-            return false;
-        return true;
+        String key;
+        for(int i = 0; i < results.size() -1; i++){
+            key = results.get(i).first.toLowerCase();
+            if(this.labels.get(key) != null){
+            Log.d("xox","key: " + key);
+                return true;
+            }
+        }
+        return false;
     }
 }

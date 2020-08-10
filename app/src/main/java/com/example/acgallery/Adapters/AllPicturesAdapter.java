@@ -18,17 +18,10 @@ public class AllPicturesAdapter extends RecyclerViewAdapter {
         holder.thumbnailToShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivitiesHandler.addData("pictureToShow",thumbnail);
-                ActivitiesHandler.addData("allPictures",true);
-                ActivitiesHandler.sendData(originActivity,FullPictureActivity.class);
-                /*
-                Intent intent = new Intent(originActivity, FullPictureActivity.class);
-                intent.putExtra("file",thumbnail);
-                intent.putExtra("allPictures",true);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                context.startActivity(intent);
-
-                 */
+                ActivitiesHandler.sendData("pictureToShow",thumbnail);
+                ActivitiesHandler.sendData("filteredPictures",true);
+                ActivitiesHandler.sendData("all",true);
+                ActivitiesHandler.changeActivity(originActivity,FullPictureActivity.class);
             }
         });
     }

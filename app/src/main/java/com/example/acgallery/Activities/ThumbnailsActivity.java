@@ -1,14 +1,20 @@
 package com.example.acgallery.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import com.example.acgallery.Adapters.ThumbnailsAdapter;
 import com.example.acgallery.ClassifierService;
 import com.example.acgallery.Composite.Folder;
@@ -36,7 +42,7 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
         //getting the folder to display
         folderToShow = (Folder) ActivitiesHandler.getData("folderToShow");
-        //folderToShow = (Folder) getIntent().getSerializableExtra("file");
+        getSupportActionBar().setTitle(folderToShow.getName());
 
         //we make sure that there's no empty files inside the folder to be displayed
         //clean();
@@ -68,58 +74,63 @@ public class ThumbnailsActivity extends AppCompatActivity {
 
         Folder folderRoot = folderToShow.getFolderRoot();
 
-        if(item.getItemId() == R.id.all_pictures_op) {
-            //Intent intent = new Intent(this, AllPicturesActivity.class);
 
-            //then send the folder where the option was chosen so the user can comeback
-            ActivitiesHandler.addData("folderToReturn",folderToShow);
-            ActivitiesHandler.sendData(this,AllPicturesActivity.class);
-            //intent.putExtra("file",folderToShow);
-            //startActivity(intent);
-            //finish();
+        if(item.getItemId() == R.id.all_pictures_op) {
+            //we send the folder where the option was chosen so the user can comeback
+            ActivitiesHandler.sendData("folderToReturn",folderToShow);
+            ActivitiesHandler.changeActivity(this,AllPicturesActivity.class);
         }
         else if(item.getItemId() == R.id.animal_picutres_op) {
-            Intent intent = new Intent(getApplicationContext(), ServicePicturesActivity.class);
-
-            //we have to send the current folder so the back event knows where to comeback
-            intent.putExtra("folderToReturn", folderToShow);
-            startActivity(intent);
-            finish();
+            ActivitiesHandler.sendData("folderToReturn",folderToShow);
+            ActivitiesHandler.changeActivity(this, AnimalPicturesActivity.class);
         }
         else if(item.getItemId() == R.id.order_by_name_op || item.getItemId() == R.id.order_by_date_op) {
             if(item.getItemId() == R.id.order_by_name_op)
                 folderToShow.sort(new NameSort());
             else
                 folderToShow.sort(new RecentDateSort());
-            ActivitiesHandler.addData("folderToShow",folderToShow);
-            ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
-            /*
-            Intent intent = new Intent(this, ThumbnailsActivity.class);
-            intent.putExtra("folderToShow",folderToShow);
-            startActivity(intent);
-            finish();
-
-             */
+            ActivitiesHandler.sendData("folderToShow",folderToShow);
+            ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
         }
         else if(item.getItemId() == R.id.copy_picture_op || item.getItemId() == R.id.move_picture_op) {
-            ActivitiesHandler.addData("folderToShow",folderRoot);
-            ActivitiesHandler.addData("fileToPaste",folderToShow);
+            ActivitiesHandler.sendData("folderToShow",folderRoot);
+            ActivitiesHandler.sendData("fileToPaste",folderToShow);
             if(item.getItemId() == R.id.copy_picture_op)
-                ActivitiesHandler.addData("opCode",0);
+                ActivitiesHandler.sendData("opCode",0);
             else
-                ActivitiesHandler.addData("opCode",1);
+                ActivitiesHandler.sendData("opCode",1);
 
-            ActivitiesHandler.sendData(this,PasteActivity.class);
-            /*
-            Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
-            intent.putExtra("file", folderRoot);
-            intent.putExtra("paste", folderToShow);
-            intent.putExtra("opCode", 0);
-            startActivity(intent);
-            finish();
-            //folderToShow.copyTo(folderRoot);
+            ActivitiesHandler.changeActivity(this,PasteActivity.class);
+        }
+        else if(item.getItemId() == R.id.delete_folder_op){
+            final AppCompatActivity originActivity = this;
+            new AlertDialog.Builder(originActivity)
+                    .setTitle("Delete folder permanently?")
+                    .setMessage("If you delete this item, it will be removed permanently from your device.")
+                    .setPositiveButton("Delete permanently", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
 
-             */
+                            Folder folderToReturn = folderToShow.getParent();
+                            //we delete the folder and make sure that won't remain an empty file of it.
+                            if(!folderToShow.delete())
+                                Toast.makeText(originActivity,"NO SE BORRO!",Toast.LENGTH_LONG).show();
+                            else
+                                Toast.makeText(originActivity,"SE BORRO!",Toast.LENGTH_LONG).show();
+                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(folderToShow.getRealFile())));
+
+                            //then we comeback to the folder where the picture was
+
+                            ActivitiesHandler.sendData("folderToShow",folderToReturn);
+                            ActivitiesHandler.changeActivity(originActivity,ThumbnailsActivity.class);
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //close the Alert Dialog
+                        }
+                    }).create().show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -145,15 +156,8 @@ public class ThumbnailsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if(folderToShow.getParent() != null){
-            ActivitiesHandler.addData("folderToShow",folderToShow.getParent());
-            ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
-            /*
-            Intent intent = new Intent(this, ThumbnailsActivity.class);
-            intent.putExtra("folderToShow", folderToShow.getParent());
-            startActivity(intent);
-            finish();
-
-             */
+            ActivitiesHandler.sendData("folderToShow",folderToShow.getParent());
+            ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
         }
         else
             this.moveTaskToBack(true); //it sends the app to the background without closing it.
@@ -163,6 +167,7 @@ public class ThumbnailsActivity extends AppCompatActivity {
         this method remove all the abstract files that don't have a inner file which path is linked
         with a real file in the phone.
      */
+
     /*
     private void clean(){
         for(int i = 0; i < folderToShow.getFilesAmount(); i++){

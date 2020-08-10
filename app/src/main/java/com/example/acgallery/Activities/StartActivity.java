@@ -83,6 +83,7 @@ public class StartActivity extends AppCompatActivity {
                     public void run() {
                         if(isPermissionsGranted()){
                             folderRoot = getFolderRootLoaded();
+                            folderRoot.rename("Root");
                             if(isServiceFinished())
                                 ClassifierService.setFinished(true);
                             else
@@ -158,8 +159,8 @@ public class StartActivity extends AppCompatActivity {
         activity so it can get the folder_thumbnail to displayed
     */
     private void startThumbnailsActivity(){
-        ActivitiesHandler.addData("folderToShow",folderRoot);
-        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
+        ActivitiesHandler.sendData("folderToShow",folderRoot);
+        ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
         /*
         Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
         intent.putExtra("file", folderRoot);
@@ -227,7 +228,7 @@ public class StartActivity extends AppCompatActivity {
             if(folderToLoad.getFilesAmount() == 0){
                 Folder container = folderToLoad.getParent();
                 if(container != null){
-                    container.deleteFile(folderToLoad);
+                    container.removeFile(folderToLoad);
                 }
             }
         }

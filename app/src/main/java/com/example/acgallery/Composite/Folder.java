@@ -1,8 +1,15 @@
 package com.example.acgallery.Composite;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.Sorters.CriterionSorter;
+
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Folder extends AbstractFile {
@@ -46,14 +53,21 @@ public class Folder extends AbstractFile {
         return folderRoot;
     }
 
+    /*
+    public AbstractFile getFileAt(int index){
+        if(index > 0 && index < files.size())
+            return files.get(index);
+        return null;
+    }
+
+     */
+
     public boolean add(AbstractFile abstractFile) {
         abstractFile.setParent(this);
         return files.add(abstractFile);
     }
-    public boolean deleteFile(AbstractFile abstractFile) {
-        if(abstractFile.getRealFile().delete())
+    public boolean removeFile(AbstractFile abstractFile) {
             return files.remove(abstractFile);
-        return false;
     }
 
     public void sort(CriterionSorter criterionSorter){
@@ -112,5 +126,15 @@ public class Folder extends AbstractFile {
 
          */
         return false;
+    }
+
+    @Override
+    public boolean delete() {
+        try {
+            FileUtils.deleteDirectory(getRealFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return getParent().removeFile(this);
     }
 }

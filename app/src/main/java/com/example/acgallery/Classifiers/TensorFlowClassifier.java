@@ -90,6 +90,9 @@ public class TensorFlowClassifier implements Classifier {
         // get current bitmap from imageView
         Bitmap bitmap_orig = ((BitmapDrawable) image.getDrawable()).getBitmap();
 
+        if(bitmap_orig == null)
+            return results;
+
         // resize the bitmap to the required input size to the CNN
         Bitmap bitmap = getResizedBitmap(bitmap_orig, DIM_IMG_SIZE_X, DIM_IMG_SIZE_Y);
 

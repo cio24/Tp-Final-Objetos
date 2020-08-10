@@ -6,45 +6,37 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.acgallery.Adapters.PasteAdapter;
-import com.example.acgallery.Adapters.RecyclerViewAdapter;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
-
-import java.io.File;
 
 public class PasteActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private Folder folderToShow;
     private static AbstractFile pictureToPaste;
-    private final int COPY_CODE = 0;
-    private static int opCode;
+    private int opCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        //buinding the activity to the activity_thumbnails_layout layout.
+        //binding the activity to the activity_thumbnails_layout layout.
         setContentView(R.layout.activity_paste_layout);
 
         //getting the folder_thumbnail from to be displayed
         folderToShow = (Folder) ActivitiesHandler.getData("folderToShow");
-        //folderToShow = (Folder) getIntent().getSerializableExtra("folderToShow");
         if(pictureToPaste == null) {
             pictureToPaste = (AbstractFile) ActivitiesHandler.getData("fileToPaste");
-            //pictureToPaste = (AbstractFile) getIntent().getSerializableExtra("fileToPaste");
             opCode = (int) ActivitiesHandler.getData("opCode");
-            //opCode = (int) getIntent().getSerializableExtra("opCode");
         }
 
         //defining the adapter which will handle the binding between the views and the layout
@@ -72,6 +64,7 @@ public class PasteActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.paste_picture_op){
+            int COPY_CODE = 0;
             if (opCode == COPY_CODE)
                 pictureToPaste.copyTo(folderToShow);
             else { //move
@@ -83,17 +76,18 @@ public class PasteActivity extends AppCompatActivity {
             pictureToPaste = null;
             opCode = -1;
         }
+        else if (item.getItemId() == R.id.cancel_op){
+            ActivitiesHandler.sendData("folderToShow",pictureToPaste.getParent());
+            ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
+        }
 
-        //then we comeback to the folder where the picture was
-        ActivitiesHandler.addData("folderToShow",folderToShow);
-        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
         /*
-        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        intent.putExtra("file",folderToShow);
-        startActivity(intent);
-        this.finish();
+        //then we comeback to the folder where the picture was
+        ActivitiesHandler.sendData("folderToShow",folderToShow);
+        ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
 
          */
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -104,18 +98,13 @@ public class PasteActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        Intent intent;
         if(folderToShow.getParent() != null) {
-            intent = new Intent(getApplicationContext(), PasteActivity.class);
-            intent.putExtra("file", folderToShow.getParent());
-            startActivity(intent);
-            finish();
+            ActivitiesHandler.sendData("folderToShow",folderToShow.getParent());
+            ActivitiesHandler.changeActivity(this,PasteActivity.class);
         }
         else {
-            intent = new Intent(getApplicationContext(),ThumbnailsActivity.class);
-            intent.putExtra("file",folderToShow);
+            ActivitiesHandler.sendData("folderToShow",pictureToPaste.getParent());
+            ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
         }
-            startActivity(intent);
-            finish();
     }
 }

@@ -53,6 +53,7 @@ public abstract class AbstractFile implements Serializable {
         this.parent = parent;
     }
 
+    /*
     public boolean delete() {
         Folder parent = getParent();
         if(parent != null){
@@ -60,6 +61,8 @@ public abstract class AbstractFile implements Serializable {
         }
         return false;
     }
+
+     */
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -71,5 +74,6 @@ public abstract class AbstractFile implements Serializable {
     public abstract boolean rename(String newName);
     public abstract boolean copyTo(Folder destination);
     public abstract boolean moveTo(Folder destination);
+    public abstract boolean delete();
     public abstract ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c);
 }

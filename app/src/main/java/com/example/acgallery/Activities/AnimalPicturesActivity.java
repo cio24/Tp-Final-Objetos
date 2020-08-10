@@ -3,10 +3,11 @@ package com.example.acgallery.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.content.Intent;
+
 import android.os.Bundle;
 import android.util.Log;
-import com.example.acgallery.Adapters.RecyclerViewAdapter;
+
+import com.example.acgallery.Adapters.AnimalPicturesAdapter;
 import com.example.acgallery.Adapters.ThumbnailsAdapter;
 import com.example.acgallery.ClassifierService;
 import com.example.acgallery.Composite.AbstractFile;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
     the pictures of animals
  */
 
-public class ServicePicturesActivity extends AppCompatActivity {
+public class AnimalPicturesActivity extends AppCompatActivity {
 
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private ArrayList<AbstractFile> picturesToShow;
@@ -37,9 +38,6 @@ public class ServicePicturesActivity extends AppCompatActivity {
         //buinding the activity to the activity_thumbnails_layout layout.
         setContentView(R.layout.activity_thumbnails_layout);
 
-
-        //getting the folder_thumbnail from to be displayed
-        //picturesToShow = (ArrayList<AbstractFile>) getIntent().getSerializableExtra("pictures");
         try {
             picturesToShow = (ArrayList<AbstractFile>) InternalStorage.readObject(this,"pictures");
         } catch (IOException e) {
@@ -49,17 +47,17 @@ public class ServicePicturesActivity extends AppCompatActivity {
         }
         if(picturesToShow == null)
             picturesToShow = ClassifierService.getPictures();
-        else
-            folderToReturn = (Folder) ActivitiesHandler.getData("folderToReturn");
-            //folderToReturn = (Folder) getIntent().getSerializableExtra("file");
 
+        folderToReturn = (Folder) ActivitiesHandler.getData("folderToReturn");
 
-        //defining the adapter which will handle the buinding between the views and the layout
-        //CriterionFilter c = new PictureFilter();
-        //ClassifierFilter c = new ClassifierFilter(this,labels, new TensorFlowClassifier(this));
-        RecyclerView.Adapter adapter = new ThumbnailsAdapter(picturesToShow,this);
+        getSupportActionBar().setTitle("Animal Pictures");
 
-        //getting the referece of the recycler view inside the activity_thumbnails_layout layout
+        //defining the adapter which will handle the binding between the views and the layout
+        RecyclerView.Adapter adapter = new AnimalPicturesAdapter(picturesToShow,this);
+
+        ActivitiesHandler.sendData("folderToReturn",folderToReturn);
+
+        //getting the reference of the recycler view inside the activity_thumbnails_layout layout
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         //setting a grid layout manager to the recycler
@@ -127,15 +125,7 @@ public class ServicePicturesActivity extends AppCompatActivity {
              */
     @Override
     public void onBackPressed() {
-        ActivitiesHandler.addData("folderToShow",folderToReturn);
-        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
-        /*
-        Intent intent = new Intent(this, ThumbnailsActivity.class);
-        intent.putExtra("folderToShow", folderToReturn);
-        startActivity(intent);
-        finish();
-        //super.onBackPressed();
-
-         */
+        ActivitiesHandler.sendData("folderToShow",folderToReturn);
+        ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
     }
 }

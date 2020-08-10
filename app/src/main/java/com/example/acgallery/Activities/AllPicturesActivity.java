@@ -3,7 +3,6 @@ package com.example.acgallery.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.content.Intent;
 import android.os.Bundle;
 import com.example.acgallery.Adapters.AllPicturesAdapter;
 import com.example.acgallery.Composite.Folder;
@@ -26,8 +25,8 @@ public class AllPicturesActivity extends AppCompatActivity {
 
         //getting the folder where the all pictures option was selected
         folderToReturn = (Folder) ActivitiesHandler.getData("folderToReturn");
-        //folderToReturn = (Folder) getIntent().getSerializableExtra("file");
-
+        ActivitiesHandler.sendData("folderToReturn",folderToReturn);
+        getSupportActionBar().setTitle("All Pictures");
         RecyclerView.Adapter adapter = new AllPicturesAdapter(folderToReturn.getFolderRoot().getDeepFilteredFiles(new TrueFilter()),this);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this,ROWS_OF_GRID));
@@ -36,14 +35,7 @@ public class AllPicturesActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        ActivitiesHandler.addData("file",folderToReturn);
-        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
-        /*
-        Intent intent = new Intent(this, ThumbnailsActivity.class);
-        intent.putExtra("file", folderToReturn);
-        startActivity(intent);
-        finish();
-
-         */
+        ActivitiesHandler.sendData("folderToShow",folderToReturn);
+        ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
     }
 }

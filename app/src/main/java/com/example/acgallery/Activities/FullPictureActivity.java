@@ -6,9 +6,11 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -18,10 +20,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 import com.example.acgallery.Adapters.SwipeAdapter;
+import com.example.acgallery.ClassifierService;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Composite.Picture;
 import com.example.acgallery.Filters.PictureFilter;
+import com.example.acgallery.InternalStorage;
 import com.example.acgallery.R;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,14 +36,15 @@ import java.util.ArrayList;
 
 /*
     this activity open a selected picture and shows a menu of actions like move, remove, etc.
-     Additionaly it lets you to display in full screen mode and zoom the picture.
+     Additionally it lets you to display in full screen mode and zoom the picture.
  */
 public class FullPictureActivity extends AppCompatActivity {
 
-    private Picture pictureToShow;
+    private Picture pictureToShow, currentPictureDisplayed;
+    private Folder folderToReturn;
     private ArrayList<AbstractFile> picturesToShow;
     private ViewPager viewPager;
-    private Picture pictureDisplayed;
+    private boolean filteredPictures;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,25 +56,52 @@ public class FullPictureActivity extends AppCompatActivity {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
 
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_icon);// set drawable icon
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
+
         //retrieving the picture to be shown
         pictureToShow = (Picture) ActivitiesHandler.getData("pictureToShow");
-        //pictureToDisplay = (Picture) getIntent().getSerializableExtra("file");
-        boolean showAllPictures = (boolean) ActivitiesHandler.getData("allPictures");
-        if(showAllPictures)
-            picturesToShow = pictureToShow.getParent().getFolderRoot().getDeepFilteredFiles(new PictureFilter());
-        else
+        Log.d("axax","se tiene que mostrar:" + pictureToShow.getName());
+        filteredPictures = (boolean) ActivitiesHandler.getData("filteredPictures");
+        if(filteredPictures){
+            folderToReturn = (Folder) ActivitiesHandler.getData("folderToReturn");
+
+            if((boolean) ActivitiesHandler.getData("all"))
+                picturesToShow = pictureToShow.getParent().getFolderRoot().getDeepFilteredFiles(new PictureFilter());
+            else{
+                try {
+                    picturesToShow = (ArrayList<AbstractFile>) InternalStorage.readObject(this,"pictures");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                if(picturesToShow == null)
+                    picturesToShow = ClassifierService.getPictures();
+            }
+        }
+        else{
             picturesToShow = pictureToShow.getParent().getFilteredFiles(new PictureFilter());
+            folderToReturn = pictureToShow.getParent();
+        }
 
         viewPager = findViewById(R.id.view_pager);
 
+        Log.d("axax","cantidad de fotos a mostrar:" + picturesToShow.size());
         int currentPicturePos = 0;
-        for(AbstractFile picture: picturesToShow){
-            if(picture.equals(pictureToShow))
+        for(int i = 0; i < picturesToShow.size(); i++){
+            Log.d("axax","real: " + pictureToShow.getName() + " pos i: " + picturesToShow.get(i).getName());
+
+            if(picturesToShow.get(i).equals(pictureToShow))
                 break;
             currentPicturePos++;
+
+
         }
         SwipeAdapter adapter = new SwipeAdapter(this, picturesToShow, getSupportActionBar());
         viewPager.setAdapter(adapter);
+        //Log.d("axax","se mostra:" + picturesToShow.get(currentPicturePos).getName());
         viewPager.setCurrentItem(currentPicturePos);
     }
 
@@ -84,32 +116,36 @@ public class FullPictureActivity extends AppCompatActivity {
     //in this method we indicate the actions to be taken for each option of the menu
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        pictureDisplayed = (Picture) picturesToShow.get(viewPager.getCurrentItem());
+        currentPictureDisplayed = (Picture) picturesToShow.get(viewPager.getCurrentItem());
 
         if(item.getItemId() == R.id.delete_picture_op){
-            new AlertDialog.Builder(this)
+            final AppCompatActivity originActivity = this;
+            new AlertDialog.Builder(originActivity)
                     .setTitle("Delete picture permanently?")
                     .setMessage("If you delete this item, it will be removed permanently from your device.")
                     .setPositiveButton("Delete permanently", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
 
+                            Folder folderToShow;
+                            Class destinationActivity;
+                            if(filteredPictures){
+                                folderToShow = currentPictureDisplayed.getParent().getFolderRoot();
+                                destinationActivity = AllPicturesActivity.class;
+                            }
+                            else{
+                                folderToShow = currentPictureDisplayed.getParent();
+                                destinationActivity = ThumbnailsActivity.class;
+                            }
+
                             //we delete the picture and make sure that won't remain an empty file of it.
-                            pictureDisplayed.delete();
-                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureDisplayed.getRealFile())));
+                            currentPictureDisplayed.delete();
+                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(currentPictureDisplayed.getRealFile())));
 
                             //then we comeback to the folder where the picture was
-                            ActivitiesHandler.addData("file",pictureDisplayed.getParent());
-                            ActivitiesHandler.sendData((AppCompatActivity) getApplicationContext(),ThumbnailsActivity.class);
-                            /*
-                            Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-                            intent.putExtra("file", pictureDisplayed.getParent());
-                            startActivity(intent);
 
-                            //and close this activity
-                            finish();
-
-                             */
+                            ActivitiesHandler.sendData("folderToShow",folderToShow);
+                            ActivitiesHandler.changeActivity(originActivity,destinationActivity);
                         }
                     })
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -119,15 +155,12 @@ public class FullPictureActivity extends AppCompatActivity {
                         }
                     }).create().show();
         }
-        else if(item.getItemId() == R.id.back_picture_op) {
-            onBackPressed();
-        }
         else if(item.getItemId() == R.id.details_picture_op){
 
             //all of this is necessary to get the real dimensions of the picture
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(pictureDisplayed.getAbsolutePath(), options);
+            BitmapFactory.decodeFile(currentPictureDisplayed.getAbsolutePath(), options);
             int height = options.outHeight;
             int width = options.outWidth;
 
@@ -136,19 +169,19 @@ public class FullPictureActivity extends AppCompatActivity {
             BasicFileAttributes attributes = null;
             Path filePath = null;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                filePath = Paths.get(pictureDisplayed.getAbsolutePath());
+                filePath = Paths.get(currentPictureDisplayed.getAbsolutePath());
                 try {
                     attributes = Files.readAttributes(filePath,BasicFileAttributes.class);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                assert attributes != null;
                 time = attributes.creationTime().toString();
             }
 
+            //we shot the units according the size
             String units;
             float size;
-            float pictureSize = (float) pictureDisplayed.getRealFile().length();
+            float pictureSize = (float) currentPictureDisplayed.getRealFile().length();
             if(pictureSize/(1024*1024) > 1.0){
                 size = pictureSize/(1024*1024);
                 units = "MB";
@@ -161,11 +194,11 @@ public class FullPictureActivity extends AppCompatActivity {
             //finally we show all the info about this picture
             assert time != null;
             new AlertDialog.Builder(this)
-                    .setTitle(pictureDisplayed.getName())
+                    .setTitle(currentPictureDisplayed.getName())
                     .setMessage(
                             "Dimensions: " + width + " x " + height + "\n" +
                                     "Size: " + size + " " + units + "\n" +
-                                    "Path: " + pictureDisplayed.getAbsolutePath() + "\n" +
+                                    "Path: " + currentPictureDisplayed.getAbsolutePath() + "\n" +
                                     "Taken on: " + time.substring(0,time.indexOf("T"))
                     )
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -179,7 +212,7 @@ public class FullPictureActivity extends AppCompatActivity {
         else if(item.getItemId() == R.id.rename_picture_op){
             //we defined an editText to read the input of the user and let the user select all the text of old name
             final EditText inputNewName = new EditText(this);
-            inputNewName.setText(pictureDisplayed.getName().substring(0,pictureDisplayed.getName().lastIndexOf(".")));
+            inputNewName.setText(currentPictureDisplayed.getName().substring(0, currentPictureDisplayed.getName().lastIndexOf(".")));
             inputNewName.setSelectAllOnFocus(true);
 
             new AlertDialog.Builder(this)
@@ -188,7 +221,7 @@ public class FullPictureActivity extends AppCompatActivity {
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            if(!pictureDisplayed.rename(inputNewName.getText().toString()))
+                            if(!currentPictureDisplayed.rename(inputNewName.getText().toString()))
                                 Toast.makeText(getApplicationContext(),"The name couldn't be changed!",Toast.LENGTH_LONG).show();
                         }
                     })
@@ -200,28 +233,27 @@ public class FullPictureActivity extends AppCompatActivity {
                     })
                     .create().show();
         }
-        else {
-            Folder folderRoot = pictureDisplayed.getParent().getFolderRoot();
+        else{
+            Folder folderRoot = currentPictureDisplayed.getParent().getFolderRoot();
             if(item.getItemId() == R.id.copy_picture_op || item.getItemId() == R.id.move_picture_op) {
-                ActivitiesHandler.addData("folderToShow",folderRoot);
-                ActivitiesHandler.addData("fileToPaste",pictureDisplayed);
-                if(item.getItemId() == R.id.copy_picture_op)
-                    ActivitiesHandler.addData("opCode",0);
+                ActivitiesHandler.sendData("folderToShow",folderRoot);
+                Folder folderToReturn;
+                if(filteredPictures)
+                    folderToReturn = pictureToShow.getParent().getFolderRoot();
                 else
-                    ActivitiesHandler.addData("opCode",1);
+                    folderToReturn = pictureToShow.getParent();
+                ActivitiesHandler.sendData("folderToReturn",folderToReturn);
+                ActivitiesHandler.sendData("fileToPaste", currentPictureDisplayed);
+                if(item.getItemId() == R.id.copy_picture_op)
+                    ActivitiesHandler.sendData("opCode",0);
+                else
+                    ActivitiesHandler.sendData("opCode",1);
 
-                ActivitiesHandler.sendData(this,PasteActivity.class);
-                /*
-                Intent intent = new Intent(getApplicationContext(), PasteActivity.class);
-                intent.putExtra("file", folderRoot);
-                intent.putExtra("paste", getPictureDisplayed());
-
-
-                intent.putExtra("opCode", 0);
-                startActivity(intent);
-                finish();
-                 */
+                ActivitiesHandler.changeActivity(this,PasteActivity.class);
             }
+        }
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -232,14 +264,7 @@ public class FullPictureActivity extends AppCompatActivity {
     */
     @Override
     public void onBackPressed() {
-        ActivitiesHandler.addData("folderToShow", pictureToShow.getParent());
-        ActivitiesHandler.sendData(this,ThumbnailsActivity.class);
-        /*
-        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        intent.putExtra("file", pictureToDisplay.getParent());
-        startActivity(intent);
-        finish();
-
-         */
+        ActivitiesHandler.sendData("folderToShow", folderToReturn);
+        ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
     }
 }

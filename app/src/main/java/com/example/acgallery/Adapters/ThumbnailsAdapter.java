@@ -1,7 +1,5 @@
 package com.example.acgallery.Adapters;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,13 +23,13 @@ public class ThumbnailsAdapter extends RecyclerViewAdapter {
             @Override
             public void onClick(View v) {
                 if (thumbnail.getRealFile().isDirectory()) {
-                    ActivitiesHandler.addData("folderToShow", thumbnail);
-                    ActivitiesHandler.sendData(originActivity, ThumbnailsActivity.class);
+                    ActivitiesHandler.sendData("folderToShow", thumbnail);
+                    ActivitiesHandler.changeActivity(originActivity, ThumbnailsActivity.class);
                 }
                 else{
-                    ActivitiesHandler.addData("pictureToShow",thumbnail);
-                    ActivitiesHandler.addData("allPictures",false);
-                    ActivitiesHandler.sendData(originActivity,FullPictureActivity.class);
+                    ActivitiesHandler.sendData("pictureToShow",thumbnail);
+                    ActivitiesHandler.sendData("filteredPictures",false);
+                    ActivitiesHandler.changeActivity(originActivity,FullPictureActivity.class);
                 }
             }
         });

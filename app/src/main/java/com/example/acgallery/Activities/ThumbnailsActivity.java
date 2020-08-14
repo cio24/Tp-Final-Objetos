@@ -132,6 +132,12 @@ public class ThumbnailsActivity extends AppCompatActivity {
                         }
                     }).create().show();
         }
+        else if(item.getItemId() == R.id.copy_folder_op){
+            ActivitiesHandler.sendData("folderToShow",folderRoot);
+            ActivitiesHandler.sendData("fileToPaste", folderToShow);
+            ActivitiesHandler.sendData("opCode",0);
+            ActivitiesHandler.changeActivity(this,PasteActivity.class);
+        }
         return super.onOptionsItemSelected(item);
     }
 

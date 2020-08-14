@@ -24,26 +24,13 @@ public class Folder extends AbstractFile {
     public int getFilesAmount() {
         return files.size();
     }
-    public ArrayList<AbstractFile> getFilteredFiles(CriterionFilter filter){
+    public ArrayList<AbstractFile> getFilteredFiles(CriterionFilter criterionFilter){
         ArrayList<AbstractFile> pictures = new ArrayList<>();
         for(AbstractFile file: files){
-            if(filter.satisfy(file))
+            if(criterionFilter.satisfy(file))
                 pictures.add(file);
         }
         return pictures;
-    }
-    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter filter){
-        ArrayList<AbstractFile> toReturn = new ArrayList<>();
-        ArrayList<AbstractFile> aux;
-        for (AbstractFile f:files) {
-            aux = f.getDeepFilteredFiles(filter);
-            if (aux != null)
-                toReturn.addAll(aux);
-        }
-        if (toReturn.isEmpty()){
-            return null;
-        }
-        return toReturn;
     }
     public  Folder getFolderRoot(){
         Folder folderRoot = this;
@@ -94,21 +81,26 @@ public class Folder extends AbstractFile {
 
     @Override
     public boolean copyTo(Folder destination){
-        File directoryCopy = new File(destination.getAbsolutePath()+ "/" + getName());
-        int copyNumber = 1;
+        File directoryCopy = new File(destination.getAbsolutePath() + "/" + this.getName());
+        int copyNumber = 0;
+
         while(directoryCopy.exists()){
+            copyNumber++;
             directoryCopy = new File(destination.getAbsolutePath() + "/" + getName() + " (" + copyNumber +")");
         }
-        directoryCopy.mkdir();
-        Folder newFolder = new Folder(directoryCopy);
-        destination.add(newFolder);
-        for(AbstractFile file: files)
-            file.copyTo(newFolder);
-        return true;
+
+        Folder folderCopy = new Folder(directoryCopy);
+        for(AbstractFile abstractFile: files){
+            abstractFile.copyTo(folderCopy);
+        }
+
+        return false;
     }
 
     @Override
     public boolean moveTo(Folder destination) {
+        this.copyTo(destination);
+
         /*
         this.getParent().removeByName(this.getName());
         File renamed = new File(destination.getAbsolutePath() + "/" + this.getName());
@@ -130,11 +122,32 @@ public class Folder extends AbstractFile {
 
     @Override
     public boolean delete() {
+        /*
         try {
             FileUtils.deleteDirectory(getRealFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
         return getParent().removeFile(this);
+
+         */
+        while(!files.isEmpty())
+            files.get(0).delete();
+        return this.getParent().removeFile(this);
+    }
+
+    @Override
+    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter criterionFilter){
+        ArrayList<AbstractFile> toReturn = new ArrayList<>();
+        ArrayList<AbstractFile> aux;
+        for (AbstractFile f:files) {
+            aux = f.getDeepFilteredFiles(criterionFilter);
+            if (aux != null)
+                toReturn.addAll(aux);
+        }
+        if (toReturn.isEmpty()){
+            return null;
+        }
+        return toReturn;
     }
 }

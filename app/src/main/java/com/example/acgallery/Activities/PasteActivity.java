@@ -22,6 +22,7 @@ public class PasteActivity extends AppCompatActivity {
     final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private Folder folderToShow;
     private static AbstractFile pictureToPaste;
+    private final static int COPY_CODE = 0;
     private int opCode;
 
     @Override
@@ -64,7 +65,7 @@ public class PasteActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.paste_picture_op){
-            int COPY_CODE = 0;
+
             if (opCode == COPY_CODE)
                 pictureToPaste.copyTo(folderToShow);
             else { //move
@@ -75,6 +76,8 @@ public class PasteActivity extends AppCompatActivity {
             }
             pictureToPaste = null;
             opCode = -1;
+            ActivitiesHandler.sendData("folderToShow",folderToShow);
+            ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
         }
         else if (item.getItemId() == R.id.cancel_op){
             ActivitiesHandler.sendData("folderToShow",pictureToPaste.getParent());

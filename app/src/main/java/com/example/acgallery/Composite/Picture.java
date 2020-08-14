@@ -1,6 +1,11 @@
 package com.example.acgallery.Composite;
 
+import android.util.Log;
+
 import com.example.acgallery.Filters.CriterionFilter;
+
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,10 +40,12 @@ public class Picture extends AbstractFile {
     @Override
     public boolean copyTo(Folder destination) {
         File fileCopy = new File(destination.getAbsolutePath() + "/" + getName());
-        int copyNumber = 1;
+        int copyNumber = 0;
 
-        while(fileCopy.exists())
+        while(fileCopy.exists()){
+            copyNumber++;
             fileCopy = new File(destination.getAbsolutePath() + "/" + getName().substring(0,getName().lastIndexOf(".")) + " (" + copyNumber +")" + getName().substring(getName().lastIndexOf(".")));
+        }
 
         try (InputStream in = new FileInputStream(this.getRealFile())) {
             try (OutputStream out = new FileOutputStream(fileCopy)) {
@@ -65,9 +72,16 @@ public class Picture extends AbstractFile {
 
     @Override
     public boolean delete() {
+
         if(getRealFile().delete())
             return getParent().removeFile(this);
         return false;
+        /*
+        if(getRealFile().delete())
+            return getParent().removeFile(this);
+        return false;
+
+         */
     }
 
     @Override

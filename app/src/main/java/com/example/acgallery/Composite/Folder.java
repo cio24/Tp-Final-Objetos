@@ -89,12 +89,20 @@ public class Folder extends AbstractFile {
             directoryCopy = new File(destination.getAbsolutePath() + "/" + getName() + " (" + copyNumber +")");
         }
 
-        Folder folderCopy = new Folder(directoryCopy);
-        for(AbstractFile abstractFile: files){
-            abstractFile.copyTo(folderCopy);
-        }
+        if(!directoryCopy.exists())
+            try {
+                FileUtils.forceMkdir(directoryCopy);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        return false;
+
+        Folder folderCopy = new Folder(directoryCopy);
+        for(int i = 0; i < files.size(); i++){
+            files.get(i).copyTo(folderCopy);
+        }
+        destination.add(folderCopy);
+        return true;
     }
 
     @Override

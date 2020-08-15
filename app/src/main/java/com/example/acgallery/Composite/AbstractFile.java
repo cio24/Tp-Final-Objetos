@@ -31,19 +31,19 @@ public abstract class AbstractFile implements Serializable {
     }
     public File getRealFile() { return this.realFile; }
     public String getCreationTime(){
-        String time = null;
+        String time = "undefined";
         BasicFileAttributes attributes = null;
         Path filePath;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            filePath = Paths.get(this.getAbsolutePath());
+            filePath = Paths.get(getRealFile().getAbsolutePath());
             try {
                 attributes = Files.readAttributes(filePath,BasicFileAttributes.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            time = attributes.creationTime().toString();
+            time = attributes.creationTime().toString().substring(0,attributes.creationTime().toString().indexOf("T"));
         }
-        return time.substring(0,time.indexOf("T"));
+        return time;
     }
 
     public void setRealFile(File realFile){
@@ -53,27 +53,18 @@ public abstract class AbstractFile implements Serializable {
         this.parent = parent;
     }
 
-    /*
-    public boolean delete() {
-        Folder parent = getParent();
-        if(parent != null){
-            return parent.deleteFile(this);
-        }
-        return false;
-    }
-
-     */
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractFile file = (AbstractFile) o;
-        if(file.getAbsolutePath() == this.getAbsolutePath()) return true;
-        return false;
+        return file.getAbsolutePath().equals(this.getAbsolutePath());
     }
 
     public abstract boolean rename(String newName);
     public abstract boolean copyTo(Folder destination);
     public abstract boolean moveTo(Folder destination);
     public abstract boolean delete();
+    public abstract int getDeepCount(CriterionFilter criterionFilter);
+    public abstract long size();
     public abstract ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c);
 }

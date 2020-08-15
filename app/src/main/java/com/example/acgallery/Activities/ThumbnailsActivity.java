@@ -8,8 +8,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,10 +21,18 @@ import android.widget.Toast;
 import com.example.acgallery.Adapters.ThumbnailsAdapter;
 import com.example.acgallery.ClassifierService;
 import com.example.acgallery.Composite.Folder;
+import com.example.acgallery.Filters.FolderFilter;
+import com.example.acgallery.Filters.PictureFilter;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 import com.example.acgallery.Sorters.RecentDateSort;
 import com.example.acgallery.Sorters.NameSort;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 
 /*
     this activity shows the thumbnails of all the pictures and a thumbnail of a folder for folders
@@ -137,6 +148,57 @@ public class ThumbnailsActivity extends AppCompatActivity {
             ActivitiesHandler.sendData("fileToPaste", folderToShow);
             ActivitiesHandler.sendData("opCode",0);
             ActivitiesHandler.changeActivity(this,PasteActivity.class);
+        }
+        else if(item.getItemId() == R.id.move_folder_op){
+            Log.d("axa","moviendo!");
+            ActivitiesHandler.sendData("folderToShow",folderRoot);
+            ActivitiesHandler.sendData("fileToPaste", folderToShow);
+            ActivitiesHandler.sendData("opCode",1);
+            ActivitiesHandler.changeActivity(this,PasteActivity.class);
+        }
+        else if(item.getItemId() == R.id.details_folder_op){
+
+
+
+
+
+            //we shot the units according the size
+            String units;
+            float folderSize = (float) folderToShow.size();
+            if(folderSize/(1024*1024*1024) > 1.0) {
+                units = "GB";
+            }
+            else if(folderSize/(1024*1024) > 1.0){
+                folderSize = folderSize/(1024*1024);
+                units = "MB";
+            }
+            else{
+                units = "KB";
+                folderSize = folderSize/1024;
+            }
+
+            //finally we show all the info about this picture
+
+            int picturesAmount = folderToShow.getCount(new PictureFilter());
+            new AlertDialog.Builder(this)
+                    .setTitle(folderToShow.getName())
+                    .setMessage(
+                            "\n" + "CURRENT FOLDER"+ "\n" +
+                                "      Pictures: " + picturesAmount + "    Folders: " + (folderToShow.getFilesAmount() - picturesAmount) + "\n" + "\n" +
+                                "CURRENT & INNER FOLDERS " + "\n" +
+                                "      Pictures: " + folderToShow.getDeepCount(new PictureFilter()) + "    Folders: " + (folderToShow.getDeepCount(new FolderFilter()) - 1) + "\n" + "\n" +
+                                "Zise: " + folderSize + " " + units +  "\n" + "\n" +
+                                "Creation time: " + folderToShow.getCreationTime()
+
+                    )
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //close the Alert Dialog
+                        }
+                    })
+                    .create().show();
+
         }
         return super.onOptionsItemSelected(item);
     }

@@ -56,7 +56,6 @@ public class Folder extends AbstractFile {
     public boolean removeFile(AbstractFile abstractFile) {
             return files.remove(abstractFile);
     }
-
     public void sort(CriterionSorter criterionSorter){
         AbstractFile aux;
         for(int i = 0; i < files.size() - 1; i++){
@@ -68,6 +67,13 @@ public class Folder extends AbstractFile {
                 }
             }
         }
+    }
+    public int getCount(CriterionFilter criterionFilter){
+        int counter = 0;
+        for(AbstractFile abstractFile: files)
+            if(criterionFilter.satisfy(abstractFile))
+                counter++;
+        return counter;
     }
 
     /*
@@ -107,41 +113,37 @@ public class Folder extends AbstractFile {
 
     @Override
     public boolean moveTo(Folder destination) {
-        this.copyTo(destination);
-
-        /*
-        this.getParent().removeByName(this.getName());
-        File renamed = new File(destination.getAbsolutePath() + "/" + this.getName());
-        int copyNumber = 1;
-        while(renamed.exists()){
-            renamed = new File(destination.getAbsolutePath() + "/" + this.getName() + " (" + copyNumber + ")");
-            copyNumber++;
-        }
-        //renamed.mkdir();
-        if(getRealFile().renameTo(renamed)){
-            setRealFile(renamed);
-            destination.add(this);
-            return true;
-        }
-
-         */
+        if(this.copyTo(destination))
+            return this.delete();
         return false;
     }
 
     @Override
     public boolean delete() {
-        /*
-        try {
-            FileUtils.deleteDirectory(getRealFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return getParent().removeFile(this);
-
-         */
         while(!files.isEmpty())
             files.get(0).delete();
         return this.getParent().removeFile(this);
+    }
+
+    @Override
+    public int getDeepCount(CriterionFilter criterionFilter) {
+        int counter = 0;
+        if(criterionFilter.satisfy(this))
+            counter++;
+        for(AbstractFile abstractFile: files){
+                counter += abstractFile.getDeepCount(criterionFilter);
+
+        }
+        return counter;
+    }
+
+    @Override
+    public long size() {
+        long counter = 0;
+        int n = files.size();
+        for(int i = 0; i < n; i++)
+            counter += files.get(i).size();
+        return counter;
     }
 
     @Override

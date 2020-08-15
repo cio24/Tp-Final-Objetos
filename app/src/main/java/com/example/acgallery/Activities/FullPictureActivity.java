@@ -61,7 +61,7 @@ public class FullPictureActivity extends AppCompatActivity {
 
         //retrieving the picture to be shown
         pictureToShow = (Picture) ActivitiesHandler.getData("pictureToShow");
-        Log.d("axax","se tiene que mostrar:" + pictureToShow.getName());
+        Log.d("aaa","se tiene que mostrar:" + pictureToShow.getName());
         filteredPictures = (boolean) ActivitiesHandler.getData("filteredPictures");
         if(filteredPictures){
             folderToReturn = (Folder) ActivitiesHandler.getData("folderToReturn");
@@ -87,10 +87,10 @@ public class FullPictureActivity extends AppCompatActivity {
 
         viewPager = findViewById(R.id.view_pager);
 
-        Log.d("axax","cantidad de fotos a mostrar:" + picturesToShow.size());
+        Log.d("aaa","cantidad de fotos a mostrar:" + picturesToShow.size());
         int currentPicturePos = 0;
         for(int i = 0; i < picturesToShow.size(); i++){
-            Log.d("axax","real: " + pictureToShow.getName() + " pos i: " + picturesToShow.get(i).getName());
+            Log.d("aaa","real: " + pictureToShow.getName() + " pos i = " + i + ":" + picturesToShow.get(i).getName());
 
             if(picturesToShow.get(i).equals(pictureToShow))
                 break;
@@ -156,49 +156,27 @@ public class FullPictureActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.details_picture_op){
 
-            //all of this is necessary to get the real dimensions of the picture
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(currentPictureDisplayed.getAbsolutePath(), options);
-            int height = options.outHeight;
-            int width = options.outWidth;
-
-            //all this things are needed to show the creationTime
-            String time = null;
-            BasicFileAttributes attributes = null;
-            Path filePath = null;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                filePath = Paths.get(currentPictureDisplayed.getAbsolutePath());
-                try {
-                    attributes = Files.readAttributes(filePath,BasicFileAttributes.class);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                time = attributes.creationTime().toString();
-            }
 
             //we shot the units according the size
             String units;
-            float size;
-            float pictureSize = (float) currentPictureDisplayed.getRealFile().length();
+            float pictureSize = (float) currentPictureDisplayed.size();
             if(pictureSize/(1024*1024) > 1.0){
-                size = pictureSize/(1024*1024);
+                pictureSize = pictureSize/(1024*1024);
                 units = "MB";
             }
             else{
                 units = "KB";
-                size = pictureSize/1024;
+                pictureSize = pictureSize/1024;
             }
 
             //finally we show all the info about this picture
-            assert time != null;
             new AlertDialog.Builder(this)
                     .setTitle(currentPictureDisplayed.getName())
                     .setMessage(
-                            "Dimensions: " + width + " x " + height + "\n" +
-                                    "Size: " + size + " " + units + "\n" +
-                                    "Path: " + currentPictureDisplayed.getAbsolutePath() + "\n" +
-                                    "Taken on: " + time.substring(0,time.indexOf("T"))
+                            "\n" + "Dimensions: " + currentPictureDisplayed.width() + " x " + currentPictureDisplayed.height() + "\n" + "\n" +
+                                    "Size: " + pictureSize + " " + units + "\n" + "\n" +
+                                    "Path: " + currentPictureDisplayed.getAbsolutePath() + "\n" + "\n" +
+                                    "Taken on: " + currentPictureDisplayed.getCreationTime()
                     )
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override

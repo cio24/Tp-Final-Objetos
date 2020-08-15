@@ -23,6 +23,10 @@
         android:title="Move"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/details_folder_op"
+        android:title="Details"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/order_by_op"
         android:title="Order by"
         app:showAsAction="ifRoom">

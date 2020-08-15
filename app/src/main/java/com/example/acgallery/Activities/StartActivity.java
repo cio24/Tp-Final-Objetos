@@ -198,7 +198,8 @@ public class StartActivity extends AppCompatActivity {
                 if(directory != null) {
                     Folder folder = new Folder(directory);
                     loadFolder(folder, directory);
-                    folderRoot.add(folder);
+                    if(folder.getFilesAmount() > 0)
+                        folderRoot.add(folder);
                 }
             }
         }

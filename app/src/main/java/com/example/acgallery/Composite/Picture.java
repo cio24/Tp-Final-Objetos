@@ -1,5 +1,6 @@
 package com.example.acgallery.Composite;
 
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.example.acgallery.Filters.CriterionFilter;
@@ -18,6 +19,20 @@ public class Picture extends AbstractFile {
 
     public Picture(File realFile) {
         super(realFile);
+    }
+
+    public int width(){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(getRealFile().getAbsolutePath(), options);
+        return options.outWidth;
+    }
+
+    public int height(){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(getRealFile().getAbsolutePath(), options);
+        return options.outHeight;
     }
 
     @Override
@@ -76,12 +91,18 @@ public class Picture extends AbstractFile {
         if(getRealFile().delete())
             return getParent().removeFile(this);
         return false;
-        /*
-        if(getRealFile().delete())
-            return getParent().removeFile(this);
-        return false;
+    }
 
-         */
+    @Override
+    public int getDeepCount(CriterionFilter criterionFilter) {
+        if(criterionFilter.satisfy(this))
+            return 1;
+        return 0;
+    }
+
+    @Override
+    public long size() {
+        return this.getRealFile().length();
     }
 
     @Override

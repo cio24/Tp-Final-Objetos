@@ -3,6 +3,7 @@ package com.example.acgallery.Activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +24,7 @@ public class PasteActivity extends AppCompatActivity {
     private Folder folderToShow;
     private static AbstractFile pictureToPaste;
     private final static int COPY_CODE = 0;
-    private int opCode;
+    private static int opCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +71,10 @@ public class PasteActivity extends AppCompatActivity {
                 pictureToPaste.copyTo(folderToShow);
             else { //move
                 pictureToPaste.moveTo(folderToShow);
-
-                //we do this to prevent the remaining of a empty file in the directory origin
-                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureToPaste.getRealFile())));
+                Log.d("axa","moviendo!");
             }
+            //we do this to prevent the remaining of a empty file in the directory origin
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(pictureToPaste.getRealFile())));
             pictureToPaste = null;
             opCode = -1;
             ActivitiesHandler.sendData("folderToShow",folderToShow);

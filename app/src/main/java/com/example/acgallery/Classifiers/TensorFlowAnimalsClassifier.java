@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-public class TensorFlowClassifier implements Classifier {
+public class TensorFlowAnimalsClassifier implements Classifier {
 
     private Context context;
     private static final int RESULTS_TO_SHOW = 3;
@@ -49,7 +49,7 @@ public class TensorFlowClassifier implements Classifier {
     // priority queue that will hold the top results from the CNN
     private PriorityQueue<Map.Entry<String, Float>> sortedLabels;
 
-    public TensorFlowClassifier(Context context){
+    public TensorFlowAnimalsClassifier(Context context){
 
         this.context = context;
 

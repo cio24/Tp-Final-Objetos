@@ -1,24 +1,16 @@
-package com.example.acgallery.Adapters;
+package com.example.acgallery.Adapters.ThumbnailsAdapters;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.acgallery.Activities.FullPictureActivity;
-import com.example.acgallery.Activities.PasteActivity;
-import com.example.acgallery.Activities.ThumbnailsActivity;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.R;
 import com.squareup.picasso.Picasso;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -28,7 +20,7 @@ import java.util.ArrayList;
     in order to adapt it to our needs, this means that the holder has two views, one for the picture or the folder image
     and another for the text that indicates the name of the folder.
 */
-public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public abstract class ThumbnailAdapter extends RecyclerView.Adapter<ThumbnailAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -37,15 +29,15 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
-            thumbnailToShow = (ImageView) itemView.findViewById(R.id.thumbnail_holder);
-            nameToShow = (TextView) itemView.findViewById(R.id.folder_name_holder);
+            thumbnailToShow = itemView.findViewById(R.id.thumbnail_holder);
+            nameToShow = itemView.findViewById(R.id.folder_name_holder);
         }
     }
 
     private ArrayList<AbstractFile> filesToShow;
     protected AppCompatActivity originActivity;
 
-    public RecyclerViewAdapter(ArrayList<AbstractFile> filesToShow, AppCompatActivity originActivity){
+    public ThumbnailAdapter(ArrayList<AbstractFile> filesToShow, AppCompatActivity originActivity){
         this.filesToShow = filesToShow;
         this.originActivity = originActivity;
     }

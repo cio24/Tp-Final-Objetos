@@ -19,13 +19,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.FullPictureActivity" />
-        <activity android:name=".Activities.ThumbnailsActivity" />
-        <activity android:name=".Activities.PasteActivity" />
-        <activity android:name=".Activities.AnimalPicturesActivity" />
-        <activity android:name=".Activities.AllPicturesActivity" />
+        <activity android:name=".Activities.FullPictureActivities.FullPictureFromFolderActivity" />
+        <activity android:name=".Activities.FullPictureActivities.FullPictureFromAllActivity" />
+        <activity android:name=".Activities.FullPictureActivities.FullPictureFromAnimalsActivity" />
+        <activity android:name=".Activities.ThumbnailsActivities.FolderThumbnailsActivity" />
+        <activity android:name=".Activities.ThumbnailsActivities.PasteThumbnailsActivity" />
+        <activity android:name=".Activities.ThumbnailsActivities.AnimalPicturesThumbnailsActivity" />
+        <activity android:name=".Activities.ThumbnailsActivities.AllPicturesThumbnailsActivity" />
+        <activity android:name=".Activities.ThumbnailsActivities.FilteredPicturesThumbnailsActivity" />
 
-        <service android:name=".ClassifierService" />
+        <service android:name=".Utilities.AnimalsClassifierService" />
     </application>
 
 </manifest>

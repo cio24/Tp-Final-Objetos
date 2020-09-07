@@ -6,7 +6,7 @@
         android:title="All pictures"
         app:showAsAction="always"/>
 
-    <item android:id="@+id/animal_picutres_op"
+    <item android:id="@+id/animal_pictures_op"
         android:title="Animal Pictures"
         app:showAsAction="always"/>
 
@@ -21,6 +21,10 @@
 
     <item android:id="@+id/move_folder_op"
         android:title="Move"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/rename_folder_op"
+        android:title="Rename"
         app:showAsAction="never"/>
 
     <item android:id="@+id/details_folder_op"

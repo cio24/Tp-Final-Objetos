@@ -1,12 +1,7 @@
 package com.example.acgallery.Composite;
 
 import android.graphics.BitmapFactory;
-import android.util.Log;
-
 import com.example.acgallery.Filters.CriterionFilter;
-
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -87,14 +82,13 @@ public class Picture extends AbstractFile {
 
     @Override
     public boolean delete() {
-
         if(getRealFile().delete())
             return getParent().removeFile(this);
         return false;
     }
 
     @Override
-    public int getDeepCount(CriterionFilter criterionFilter) {
+    public int getDeepItemsNumber(CriterionFilter criterionFilter) {
         if(criterionFilter.satisfy(this))
             return 1;
         return 0;

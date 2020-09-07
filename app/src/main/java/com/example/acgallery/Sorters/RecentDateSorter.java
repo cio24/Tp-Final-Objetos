@@ -3,7 +3,7 @@ package com.example.acgallery.Sorters;
 import com.example.acgallery.Composite.AbstractFile;
 import java.io.Serializable;
 
-public class RecentDateSort implements CriterionSorter, Serializable {
+public class RecentDateSorter implements CriterionSorter, Serializable {
 
     @Override
     public boolean lessThan(AbstractFile a, AbstractFile b) {

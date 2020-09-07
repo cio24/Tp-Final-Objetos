@@ -1,13 +1,8 @@
 package com.example.acgallery.Composite;
 
-import android.util.Log;
-import android.widget.Toast;
-
 import com.example.acgallery.Filters.CriterionFilter;
 import com.example.acgallery.Sorters.CriterionSorter;
-
 import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,15 +10,15 @@ import java.util.ArrayList;
 public class Folder extends AbstractFile {
 
     private ArrayList<AbstractFile> files;
+    private static Folder folderRoot;
 
     public Folder(File realFile) {
         super(realFile);
         files = new ArrayList<>();
+        if(folderRoot == null)
+            folderRoot = this;
     }
 
-    public int getFilesAmount() {
-        return files.size();
-    }
     public ArrayList<AbstractFile> getFilteredFiles(CriterionFilter criterionFilter){
         ArrayList<AbstractFile> pictures = new ArrayList<>();
         for(AbstractFile file: files){
@@ -32,22 +27,9 @@ public class Folder extends AbstractFile {
         }
         return pictures;
     }
-    public  Folder getFolderRoot(){
-        Folder folderRoot = this;
-        while(folderRoot.getParent() != null){
-            folderRoot = folderRoot.getParent();
-        }
+    public static Folder getFolderRoot(){
         return folderRoot;
     }
-
-    /*
-    public AbstractFile getFileAt(int index){
-        if(index > 0 && index < files.size())
-            return files.get(index);
-        return null;
-    }
-
-     */
 
     public boolean add(AbstractFile abstractFile) {
         abstractFile.setParent(this);
@@ -68,20 +50,34 @@ public class Folder extends AbstractFile {
             }
         }
     }
-    public int getCount(CriterionFilter criterionFilter){
+    public int getItemsNumber(CriterionFilter criterionFilter){
         int counter = 0;
         for(AbstractFile abstractFile: files)
             if(criterionFilter.satisfy(abstractFile))
                 counter++;
         return counter;
     }
+    public AbstractFile get(int index){
+        if(index >= 0 && index < files.size())
+            return files.get(index);
+        return null;
+    }
 
-    /*
-        the following methods are not implemented because they're not related
-        with object oriented programming concepts
-     */
+
     @Override
     public boolean rename(String newName) {
+        File renamed = new File(getParent().getAbsolutePath() + "/" + newName);
+        int copyNumber = 1;
+
+        while(renamed.exists()){
+            renamed = new File(getParent().getAbsolutePath() + "/" + newName + "(" + copyNumber + ")");
+            copyNumber++;
+        }
+
+        if(getRealFile().renameTo(renamed)){
+            setRealFile(renamed);
+            return true;
+        }
         return false;
     }
 
@@ -101,7 +97,6 @@ public class Folder extends AbstractFile {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
 
         Folder folderCopy = new Folder(directoryCopy);
         for(int i = 0; i < files.size(); i++){
@@ -126,12 +121,12 @@ public class Folder extends AbstractFile {
     }
 
     @Override
-    public int getDeepCount(CriterionFilter criterionFilter) {
+    public int getDeepItemsNumber(CriterionFilter criterionFilter) {
         int counter = 0;
         if(criterionFilter.satisfy(this))
             counter++;
         for(AbstractFile abstractFile: files){
-                counter += abstractFile.getDeepCount(criterionFilter);
+                counter += abstractFile.getDeepItemsNumber(criterionFilter);
 
         }
         return counter;

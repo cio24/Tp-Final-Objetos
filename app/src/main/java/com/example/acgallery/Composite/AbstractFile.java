@@ -20,6 +20,8 @@ public abstract class AbstractFile implements Serializable {
         this.realFile = realFile;
     }
 
+    protected AbstractFile(){ }
+
     public String getAbsolutePath(){
         return this.realFile.getAbsolutePath();
     }
@@ -64,7 +66,7 @@ public abstract class AbstractFile implements Serializable {
     public abstract boolean copyTo(Folder destination);
     public abstract boolean moveTo(Folder destination);
     public abstract boolean delete();
-    public abstract int getDeepCount(CriterionFilter criterionFilter);
     public abstract long size();
-    public abstract ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter c);
+    public abstract int getDeepItemsNumber(CriterionFilter criterionFilter);
+    public abstract ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter criterionFilter);
 }

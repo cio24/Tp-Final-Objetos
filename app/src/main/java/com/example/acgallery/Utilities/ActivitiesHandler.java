@@ -1,8 +1,6 @@
-package com.example.acgallery.Activities;
+package com.example.acgallery.Utilities;
 
 import android.content.Intent;
-import android.util.Log;
-
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -19,7 +17,6 @@ public class ActivitiesHandler{
     public static void changeActivity(AppCompatActivity originActivity, Class destinationActivity){
         intent = new Intent(originActivity.getApplicationContext(),destinationActivity);
         for (Map.Entry<String,Object> set : buffer.entrySet()) {
-            Log.d("xox","se envia: " + set.getKey());
             intent.putExtra(set.getKey(), (Serializable) set.getValue());
         }
         buffer.clear();

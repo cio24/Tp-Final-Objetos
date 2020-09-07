@@ -5,90 +5,79 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import com.example.acgallery.ClassifierService;
+import com.example.acgallery.Activities.ThumbnailsActivities.FolderThumbnailsActivity;
+import com.example.acgallery.Utilities.ActivitiesHandler;
+import com.example.acgallery.Utilities.AnimalsClassifierService;
 import com.example.acgallery.Composite.Folder;
-import com.example.acgallery.Composite.Picture;
-import com.example.acgallery.InternalStorage;
+import com.example.acgallery.Utilities.FileManager;
+import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
-import com.example.acgallery.Sorters.TypeSort;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 /*
     this is the starting activity that has to search for pictures in some directories
     also has to request for permissions to read an write the internal and external storage
-    and run a background service that classifies pictures in order to create a dinamic album
+    and run a background service that classifies pictures in order to create a dynamic album
     in this case of animal pictures
  */
 public class StartActivity extends AppCompatActivity {
 
-    // Request permission code
-    final int REQUEST_PERMISSION = 1;
-
-    //time the icon of the app remains in the activity_start_layout screen
-    final int START_SCREEN_DELAY = 1000;
-
-    // internal and external storage directories paths
-    final String EXTERNAL_PATH = "/storage", INTERNAL_PATH = "/mnt";
-
-    // Images extensions
-    final String JPG_EXTENSION = ".jpg", PNG_EXTENSION = ".png", JPEG_EXTENSION = ".jpeg";
-
-    // Folders we want to track
-    final  String DCIM = "DCIM", DOWNLOADS = "Download", CAMERA = "Camera", SCREENSHOTS = "Screenshots";
-
-    // Folders we want to exclude
-    final  String THUMBNAILS = ".thumbnails";
+    private final static int REQUEST_PERMISSION = 1; // Request permission code
+    private final static int START_SCREEN_DELAY = 1000; //time the icon of the app remains in the activity_start_layout screen
 
     private boolean firstRequirement = true; //it is used to prevent the dialog screen to be shown when the app runs the first time.
-    private List<String> extensions, directories, excludedDirectories, innerDataPaths;
     private String [] permissions;
     private Folder folderRoot;
+
+    private  ArrayList<String> innerDataPaths, directories, excludedDirectories, extensions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //buinding the activity to the activity_start_layout layout.
-        setContentView(R.layout.activity_start_layout);
-
-        //we hide the actions buttons 'cause we copied the style from Google Photos
-        getSupportActionBar().hide();
+        setContentView(R.layout.activity_start_layout); //binding the activity to the activity_start_layout layout.
+        getSupportActionBar().hide(); //we hide the actions buttons 'cause we copied the style from Google Photos
 
         permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-        extensions = Arrays.asList(JPG_EXTENSION, PNG_EXTENSION, JPEG_EXTENSION);
-        directories = Arrays.asList(DCIM,DOWNLOADS,CAMERA,SCREENSHOTS);
-        innerDataPaths = Arrays.asList(/*EXTERNAL_PATH,*/INTERNAL_PATH);
-        excludedDirectories = Arrays.asList(THUMBNAILS);
 
+        try {
+            extensions = loadTextResource("targetedExtensions");
+            innerDataPaths = loadTextResource("scannedPaths");
+            directories = loadTextResource("trackedDirectories");
+            excludedDirectories = loadTextResource("excludedDirectories");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        final StartActivity originActivity = this;
         Timer timer = new Timer();
-
-        //we want to show the app icon like Google Photo does
         timer.schedule(new TimerTask() {
             @Override
-            public void run() {
+            public void run() { //we want to show the app icon like Google Photo does too
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(isPermissionsGranted()){
-                            folderRoot = getFolderRootLoaded();
-                            folderRoot.rename("Root");
-                            if(isServiceFinished())
-                                ClassifierService.setFinished(true);
-                            else
-                                runService();
-                            startThumbnailsActivity();
+                        boolean isPermissionsGranted = true;
+                        for(String permission: permissions)
+                            if(ContextCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED)
+                                isPermissionsGranted = false;
+                        if(isPermissionsGranted){
+                            folderRoot = FileManager.getFolderRootLoaded(directories,innerDataPaths,extensions,excludedDirectories);
+                            if(!AnimalsClassifierService.isFinished(originActivity))
+                                runAnimalPicturesService();
+                            ActivitiesHandler.sendData("folderToShow",folderRoot);
+                            ActivitiesHandler.changeActivity(originActivity, FolderThumbnailsActivity.class);
                         }
                         else
                             askForPermissions();
@@ -99,22 +88,21 @@ public class StartActivity extends AppCompatActivity {
     }
 
     /*
-        this methods runs automatically when the app starts, so
-        we have to control the result of the request of the permissions
-        so we show a message explaining the user why we need them when the permissions are not accepted
-        in the other case we continue loading the pictures and showing them
+        this method runs automatically when the app starts, so we have to control the result of the request
+        of the permissions. when the permissions are not accepted we show a message explaining the user why
+        we need them, in the other case we continue loading the pictures and showing them
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSION){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(getApplicationContext(), "Permission Granted!", Toast.LENGTH_SHORT).show();
-                folderRoot = getFolderRootLoaded();
-                if(isServiceFinished())
-                    ClassifierService.setFinished(true);
-                else
-                    runService();
-                startThumbnailsActivity();
+                folderRoot = FileManager.getFolderRootLoaded(directories,innerDataPaths,extensions,excludedDirectories);
+                if(!AnimalsClassifierService.isFinished(this))
+                    runAnimalPicturesService();
+                Log.d("asd","items " + folderRoot.getItemsNumber(new TrueFilter()));
+                ActivitiesHandler.sendData("folderToShow",folderRoot);
+                ActivitiesHandler.changeActivity(this, FolderThumbnailsActivity.class);
             }
             else{
                 if(firstRequirement)
@@ -141,38 +129,16 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    //this method checks whether the service has finished with the classification of the pictures or not
-    private boolean isServiceFinished(){
-        Object o = null;
+    //this method runs in the background with a thread, the service that classifies the pictures
+    private void runAnimalPicturesService(){
+        ArrayList<String> animalLabels = null;
         try {
-            o = InternalStorage.readObject(getApplicationContext(),"pictures");
-        } catch (IOException | ClassNotFoundException e) {
+            animalLabels = loadTextResource("animalLabels");
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        if(o == null)
-            return false;
-        return true;
-    }
-
-    /*
-        this method puts the folder root in an intent then starts the thumbnails
-        activity so it can get the folder_thumbnail to displayed
-    */
-    private void startThumbnailsActivity(){
-        ActivitiesHandler.sendData("folderToShow",folderRoot);
-        ActivitiesHandler.changeActivity(this,ThumbnailsActivity.class);
-        /*
-        Intent intent = new Intent(getApplicationContext(), ThumbnailsActivity.class);
-        intent.putExtra("file", folderRoot);
-        startActivity(intent);
-        finish();
-
-         */
-    }
-
-    //this method runs in the background with a thread, the service that classifies the pictures
-    private void runService(){
-        Intent intent = new Intent(this, ClassifierService.class);
+        AnimalsClassifierService.setLabelList(animalLabels);
+        Intent intent = new Intent(this, AnimalsClassifierService.class);
         intent.putExtra("file",folderRoot);
         startService(intent);
     }
@@ -185,91 +151,15 @@ public class StartActivity extends AppCompatActivity {
             }
     }
 
-    /*
-        this method creates a Folder and adds all the folders we want to track,
-        loaded with pictures and other folders
-     */
-    private Folder getFolderRootLoaded(){
-        Folder folderRoot = new Folder(Environment.getDataDirectory());
-        File directory;
-        for (String directoryName: directories) {
-            for(String innerPath: innerDataPaths){
-                directory = findDirectory(directoryName, new File(innerPath));
-                if(directory != null) {
-                    Folder folder = new Folder(directory);
-                    loadFolder(folder, directory);
-                    if(folder.getFilesAmount() > 0)
-                        folderRoot.add(folder);
-                }
-            }
+    private ArrayList<String> loadTextResource(String directoryName) throws IOException {
+        ArrayList<String> textList = new ArrayList<>();
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(this.getAssets().open("textResources/" + directoryName + ".txt")));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            textList.add(line);
         }
-        return folderRoot;
+        reader.close();
+        return textList;
     }
-
-    //it loads all the pictures from the directory source into the given folder_thumbnail
-    private void loadFolder(Folder folderToLoad,File directorySource){
-        File[] files = directorySource.listFiles();
-        if(files != null){
-            for (int i = 0; i < files.length; i++) {
-                if (!files[i].isDirectory()) {
-                    for(String extension: extensions){
-                        if(files[i].getName().endsWith(extension)){
-                            Picture picture = new Picture (files[i]);
-                            folderToLoad.add(picture);
-                        }
-                    }
-                }
-                else if(!isExcludedDirectory(files[i])){
-                    Folder folder = new Folder(files[i]);
-                    loadFolder(folder, files[i]); // deep loading
-                    if(folder.getFilesAmount() > 0)
-                        folderToLoad.add(folder);
-                }
-            }
-            if(folderToLoad.getFilesAmount() == 0){
-                Folder container = folderToLoad.getParent();
-                if(container != null){
-                    container.removeFile(folderToLoad);
-                }
-            }
-        }
-        folderToLoad.sort(new TypeSort());
-    }
-
-    private boolean isExcludedDirectory(File directory){
-        for(String excludedDirectory : excludedDirectories)
-            if(excludedDirectory.equals(directory.getName()))
-                return true;
-        return false;
-    }
-
-    //it searchs for a directory with the given name in the directory source
-    private File findDirectory(String directoryName, File directorySource) {
-        File[] files = directorySource.listFiles();
-        if (files != null) {
-            File aux;
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    if(files[i].getName().equals(directoryName)){
-                        return files[i];
-                    }
-                    aux = findDirectory(directoryName, files[i]); // deep searching
-                    if(aux != null){
-                        return aux;
-                    }
-                }
-            }
-        }
-        return null; // the directory is not on the storage
-    }
-
-    //it checks whether the app has the required permissions or not
-    private boolean isPermissionsGranted(){
-        for(String permission: permissions)
-            if(ContextCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        return true;
-    }
-
 }

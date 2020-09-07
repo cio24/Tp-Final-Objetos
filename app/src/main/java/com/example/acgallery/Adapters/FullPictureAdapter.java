@@ -12,10 +12,9 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.example.acgallery.Composite.AbstractFile;
-
 import java.util.ArrayList;
 
-public class SwipeAdapter extends PagerAdapter {
+public class FullPictureAdapter extends PagerAdapter {
 
     /*
         context is required when we want to create a view when there's no xml file to associate with,
@@ -31,7 +30,6 @@ public class SwipeAdapter extends PagerAdapter {
         inside of one of them we must use getSupportActionBar(), but in this case we need another parameter.
      */
     private ActionBar actionBar;
-
     private SubsamplingScaleImageView fullPictureToShow; //the current picture to be displayed
     private ArrayList<AbstractFile> picturesToShow; //its folder container
 
@@ -44,7 +42,7 @@ public class SwipeAdapter extends PagerAdapter {
         as the interface name suggest, it controls the views so they can be displayed
         as a page.
      */
-    public SwipeAdapter(Context context, ArrayList<AbstractFile> picturesToShow, ActionBar actionBar) {
+    public FullPictureAdapter(Context context, ArrayList<AbstractFile> picturesToShow, ActionBar actionBar) {
         this.picturesToShow = picturesToShow;
         this.actionBar = actionBar;
         this.context = context;
@@ -75,7 +73,6 @@ public class SwipeAdapter extends PagerAdapter {
      */
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-
         fullPictureToShow = new SubsamplingScaleImageView(context);
         Bitmap bitmap = BitmapFactory.decodeFile(picturesToShow.get(position).getAbsolutePath());
         fullPictureToShow.setImage(ImageSource.bitmap(bitmap));
@@ -102,7 +99,6 @@ public class SwipeAdapter extends PagerAdapter {
         Thw following methods are needed for giving the picture the capability of
         hide the navigation and status bar in order to see it in full screen
      */
-
     private void toggle() {
         if (mVisible) {
             hide();

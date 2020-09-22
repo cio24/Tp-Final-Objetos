@@ -32,6 +32,7 @@ public abstract class AbstractFile implements Serializable {
         return realFile.getName();
     }
     public File getRealFile() { return this.realFile; }
+
     public String getCreationTime(){
         String time = "undefined";
         BasicFileAttributes attributes = null;

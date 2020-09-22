@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class FullPictureFromFolderActivity extends FullPictureActivity {
 
     @Override
-    public ArrayList<AbstractFile> getPicturesToShow() {
+    protected ArrayList<AbstractFile> getPicturesToShow() {
         return getPictureToShow().getParent().getFilteredFiles(new TrueFilter());
     }
 

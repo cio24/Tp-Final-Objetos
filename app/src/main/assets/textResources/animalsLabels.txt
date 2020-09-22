@@ -1,0 +1,53 @@
+pug
+Labrador retriever
+Indian elephant
+African elephant
+Bedlington terrier
+ram
+koala
+hog
+white wolf
+Artic fox
+kelpie
+bighorn
+llama
+barn spider
+garden spider
+wolf spider
+tarantula
+sulphur butterfly
+oxcart
+ibex
+saluki
+afghan hound
+ox
+bison
+ringlet
+lycaenid
+monarch
+basset
+cabbage butterfly
+admiral
+horse cart
+hartebeest
+water buffalo
+squirrel monkey
+grey fox
+fox squirrel
+hare
+wallaby
+tiger cat
+tabby
+Persian cat
+Egyptian cat
+American Staffordshire terrier
+boxer
+Staffordshire bullterrier
+collie
+Border collie
+Appenzeller
+toy terrier
+papillon
+cock
+partridge
+hen

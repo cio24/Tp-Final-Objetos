@@ -11,8 +11,8 @@ import java.util.ArrayList;
     the pictures of animals
  */
 public class AnimalPicturesThumbnailsActivity extends FilteredPicturesThumbnailsActivity {
-
     private ArrayList<AbstractFile> picturesToShow;
+
     @Override
     public ArrayList<AbstractFile> getPicturesToShow() {
         if(picturesToShow == null)

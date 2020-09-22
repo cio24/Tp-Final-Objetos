@@ -17,7 +17,6 @@ public class AnimalsClassifierService extends IntentService {
 
     private static ArrayList<AbstractFile> pictures = null;
     private static ArrayList<String> labels;
-    private Folder folderToClassify;
 
     public AnimalsClassifierService(){
         super("Classifier Service");
@@ -25,14 +24,17 @@ public class AnimalsClassifierService extends IntentService {
     public static void setLabelList(ArrayList<String> animalLabels){
         labels = animalLabels;
     }
+
     public static boolean isFinished(Context context){
         if(pictures == null)
             return getPictures(context) != null;
         return true;
     }
+
     public static ArrayList<AbstractFile> getPictures(Context context){
         if(pictures != null)
             return pictures;
+
         ArrayList<AbstractFile> animalPictures = null;
         try {
             animalPictures = (ArrayList<AbstractFile>) FileManager.readObject(context,"pictures");
@@ -41,13 +43,15 @@ public class AnimalsClassifierService extends IntentService {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
         return animalPictures;
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+
         //getting the folder_thumbnail from to be displayed
-        folderToClassify = (Folder) intent.getSerializableExtra("file");
+        Folder folderToClassify = (Folder) intent.getSerializableExtra("filesToClassify");
 
         ClassifierFilter filter = new ClassifierFilter(getApplicationContext(), labels, new TensorFlowAnimalsClassifier(getApplicationContext()));
         pictures = folderToClassify.getDeepFilteredFiles(filter);

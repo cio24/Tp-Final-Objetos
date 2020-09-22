@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.acgallery.Adapters.ThumbnailsAdapters.FolderThumbnailAdapter;
 import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.FolderFilter;
-import com.example.acgallery.Filters.PictureFilter;
+import com.example.acgallery.Filters.FileFilter;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 import com.example.acgallery.Sorters.CompoundSorter;
@@ -29,7 +29,9 @@ import com.example.acgallery.Utilities.AnimalsClassifierService;
 
 public class FolderThumbnailsActivity extends AppCompatActivity {
     private Folder folderToShow;
-    private final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
+
+    //Number of rows of pics showed
+    private final static int ROWS_OF_GRID = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +40,7 @@ public class FolderThumbnailsActivity extends AppCompatActivity {
         //binding the activity to the activity_thumbnails_layout layout.
         setContentView(R.layout.activity_thumbnails_layout);
 
-        //getting the folder to display
         folderToShow = (Folder) ActivitiesHandler.getData("folderToShow");
-
-        //we make sure that there's no empty files inside the folder to be displayed
-        //clean();
 
         //defining the adapter which will handle the binding between the views and the layout
         RecyclerView.Adapter adapter = new FolderThumbnailAdapter(folderToShow.getFilteredFiles(new TrueFilter()),this);
@@ -69,12 +67,14 @@ public class FolderThumbnailsActivity extends AppCompatActivity {
     }
 
     /*
-            this will be executed before showing the options of the menu so we can control here
-            the option that displays the animal pictures, enabling or disabling the option
-            when the service that creates the album is finished or not
-         */
+        this will be executed before showing the options of the menu so we can control here
+        the option that displays the animal pictures, enabling or disabling the option
+        when the service that creates the album is finished or not
+     */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+
+        //when the folder root is displayed we have to disabled some options so this folder can't be modified
         if(folderToShow.equals(Folder.getFolderRoot())){
             getSupportActionBar().setTitle("Root");
             menu.getItem(2).setVisible(false);
@@ -82,10 +82,15 @@ public class FolderThumbnailsActivity extends AppCompatActivity {
                 menu.getItem(i).setEnabled(false);
         }
 
+        /*
+            here we also check if the service that classifies the animals pictures is done so
+            we can activate the option that let the user see the pictures
+         */
         if(!AnimalsClassifierService.isFinished(this))
             menu.getItem(1).setEnabled(false);
         else
             menu.getItem(1).setEnabled(true);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -93,6 +98,7 @@ public class FolderThumbnailsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Folder folderRoot = Folder.getFolderRoot();
+
         switch (item.getItemId()) {
             case R.id.all_pictures_op:
                 //we send the folder where the option was chosen so the user can comeback
@@ -120,6 +126,8 @@ public class FolderThumbnailsActivity extends AppCompatActivity {
             case R.id.copy_folder_op:
                 ActivitiesHandler.sendData("folderToShow",folderRoot);
                 ActivitiesHandler.sendData("fileToPaste",folderToShow);
+
+                //with opCode we can tell the activity whether we want to copy or move something
                 ActivitiesHandler.sendData("opCode",0);
                 ActivitiesHandler.changeActivity(this,PasteThumbnailsActivity.class);
                 return true;
@@ -142,15 +150,17 @@ public class FolderThumbnailsActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                                 Folder folderToReturn = folderToShow.getParent();
+
                                 //we delete the folder and make sure that won't remain an empty file of it.
                                 if(!folderToShow.delete())
-                                    Toast.makeText(originActivity,"NO SE BORRO!",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(originActivity,"The action failed!",Toast.LENGTH_LONG).show();
                                 else
-                                    Toast.makeText(originActivity,"SE BORRO!",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(originActivity,"The file was deleted!",Toast.LENGTH_LONG).show();
+
+                                //this is used to erased any trace of the deleted file
                                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(folderToShow.getRealFile())));
 
                                 //then we comeback to the folder where the picture was
-
                                 ActivitiesHandler.sendData("folderToShow",folderToReturn);
                                 ActivitiesHandler.changeActivity(originActivity, FolderThumbnailsActivity.class);
                             }
@@ -164,8 +174,9 @@ public class FolderThumbnailsActivity extends AppCompatActivity {
                 return true;
 
             case R.id.details_folder_op:
-                //we shot the units according the size
+                //we show the units according the size of the folder
                 String units;
+
                 float folderSize = (float) folderToShow.size();
                 if(folderSize/(1024*1024*1024) > 1.0) {
                     units = "GB";
@@ -179,16 +190,15 @@ public class FolderThumbnailsActivity extends AppCompatActivity {
                     folderSize = folderSize/1024;
                 }
 
-                //finally we show all the info about this picture
-
-                int picturesAmount = folderToShow.getItemsNumber(new PictureFilter());
+                //finally we show all the info about this folder
+                int picturesAmount = folderToShow.getItemsNumber(new FileFilter());
                 new AlertDialog.Builder(this)
                         .setTitle(folderToShow.getName())
                         .setMessage(
                                 "\n" + "CURRENT FOLDER"+ "\n" +
                                         "      Pictures: " + picturesAmount + "    Folders: " + (folderToShow.getItemsNumber(new TrueFilter()) - picturesAmount) + "\n" + "\n" +
                                         "CURRENT & INNER FOLDERS " + "\n" +
-                                        "      Pictures: " + folderToShow.getDeepItemsNumber(new PictureFilter()) + "    Folders: " + (folderToShow.getDeepItemsNumber(new FolderFilter()) - 1) + "\n" + "\n" +
+                                        "      Pictures: " + folderToShow.getDeepItemsNumber(new FileFilter()) + "    Folders: " + (folderToShow.getDeepItemsNumber(new FolderFilter()) - 1) + "\n" + "\n" +
                                         "Size: " + folderSize + " " + units +  "\n" + "\n" +
                                         "Creation time: " + folderToShow.getCreationTime() +  "\n" + "\n" +
                                         "Path: " + folderToShow.getAbsolutePath()
@@ -245,20 +255,4 @@ public class FolderThumbnailsActivity extends AppCompatActivity {
         else
             this.moveTaskToBack(true); //it sends the app to the background without closing it.
     }
-
-
-    /*
-        this method remove all the abstract files that don't have a inner file which path is linked
-        with a real file in the phone.
-     */
-
-    /*
-    private void clean(){
-        for(int i = 0; i < folderToShow.getFilesAmount(); i++){
-            if(!folderToShow.getFileAt(i).getRealFile().exists()){
-                folderToShow.removeByName(folderToShow.getFileAt(i).getName());
-            }
-        }
-    }
-     */
 }

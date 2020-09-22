@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,8 +25,7 @@ import com.example.acgallery.R;
 import java.util.ArrayList;
 
 public abstract class FullPictureActivity extends AppCompatActivity{
-    private Picture pictureToShow;
-    private Picture currentPictureDisplayed;
+    private Picture pictureToShow, currentPictureDisplayed;
     private Folder folderToReturn;
     private ArrayList<AbstractFile> picturesToShow;
     private ViewPager viewPager;
@@ -43,6 +41,7 @@ public abstract class FullPictureActivity extends AppCompatActivity{
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
 
+        //the following action are taken in order to hide the title of the activity and show a icon instead
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_icon);// set drawable icon
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
@@ -60,13 +59,14 @@ public abstract class FullPictureActivity extends AppCompatActivity{
         viewPager.setCurrentItem(currentPicturePos);
     }
 
-    public int getCurrentPicturePosition(){
+    private int getCurrentPicturePosition(){
         int currentPicturePos = 0;
         for(int i = 0; i < picturesToShow.size(); i++){
             if(picturesToShow.get(i).equals(pictureToShow))
                 break;
             currentPicturePos++;
         }
+
         return currentPicturePos;
     }
 
@@ -87,12 +87,16 @@ public abstract class FullPictureActivity extends AppCompatActivity{
         switch (item.getItemId()) {
             case R.id.delete_picture_op:
                 final AppCompatActivity originActivity = this;
+
                 new AlertDialog.Builder(originActivity)
                         .setTitle("Delete picture permanently?")
                         .setMessage("If you delete this item, it will be removed permanently from your device.")
                         .setPositiveButton("Delete permanently", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+
+                                //we have to control if we are erasing the last picture of the folder or not
+                                //so we know what is the nextPicture to show
                                 int posNextPicture = currentPicturePos;
                                 if(posNextPicture == picturesToShow.size() - 1)
                                     posNextPicture--;
@@ -101,10 +105,15 @@ public abstract class FullPictureActivity extends AppCompatActivity{
                                 currentPictureDisplayed.delete();
                                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(currentPictureDisplayed.getRealFile())));
 
-                                //then we show the next picture to the folder where the picture was
-                                ActivitiesHandler.sendData("folderToReturn",folderToReturn);
-                                ActivitiesHandler.sendData("pictureToShow",picturesToShow.get(posNextPicture));
-                                ActivitiesHandler.changeActivity(originActivity,originActivity.getClass());
+                                //if it was the last picture of the album we return to the folder activity
+                                if(picturesToShow.isEmpty())
+                                    onBackPressed();
+                                else{
+                                    //we show the next picture to the folder where the picture was
+                                    ActivitiesHandler.sendData("folderToReturn",folderToReturn);
+                                    ActivitiesHandler.sendData("pictureToShow",picturesToShow.get(posNextPicture));
+                                    ActivitiesHandler.changeActivity(originActivity,originActivity.getClass());
+                                }
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -116,9 +125,9 @@ public abstract class FullPictureActivity extends AppCompatActivity{
                 return true;
 
             case R.id.details_picture_op:
-                Log.d("asd","se apreto el back");
                 //we shot the units according the size
                 String units;
+
                 float pictureSize = (float) currentPictureDisplayed.size();
                 if(pictureSize/(1024*1024) > 1.0){
                     pictureSize = pictureSize/(1024*1024);
@@ -173,7 +182,6 @@ public abstract class FullPictureActivity extends AppCompatActivity{
                 return true;
 
             case android.R.id.home:
-                Log.d("asd","se apreto el back");
                 onBackPressed();
                 return true;
 
@@ -196,12 +204,12 @@ public abstract class FullPictureActivity extends AppCompatActivity{
         }
     }
 
-    public Folder getFolderToReturn(){
+    protected Folder getFolderToReturn(){
         return this.folderToReturn;
     }
-    public Picture getPictureToShow(){
+    protected Picture getPictureToShow(){
         return this.pictureToShow;
     }
 
-    public abstract ArrayList<AbstractFile> getPicturesToShow();
+    protected abstract ArrayList<AbstractFile> getPicturesToShow();
 }

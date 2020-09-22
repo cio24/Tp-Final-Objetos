@@ -16,10 +16,9 @@ import com.example.acgallery.Adapters.ThumbnailsAdapters.PasteThumbnailAdapter;
 import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
-import com.example.acgallery.Utilities.AnimalsClassifierService;
 
 public class PasteThumbnailsActivity extends AppCompatActivity {
-    private int opCode;
+    private static int opCode;
     private static AbstractFile fileToPaste;
     private static final int COPY_CODE = 0;
     private Folder folderToShow;
@@ -91,16 +90,18 @@ public class PasteThumbnailsActivity extends AppCompatActivity {
                 }
                 //we do this to prevent the remaining of a empty file in the directory origin
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fileToPaste.getRealFile())));
-                fileToPaste = null;
                 opCode = -1;
                 ActivitiesHandler.sendData("folderToShow", fileToPaste.getParent());
                 ActivitiesHandler.changeActivity(this, FolderThumbnailsActivity.class);
+                fileToPaste = null;
                 return true;
 
             case R.id.cancel_op:
-                fileToPaste.getParent().add(fileToPaste);
+                if(opCode != COPY_CODE)
+                    fileToPaste.getParent().add(fileToPaste);
+
                 ActivitiesHandler.sendData("folderToShow", fileToPaste.getParent());
-                fileToPaste = null;
+                fileToPaste = null; //we have to do this because fileToPaste is static!
                 ActivitiesHandler.changeActivity(this, FolderThumbnailsActivity.class);
                 return true;
 
@@ -123,7 +124,8 @@ public class PasteThumbnailsActivity extends AppCompatActivity {
             ActivitiesHandler.changeActivity(this, PasteThumbnailsActivity.class);
         }
         else {
-            fileToPaste.getParent().add(fileToPaste);
+            if(opCode != COPY_CODE)
+                fileToPaste.getParent().add(fileToPaste);
             ActivitiesHandler.sendData("folderToShow", fileToPaste.getParent());
             ActivitiesHandler.changeActivity(this, FolderThumbnailsActivity.class);
         }

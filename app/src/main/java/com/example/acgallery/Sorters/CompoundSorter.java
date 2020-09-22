@@ -13,9 +13,9 @@ public class CompoundSorter implements CriterionSorter, Serializable {
     }
     @Override
     public boolean lessThan(AbstractFile a, AbstractFile b) {
-        if(c1.lessThan(a,b) && c1.lessThan(a,b))
-            return c2.lessThan(a,b);
-        return c1.lessThan(a,b);
-
+        boolean result = c1.lessThan(a,b);
+        if(result == c1.lessThan(b,a))
+            result = c2.lessThan(a,b);
+        return result;
     }
 }

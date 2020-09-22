@@ -28,9 +28,10 @@ public abstract class FilteredPicturesThumbnailsActivity extends AppCompatActivi
         //binding the activity to the activity_thumbnails_layout layout.
         setContentView(R.layout.activity_thumbnails_layout);
 
-        //defining the adapter which will handle the binding between the views and the layout
         this.folderToReturn = (Folder) ActivitiesHandler.getData("folderToReturn");
         this.picturesToShow = getPicturesToShow();
+
+        //defining the adapter which will handle the binding between the views and the layout
         RecyclerView.Adapter adapter = getAdapter();
 
         //showing the name of the folder
@@ -63,9 +64,11 @@ public abstract class FilteredPicturesThumbnailsActivity extends AppCompatActivi
     //in this method we indicate the actions to be taken for each option of the menu
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.details_filtered_pictures_op:
-                //we shot the units according the size
+                //we show the units according the size
                 String units;
+
                 float size = 0;
                 int n = picturesToShow.size();
                 for(int i = 0; i < n; i++){
@@ -102,6 +105,7 @@ public abstract class FilteredPicturesThumbnailsActivity extends AppCompatActivi
                 ActivitiesHandler.sendData("folderToShow", folderToReturn);
                 ActivitiesHandler.changeActivity(this, FolderThumbnailsActivity.class);
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -111,7 +115,7 @@ public abstract class FilteredPicturesThumbnailsActivity extends AppCompatActivi
         return this.folderToReturn;
     }
 
-    public abstract ArrayList<AbstractFile> getPicturesToShow();
-    public abstract RecyclerView.Adapter getAdapter();
-    public abstract String getActionBarTitle();
+    protected abstract ArrayList<AbstractFile> getPicturesToShow();
+    protected abstract RecyclerView.Adapter getAdapter();
+    protected abstract String getActionBarTitle();
 }

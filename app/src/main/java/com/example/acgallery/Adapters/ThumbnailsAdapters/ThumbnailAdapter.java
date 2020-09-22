@@ -15,7 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 /*
-    This class is has to administrate all the pictures to be shown, it creates all the holders required
+    This class must to administrate all the pictures to be shown, it creates all the holders required
     and bind every picture to each one of them. The holder is a inner class that we must to create
     in order to adapt it to our needs, this means that the holder has two views, one for the picture or the folder image
     and another for the text that indicates the name of the folder.
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 public abstract class ThumbnailAdapter extends RecyclerView.Adapter<ThumbnailAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder {
-
         protected ImageView thumbnailToShow;
         private TextView nameToShow;
 

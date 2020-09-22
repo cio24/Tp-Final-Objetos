@@ -16,7 +16,6 @@ import java.util.ArrayList;
 public class FileManager {
 
     public static Folder getFolderRootLoaded(ArrayList<String> directoriesNameToFind, ArrayList<String> searchPaths, ArrayList<String> fileExtensions, ArrayList<String> excludedDirectories){
-
         Folder folderRoot = new Folder(Environment.getDataDirectory()); //first we create the folder root
 
         File directory;
@@ -36,10 +35,9 @@ public class FileManager {
         }
 
         //we create a Folder with each directory found then we load every Folder
+        Folder folder;
         for(File dir: directoriesFound){
-            Folder folder = new Folder(dir);
             folder = getFolderLoaded(dir,fileExtensions,excludedDirectories);
-            //loadFolder(folder, dir, fileExtensions, excludedDirectories);
             if(folder.getItemsNumber(new TrueFilter()) > 0)
                 folderRoot.add(folder);
         }
@@ -122,6 +120,7 @@ public class FileManager {
                 }
             }
         }
+
         return parent;
     }
 
@@ -139,5 +138,6 @@ public class FileManager {
         ObjectInputStream ois = new ObjectInputStream(fis);
         Object object = ois.readObject();
         return object;
+
     }
 }

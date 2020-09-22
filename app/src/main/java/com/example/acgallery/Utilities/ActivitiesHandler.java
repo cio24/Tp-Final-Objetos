@@ -13,6 +13,9 @@ public class ActivitiesHandler{
     public static void sendData(String key, Object value) {
         buffer.put(key,value);
     }
+    public static Object getData(String key){
+        return intent.getSerializableExtra(key);
+    }
 
     public static void changeActivity(AppCompatActivity originActivity, Class destinationActivity){
         intent = new Intent(originActivity.getApplicationContext(),destinationActivity);
@@ -24,7 +27,5 @@ public class ActivitiesHandler{
         originActivity.finish();
     }
 
-    public static Object getData(String key){
-        return intent.getSerializableExtra(key);
-    }
+
 }

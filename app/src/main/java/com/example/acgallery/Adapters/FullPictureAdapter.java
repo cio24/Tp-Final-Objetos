@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class FullPictureAdapter extends PagerAdapter {
 
     /*
-        context is required when we want to create a view when there's no xml file to associate with,
+        context is required when we want to create a view and there's no xml file to associate with,
         only in classes that implements AppCompatActivity the context is the instance of the class itself
         so you can use the reserved word this or getContextApplication() (something like that) when you create a thread that
         needs that context.
@@ -26,10 +26,12 @@ public class FullPictureAdapter extends PagerAdapter {
     private Context context;
 
     /*
-        as the context, the actionBar is related to an activity, when we want to manipulate it
-        inside of one of them we must use getSupportActionBar(), but in this case we need another parameter.
+        like the context, the actionBar is related to an activity, when we want to manipulate
+        it we must use the getSupportActionBar() method of its activity, but in this case we
+        need to get it through another parameter too.
      */
     private ActionBar actionBar;
+
     private SubsamplingScaleImageView fullPictureToShow; //the current picture to be displayed
     private ArrayList<AbstractFile> picturesToShow; //its folder container
 

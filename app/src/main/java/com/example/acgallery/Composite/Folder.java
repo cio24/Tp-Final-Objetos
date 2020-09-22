@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Folder extends AbstractFile {
-
     private ArrayList<AbstractFile> files;
     private static Folder folderRoot;
 
@@ -27,22 +26,21 @@ public class Folder extends AbstractFile {
         }
         return pictures;
     }
-    public static Folder getFolderRoot(){
-        return folderRoot;
-    }
 
     public boolean add(AbstractFile abstractFile) {
         abstractFile.setParent(this);
         return files.add(abstractFile);
     }
+
     public boolean removeFile(AbstractFile abstractFile) {
             return files.remove(abstractFile);
     }
+
     public void sort(CriterionSorter criterionSorter){
         AbstractFile aux;
         for(int i = 0; i < files.size() - 1; i++){
             for (int j = i+1; j < files.size(); j++){
-                if (!criterionSorter.lessThan(files.get(i), files.get(j))){
+                if (criterionSorter.lessThan(files.get(j), files.get(i))){
                     aux = files.remove(i);
                     files.add(i, files.remove(j-1));
                     files.add(j, aux);
@@ -50,6 +48,7 @@ public class Folder extends AbstractFile {
             }
         }
     }
+
     public int getItemsNumber(CriterionFilter criterionFilter){
         int counter = 0;
         for(AbstractFile abstractFile: files)
@@ -57,12 +56,16 @@ public class Folder extends AbstractFile {
                 counter++;
         return counter;
     }
+
     public AbstractFile get(int index){
         if(index >= 0 && index < files.size())
             return files.get(index);
         return null;
     }
 
+    public static Folder getFolderRoot() {
+        return folderRoot;
+    }
 
     @Override
     public boolean rename(String newName) {

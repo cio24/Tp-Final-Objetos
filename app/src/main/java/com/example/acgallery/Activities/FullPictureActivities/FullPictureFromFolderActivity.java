@@ -1,3 +1,7 @@
+/*
+ * this activity displayed in full screen mode the pictures shown in the FullPictureFromFolderActivity
+ */
+
 package com.example.acgallery.Activities.FullPictureActivities;
 
 import com.example.acgallery.Activities.ThumbnailsActivities.FolderThumbnailsActivity;
@@ -6,10 +10,6 @@ import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.Utilities.ActivitiesHandler;
 import java.util.ArrayList;
 
-/*
-    this activity open a selected picture and shows a menu of actions like move, remove, etc.
-     Additionally it lets you to display in full screen mode and zoom the picture.
- */
 public class FullPictureFromFolderActivity extends FullPictureActivity {
 
     @Override

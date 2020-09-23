@@ -1,9 +1,13 @@
+/*
+ * this activity displays in full screen mode the pictures shown in the AnimalPicturesThumbnailsActivity
+ */
+
 package com.example.acgallery.Activities.FullPictureActivities;
 
 import com.example.acgallery.Activities.ThumbnailsActivities.AnimalPicturesThumbnailsActivity;
+import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Utilities.ActivitiesHandler;
 import com.example.acgallery.Utilities.AnimalsClassifierService;
-import com.example.acgallery.Composite.AbstractFile;
 import java.util.ArrayList;
 
 public class FullPictureFromAnimalsActivity extends FullPictureActivity {

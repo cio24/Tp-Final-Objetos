@@ -1,3 +1,10 @@
+/*
+ * This class has to administrate the pictures to be shown but in full screen mode,
+ * it creates a holder and bind the picture that is going to be shown in full screen.
+ * this adapter add a listener to the picture that is displayed so when it is touched
+ * hide the navigation bar and the control only.
+ */
+
 package com.example.acgallery.Adapters;
 
 import android.annotation.SuppressLint;
@@ -33,7 +40,7 @@ public class FullPictureAdapter extends PagerAdapter {
     private ActionBar actionBar;
 
     private SubsamplingScaleImageView fullPictureToShow; //the current picture to be displayed
-    private ArrayList<AbstractFile> picturesToShow; //its folder container
+    private ArrayList<AbstractFile> picturesToShow; //where it is contained
 
     //staff required to change to full screen mode
     private boolean mVisible;

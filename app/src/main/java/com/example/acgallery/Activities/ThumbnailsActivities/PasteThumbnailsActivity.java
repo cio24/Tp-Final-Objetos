@@ -18,12 +18,11 @@ import com.example.acgallery.Filters.TrueFilter;
 import com.example.acgallery.R;
 
 public class PasteThumbnailsActivity extends AppCompatActivity {
+    private static final int COPY_CODE = 0;
+    private static final int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private static int opCode;
     private static AbstractFile fileToPaste;
-    private static final int COPY_CODE = 0;
     private Folder folderToShow;
-
-    private final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

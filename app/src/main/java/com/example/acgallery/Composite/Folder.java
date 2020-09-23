@@ -1,7 +1,12 @@
+/*
+ * this class represents a folder and it implements all the abstract methods of AbstractFile and also
+ * provide other operations such as add and get files, filter files, etc.
+ */
+
 package com.example.acgallery.Composite;
 
-import com.example.acgallery.Filters.CriterionFilter;
-import com.example.acgallery.Sorters.CriterionSorter;
+import com.example.acgallery.Filters.Filterable;
+import com.example.acgallery.Sorters.Sorteable;
 import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +16,8 @@ public class Folder extends AbstractFile {
     private ArrayList<AbstractFile> files;
     private static Folder folderRoot;
 
+    //constructor
+
     public Folder(File realFile) {
         super(realFile);
         files = new ArrayList<>();
@@ -18,14 +25,38 @@ public class Folder extends AbstractFile {
             folderRoot = this;
     }
 
-    public ArrayList<AbstractFile> getFilteredFiles(CriterionFilter criterionFilter){
+
+    //getters
+
+    public AbstractFile get(int index){
+        if(index >= 0 && index < files.size())
+            return files.get(index);
+        return null;
+    }
+
+    public ArrayList<AbstractFile> getFilteredFiles(Filterable filterable){
         ArrayList<AbstractFile> pictures = new ArrayList<>();
         for(AbstractFile file: files){
-            if(criterionFilter.satisfy(file))
+            if(filterable.satisfy(file))
                 pictures.add(file);
         }
         return pictures;
     }
+
+    public int getItemsNumber(Filterable filterable){
+        int counter = 0;
+        for(AbstractFile abstractFile: files)
+            if(filterable.satisfy(abstractFile))
+                counter++;
+        return counter;
+    }
+
+    public static Folder getFolderRoot() {
+        return folderRoot;
+    }
+
+
+    //others
 
     public boolean add(AbstractFile abstractFile) {
         abstractFile.setParent(this);
@@ -36,11 +67,11 @@ public class Folder extends AbstractFile {
             return files.remove(abstractFile);
     }
 
-    public void sort(CriterionSorter criterionSorter){
+    public void sort(Sorteable sorteable){
         AbstractFile aux;
         for(int i = 0; i < files.size() - 1; i++){
             for (int j = i+1; j < files.size(); j++){
-                if (criterionSorter.lessThan(files.get(j), files.get(i))){
+                if (sorteable.lessThan(files.get(j), files.get(i))){
                     aux = files.remove(i);
                     files.add(i, files.remove(j-1));
                     files.add(j, aux);
@@ -49,23 +80,8 @@ public class Folder extends AbstractFile {
         }
     }
 
-    public int getItemsNumber(CriterionFilter criterionFilter){
-        int counter = 0;
-        for(AbstractFile abstractFile: files)
-            if(criterionFilter.satisfy(abstractFile))
-                counter++;
-        return counter;
-    }
 
-    public AbstractFile get(int index){
-        if(index >= 0 && index < files.size())
-            return files.get(index);
-        return null;
-    }
-
-    public static Folder getFolderRoot() {
-        return folderRoot;
-    }
+    //abstracts implementation
 
     @Override
     public boolean rename(String newName) {
@@ -124,12 +140,12 @@ public class Folder extends AbstractFile {
     }
 
     @Override
-    public int getDeepItemsNumber(CriterionFilter criterionFilter) {
+    public int getDeepItemsNumber(Filterable filterable) {
         int counter = 0;
-        if(criterionFilter.satisfy(this))
+        if(filterable.satisfy(this))
             counter++;
         for(AbstractFile abstractFile: files){
-                counter += abstractFile.getDeepItemsNumber(criterionFilter);
+                counter += abstractFile.getDeepItemsNumber(filterable);
 
         }
         return counter;
@@ -145,13 +161,13 @@ public class Folder extends AbstractFile {
     }
 
     @Override
-    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter criterionFilter){
+    public ArrayList<AbstractFile> getDeepFilteredFiles(Filterable filterable){
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
-        ArrayList<AbstractFile> aux;
+        ArrayList<AbstractFile> temp;
         for (AbstractFile f:files) {
-            aux = f.getDeepFilteredFiles(criterionFilter);
-            if (aux != null)
-                toReturn.addAll(aux);
+            temp = f.getDeepFilteredFiles(filterable);
+            if (temp != null)
+                toReturn.addAll(temp);
         }
         if (toReturn.isEmpty()){
             return null;

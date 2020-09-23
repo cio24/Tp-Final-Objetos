@@ -11,10 +11,7 @@ import com.example.acgallery.Filters.ClassifierFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.example.acgallery.Utilities.FileManager.readObject;
-
 public class AnimalsClassifierService extends IntentService {
-
     private static ArrayList<AbstractFile> pictures = null;
     private static ArrayList<String> labels;
 

@@ -1,3 +1,7 @@
+/*
+ * This adapter handles the pictures of the AnimalPicturesThumbnailsActivity
+ */
+
 package com.example.acgallery.Adapters.ThumbnailsAdapters;
 
 import android.view.View;

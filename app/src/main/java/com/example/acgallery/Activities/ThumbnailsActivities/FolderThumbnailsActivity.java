@@ -1,3 +1,8 @@
+/*
+ * this activity displayed the files (pictures and folders) of a given folder, it also provides a menu that
+ * gives the user the ability to make some operations with the folder and its files
+ */
+
 package com.example.acgallery.Activities.ThumbnailsActivities;
 
 import android.content.DialogInterface;
@@ -28,10 +33,10 @@ import com.example.acgallery.Utilities.ActivitiesHandler;
 import com.example.acgallery.Utilities.AnimalsClassifierService;
 
 public class FolderThumbnailsActivity extends AppCompatActivity {
-    private Folder folderToShow;
-
     //Number of rows of pics showed
     private final static int ROWS_OF_GRID = 4;
+
+    private Folder folderToShow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

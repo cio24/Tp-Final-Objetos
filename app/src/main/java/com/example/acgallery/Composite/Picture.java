@@ -1,7 +1,12 @@
+/*
+ * this class represents a picture and it implements all the abstract methods of AbstractFile and also
+ *  provide getters for the width and the height of the image
+ */
+
 package com.example.acgallery.Composite;
 
 import android.graphics.BitmapFactory;
-import com.example.acgallery.Filters.CriterionFilter;
+import com.example.acgallery.Filters.Filterable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,23 +17,31 @@ import java.util.ArrayList;
 
 public class Picture extends AbstractFile {
 
+    //constructor
+
     public Picture(File realFile) {
         super(realFile);
     }
 
-    public int width(){
+
+    //getters
+
+    public int getWidth(){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(getRealFile().getAbsolutePath(), options);
         return options.outWidth;
     }
 
-    public int height(){
+    public int getHeight(){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(getRealFile().getAbsolutePath(), options);
         return options.outHeight;
     }
+
+
+    //abstracts implementation
 
     @Override
     public boolean rename(String newName) {
@@ -88,8 +101,8 @@ public class Picture extends AbstractFile {
     }
 
     @Override
-    public int getDeepItemsNumber(CriterionFilter criterionFilter) {
-        if(criterionFilter.satisfy(this))
+    public int getDeepItemsNumber(Filterable filterable) {
+        if(filterable.satisfy(this))
             return 1;
         return 0;
     }
@@ -100,9 +113,9 @@ public class Picture extends AbstractFile {
     }
 
     @Override
-    public ArrayList<AbstractFile> getDeepFilteredFiles(CriterionFilter criterionFilter) {
+    public ArrayList<AbstractFile> getDeepFilteredFiles(Filterable filterable) {
         ArrayList<AbstractFile> toReturn = new ArrayList<>();
-        if (criterionFilter.satisfy(this)){
+        if (filterable.satisfy(this)){
             toReturn.add(this);
             return toReturn;
         }

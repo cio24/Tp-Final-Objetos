@@ -1,3 +1,9 @@
+/*
+ * this abstract class generalizes the behavior of an activity that shows pictures in full screen mode
+ * and shows a menu of actions like move, remove, etc. Additionally it lets you to display in full screen
+ *  mode and zoom the picture.
+ */
+
 package com.example.acgallery.Activities.FullPictureActivities;
 
 import android.content.DialogInterface;
@@ -142,7 +148,7 @@ public abstract class FullPictureActivity extends AppCompatActivity{
                 new AlertDialog.Builder(this)
                         .setTitle(currentPictureDisplayed.getName())
                         .setMessage(
-                                "\n" + "Dimensions: " + currentPictureDisplayed.width() + " x " + currentPictureDisplayed.height() + "\n" + "\n" +
+                                "\n" + "Dimensions: " + currentPictureDisplayed.getWidth() + " x " + currentPictureDisplayed.getHeight() + "\n" + "\n" +
                                         "Size: " + pictureSize + " " + units + "\n" + "\n" +
                                         "Path: " + currentPictureDisplayed.getAbsolutePath() + "\n" + "\n" +
                                         "Taken on: " + currentPictureDisplayed.getCreationTime()

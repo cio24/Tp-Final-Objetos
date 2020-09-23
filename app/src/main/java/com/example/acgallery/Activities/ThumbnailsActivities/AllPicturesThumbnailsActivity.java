@@ -1,3 +1,7 @@
+/*
+ * This activity shows all the pictures without folders.
+ */
+
 package com.example.acgallery.Activities.ThumbnailsActivities;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -7,9 +11,6 @@ import com.example.acgallery.Composite.Folder;
 import com.example.acgallery.Filters.TrueFilter;
 import java.util.ArrayList;
 
-/*
-    This activity shows all the pictures without folders.
- */
 public class AllPicturesThumbnailsActivity extends FilteredPicturesThumbnailsActivity {
     private ArrayList<AbstractFile> picturesToShow;
 

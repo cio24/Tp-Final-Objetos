@@ -1,3 +1,8 @@
+/*
+ * This activity shows the pictures the service classifies that is to say
+ * the pictures of animals
+ */
+
 package com.example.acgallery.Activities.ThumbnailsActivities;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -6,10 +11,6 @@ import com.example.acgallery.Composite.AbstractFile;
 import com.example.acgallery.Utilities.AnimalsClassifierService;
 import java.util.ArrayList;
 
-/*
-    This activity shows the pictures the service classifies that is to say
-    the pictures of animals
- */
 public class AnimalPicturesThumbnailsActivity extends FilteredPicturesThumbnailsActivity {
     private ArrayList<AbstractFile> picturesToShow;
 

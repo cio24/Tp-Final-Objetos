@@ -1,3 +1,9 @@
+/*
+ * This classifier uses a library of tensorFlow.lite that lets you find objects in a image and gives you
+ * a list of labels of the things that were found, so we have or our list of animal labels and we check
+ * whether one of the labels that give us the library matches with one of the animals labels
+ */
+
 package com.example.acgallery.Classifiers;
 
 import android.content.Context;
@@ -23,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-public class TensorFlowAnimalsClassifier implements Classifier {
+public class TensorFlowAnimalsClassifier implements Classifiable {
 
     private Context context;
     private static final int RESULTS_TO_SHOW = 3;

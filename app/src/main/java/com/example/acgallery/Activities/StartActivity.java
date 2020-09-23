@@ -1,3 +1,9 @@
+/*
+ * this is the starting activity that has to request for permissions to read an write the internal and external storage
+ * then it search for pictures in some directories. It also run a background service that classifies pictures in order
+ * to create a dynamic album of animals pictures
+ */
+
 package com.example.acgallery.Activities;
 
 import android.Manifest;
@@ -24,11 +30,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/*
-    this is the starting activity that has to request for permissions to read an write the internal and external storage
-    then it search for pictures in some directories. It also run a background service that classifies pictures in order
-    to create a dynamic album of animals pictures
- */
 public class StartActivity extends AppCompatActivity {
 
     private final static int REQUEST_PERMISSION = 1;
@@ -40,7 +41,6 @@ public class StartActivity extends AppCompatActivity {
     private String [] permissionsCodes;
     private Folder folderRoot;
     private  ArrayList<String> pathsToScan, directoriesToTrack, directoriesToExclude, targetedExtensions;
-
 
     //this method runs automatically when the activity is created
     @Override

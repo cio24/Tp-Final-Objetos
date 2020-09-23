@@ -1,3 +1,8 @@
+/*
+ * this abstract class generalizes the behavior of an activity that shows only pictures that are filtered
+ * by any criteria
+ */
+
 package com.example.acgallery.Activities.ThumbnailsActivities;
 
 import android.content.DialogInterface;
@@ -17,9 +22,9 @@ import com.example.acgallery.Utilities.ActivitiesHandler;
 import java.util.ArrayList;
 
 public abstract class FilteredPicturesThumbnailsActivity extends AppCompatActivity {
+    final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
     private Folder folderToReturn;
     private ArrayList<AbstractFile> picturesToShow;
-    final static int ROWS_OF_GRID = 4; //Number of rows of pics showed
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

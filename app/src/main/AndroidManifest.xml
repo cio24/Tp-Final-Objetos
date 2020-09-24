@@ -7,28 +7,28 @@
     <application
         android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/final_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/final_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.StartActivity">
+        <activity android:name=".Controller.Activities.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.FullPictureActivities.FullPictureFromFolderActivity" />
-        <activity android:name=".Activities.FullPictureActivities.FullPictureFromAllActivity" />
-        <activity android:name=".Activities.FullPictureActivities.FullPictureFromAnimalsActivity" />
-        <activity android:name=".Activities.ThumbnailsActivities.FolderThumbnailsActivity" />
-        <activity android:name=".Activities.ThumbnailsActivities.PasteThumbnailsActivity" />
-        <activity android:name=".Activities.ThumbnailsActivities.AnimalPicturesThumbnailsActivity" />
-        <activity android:name=".Activities.ThumbnailsActivities.AllPicturesThumbnailsActivity" />
-        <activity android:name=".Activities.ThumbnailsActivities.FilteredPicturesThumbnailsActivity" />
+        <activity android:name=".Controller.Activities.FullPictureActivities.FullPictureFromFolderActivity" />
+        <activity android:name=".Controller.Activities.FullPictureActivities.FullPictureFromAllActivity" />
+        <activity android:name=".Controller.Activities.FullPictureActivities.FullPictureFromAnimalsActivity" />
+        <activity android:name=".Controller.Activities.ThumbnailsActivities.FolderThumbnailsActivity" />
+        <activity android:name=".Controller.Activities.ThumbnailsActivities.PasteThumbnailsActivity" />
+        <activity android:name=".Controller.Activities.ThumbnailsActivities.AnimalPicturesThumbnailsActivity" />
+        <activity android:name=".Controller.Activities.ThumbnailsActivities.AllPicturesThumbnailsActivity" />
+        <activity android:name=".Controller.Activities.ThumbnailsActivities.FilteredPicturesThumbnailsActivity" />
 
-        <service android:name=".Utilities.AnimalsClassifierService" />
+        <service android:name=".Controller.AnimalsClassifierService" />
     </application>
 
 </manifest>

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:background="#000000"
     android:layout_height="match_parent"
-    tools:context=".Activities.StartActivity">
+    tools:context=".Controller.Activities.StartActivity">
 
     <ImageView
         android:id="@+id/background"
